@@ -17,7 +17,7 @@ int main(int argc, const char* argv[])
 		{
 			int result = 0;
 			const char* message_result = nullptr;
-			bool res = function(&result, &message_result, argv);
+			bool res = function(&result, &message_result, argv, argc);
 			if (res)
 			{
 				if (message_result != nullptr)
@@ -39,55 +39,6 @@ int main(int argc, const char* argv[])
 		{
 			WriteStderr("Unknown command line flag");
 			return -1;
-		}
-		continue;
-		if (lstrcmpi(argv[i], FlagSilent1) == 0 || lstrcmpi(argv[i], FlagSilent2) == 0)
-		{
-			SILENCE = true;
-		}
-		if (lstrcmpi(argv[i], FlagEmptyBin) == 0)
-		{
-			int result = 0;
-			const char* message_result = nullptr;
-			if (EmptyBin( & result, &message_result, argv))
-			{
-				if (message_result != nullptr)
-				{
-					WriteStdout(message_result);
-				}
-				return result;
-			}
-			else
-			{
-				if (message_result != nullptr)
-				{
-					WriteStderr(message_result);
-				}
-				return -1;
-			}
-		}
-
-		if (lstrcmpi(argv[i], FlagGetVersionOS) == 0)
-		{
-			int result = 0;
-			const char* message_result = nullptr;
-			if (ReportVersionStdout(&result, &message_result, argv))
-			{
-				if (message_result != nullptr)
-				{
-					WriteStdout(message_result);
-				}
-				return result;
-			}
-			else
-			{
-				if (message_result != nullptr)
-				{
-					WriteStderr(message_result);
-				}
-				return -1;
-			}
-
 		}
 		
 	}

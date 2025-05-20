@@ -153,10 +153,12 @@
   <ItemGroup>
     <ClCompile Include="common.cpp" />
     <ClCompile Include="iosys.cpp" />
+    <ClCompile Include="killprocess.cpp" />
     <ClCompile Include="mylib_string.cpp" />
     <ClCompile Include="Numbers.cpp" />
     <ClCompile Include="numbers.h" />
     <ClCompile Include="osver.cpp" />
+    <ClCompile Include="Recyclinbin.cpp" />
     <ClCompile Include="stdpipe.cpp" />
     <ClCompile Include="string_data.cpp" />
     <ClCompile Include="string_wrapper.cpp" />

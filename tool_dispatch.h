@@ -2,7 +2,7 @@
 
 
 #ifndef CONTAINS_TOOL_FUNCTION_PTR
-typedef bool (*ToolFunction)(int* result, const char** message_result, const char* argv[]);
+typedef bool (*ToolFunction)(int* result, const char** message_result, const char* argv[], int argc);
 #define CONTAINS_TOOL_FUNCTION_PTR
 #endif
 

@@ -1,5 +1,43 @@
 #include "common.h"
 extern "C" {
+	bool StringToNumber(const char* input, int* output)
+	{
+		int mul = 1;
+		int len = 0;
+		if (input == nullptr)
+			return false;
+		if (output == nullptr)
+			return false;
+
+		for (int i = 0; ; i++)
+		{
+			if (input[i] == 0)
+			{
+				// to the future:  we sub 1 from i so the code below DOESN'T start at null
+				len = i-1;
+				break;
+			}
+		}
+		if (len == 0)
+			return false;
+		else
+		{
+			*output = 0;
+			for (int i = len; i >= 0; i--)
+			{
+				if ((input[i] < '0') || (input[i] > '9'))
+				{
+					return false;
+				}
+				else
+				{
+					*output += (input[i] - '0') * mul;
+					mul *= 10;
+				}
+			}
+		}
+
+	}
 	bool NumberToString(int number, char** output, int* output_size)
 	{
 		// arg validation;

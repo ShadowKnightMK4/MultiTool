@@ -19,6 +19,12 @@
     <Filter Include="Source Files\osver">
       <UniqueIdentifier>{a3e58c6d-2479-4622-8523-1c2e6a49e44a}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\killprocess">
+      <UniqueIdentifier>{63f35071-4637-4aba-8e2d-76f164fb096e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\EmptyRecylingBin">
+      <UniqueIdentifier>{ad4d89e7-2e69-4c79-a51c-2a2ed6f6a1eb}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -62,6 +68,12 @@
     </ClCompile>
     <ClCompile Include="osver.cpp">
       <Filter>Source Files\osver</Filter>
+    </ClCompile>
+    <ClCompile Include="killprocess.cpp">
+      <Filter>Source Files\killprocess</Filter>
+    </ClCompile>
+    <ClCompile Include="Recyclinbin.cpp">
+      <Filter>Source Files\EmptyRecylingBin</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

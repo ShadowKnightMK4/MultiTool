@@ -8,4 +8,5 @@
 /// <returns>true if ok and false on error. Note output and outputsize will be set to 0 on error also if not null</returns>
 extern "C" {
 	extern bool NumberToString(int number, char** output, int* output_size);
+	extern bool StringToNumber(const char* input, int* output);
 }
