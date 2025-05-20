@@ -1,0 +1,87 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;h++;hm;inl;inc;ipp;xsd</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="mylibc">
+      <UniqueIdentifier>{594ec974-6f5c-420b-8f1f-7299aa023068}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\osver">
+      <UniqueIdentifier>{a3e58c6d-2479-4622-8523-1c2e6a49e44a}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="main.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="SystemEntry.cpp">
+      <Filter>mylibc</Filter>
+    </ClCompile>
+    <ClCompile Include="common.cpp">
+      <Filter>mylibc</Filter>
+    </ClCompile>
+    <ClCompile Include="stdpipe.cpp">
+      <Filter>mylibc</Filter>
+    </ClCompile>
+    <ClCompile Include="iosys.cpp">
+      <Filter>mylibc</Filter>
+    </ClCompile>
+    <ClCompile Include="string_data.cpp">
+      <Filter>mylibc</Filter>
+    </ClCompile>
+    <ClCompile Include="mylib_string.cpp">
+      <Filter>mylibc</Filter>
+    </ClCompile>
+    <ClCompile Include="string_wrapper.cpp">
+      <Filter>mylibc</Filter>
+    </ClCompile>
+    <ClCompile Include="tool_dispatch.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="tool_functions.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Numbers.cpp">
+      <Filter>mylibc</Filter>
+    </ClCompile>
+    <ClCompile Include="numbers.h">
+      <Filter>Header Files</Filter>
+    </ClCompile>
+    <ClCompile Include="WinApiStubbs.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="osver.cpp">
+      <Filter>Source Files\osver</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="common.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="stdpipe.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="iosys.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="string_data.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="tool_functions.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="tool_dispatch.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>
