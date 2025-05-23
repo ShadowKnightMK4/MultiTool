@@ -20,7 +20,13 @@ extern "C" {
 }
 
 
+
 /// <summary>
 /// If true , the tool and this app should not procude output beyond exit code
 /// </summary>
 extern bool SILENCE;
+
+extern bool VERISON_INFO_IS_UNICODE = false;
+extern bool VERSION_INFO_WAS_GOTTON = false;
+
+extern MyOSVERSIONINFO GlobalVersionInfo = { 0, 0, 0, 0 };

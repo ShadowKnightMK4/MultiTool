@@ -1,30 +1,101 @@
 #include "common.h"
 
-typedef union MyOSVERSIONINFO
-{
-	OSVERSIONINFOA A;
-	OSVERSIONINFOW W;
-} ;
+#define WINDOWS_8_MAJOR 6
+#define WINDOWS_8_MINOR 2
 
 
+/// <summary>
+/// FetchVerisonInfo sets this if RtlGetVersion was used to get the version info since that stores in unicode
+/// </summary>
+bool VERISON_INFO_IS_UNICODE;
+/// <summary>
+/// FetchVerisonInfo sets this if FetchVersionInfo was called at least once.  The rest of the software can just OSVERSIONINFO dependeing on what union
+/// </summary>
+bool VERSION_INFO_WAS_GOTTON;
+
+/// <summary>
+/// Storage for versioned routined to actually get the version info.
+/// </summary>
+MyOSVERSIONINFO GlobalVersionInfo = { 0, 0, 0, 0 };
 
 typedef int (WINAPI* GetVersionInfOExA_PTR)(
 	LPOSVERSIONINFOA lpVersionInformation
 	);
 typedef NTSTATUS(WINAPI* RtlGetVersion_PTR)(OSVERSIONINFOW*);
 
+void SetVersionInfoToZeroAndSetSize(bool Unicode)
+{
+	GlobalVersionInfo.A.dwBuildNumber = GlobalVersionInfo.A.dwMajorVersion = GlobalVersionInfo.A.dwMinorVersion = GlobalVersionInfo.A.dwPlatformId = 0;
+	if (Unicode)
+	{
+		GlobalVersionInfo.W.szCSDVersion[0] = 0;
+		for (int i = 0; i < 128; i++)
+		{
+			GlobalVersionInfo.W.szCSDVersion[i] = 0;
+		}
+	}
+	else
+	{
+		GlobalVersionInfo.A.szCSDVersion[0] = 0;
+	}
+}
+
+void SetVersionInfoFromAnother(MyOSVERSIONINFO* Source, bool Unicode)
+{
+	if (Unicode)
+	{
+		GlobalVersionInfo.W.dwBuildNumber = Source->W.dwBuildNumber;
+		GlobalVersionInfo.W.dwMajorVersion = Source->W.dwMajorVersion;
+		GlobalVersionInfo.W.dwMinorVersion = Source->W.dwMinorVersion;
+		GlobalVersionInfo.W.dwPlatformId = Source->W.dwPlatformId;
+		for (int i = 0; i < 128; i++)
+		{
+			GlobalVersionInfo.A.szCSDVersion[i] = Source->A.szCSDVersion[i];
+		}
+	}
+	else
+	{
+		GlobalVersionInfo.A.dwBuildNumber = Source->A.dwBuildNumber;
+		GlobalVersionInfo.A.dwMajorVersion = Source->A.dwMajorVersion;
+		GlobalVersionInfo.A.dwMinorVersion = Source->A.dwMinorVersion;
+		GlobalVersionInfo.A.dwPlatformId = Source->A.dwPlatformId;
+		for (int i = 0; i < 128; i++)
+		{
+			GlobalVersionInfo.A.szCSDVersion[i] = Source->A.szCSDVersion[i];
+		}
+	}
+}
+
+
 int FetchVersionInfo(MyOSVERSIONINFO* Output, bool* UseUnicode)
 {
 	if (Output == nullptr)
 		return -1;
-	Output->W.dwBuildNumber = Output->W.dwMajorVersion = Output->W.dwMinorVersion = Output->W.dwPlatformId = 0;
-	Output->W.szCSDVersion[0] = 0;
+	if (VERSION_INFO_WAS_GOTTON)
+	{
+		// we already got the version info, no need to do it again. Not like the Windows version can change while running right?
+		if (VERISON_INFO_IS_UNICODE)
+			Output->W = GlobalVersionInfo.W;
+		else
+			Output->A = GlobalVersionInfo.A;
+
+		
+		return 0;
+	}
+
+
+	// why this:: no libc means memset.  Why not MemorySet or Zeromemory? That resolves to RtlXXXX which on windows resolves to well memset
+	SetVersionInfoToZeroAndSetSize(false);
 	*UseUnicode = false;
+
+
+	// load and bail if we can't
 	HMODULE kernel32 = LoadLibraryA("kernel32.dll");
 	if (kernel32 == NULL)
 	{
 		return -2;
 	}
+	// get the function pointer and bail if we can't
 	GetVersionInfOExA_PTR GetVersionExA = (GetVersionInfOExA_PTR)GetProcAddress(kernel32, "GetVersionExA");
 	if (GetVersionExA == nullptr)
 	{
@@ -32,6 +103,7 @@ int FetchVersionInfo(MyOSVERSIONINFO* Output, bool* UseUnicode)
 	}
 	else
 	{
+		// we want to mantain ANSI strings for compatibility when talking to OS.
 		Output->A.dwOSVersionInfoSize = sizeof(OSVERSIONINFOA);
 		if (GetVersionExA(&Output->A) == 0)
 		{
@@ -40,21 +112,26 @@ int FetchVersionInfo(MyOSVERSIONINFO* Output, bool* UseUnicode)
 		else
 		{
 			// https://learn.microsoft.com/en-us/windows/win32/api/sysinfoapi/nf-sysinfoapi-getversionexa
-			/* we're checking for this, assuming the app (us) doesn't have a manifest
+			/* we're checking for this 6.2, assuming the app (us) doesn't have a manifest
 				* and probing deapper with the RTLGetVersion if needed.
+				* 
+				* Why this? cause the GetVersionEx has meen modified to always return 6.2 aka windows 8 if no manifest and return the manifiest if set.
+				* We're looking for the true version. Anything below this 6.2 is likely legit.
 			*/
-			if (((Output->A.dwMajorVersion == 6)) && (Output->A.dwMinorVersion == 2))
+			if (((Output->A.dwMajorVersion == WINDOWS_8_MAJOR)) && (Output->A.dwMinorVersion == WINDOWS_8_MINOR))
 			{
 				HMODULE ntdll = LoadLibraryA("ntdll.dll");
 				if (ntdll == NULL)
 				{
-					Output->W.dwBuildNumber = Output->W.dwMajorVersion = Output->W.dwMinorVersion = Output->W.dwPlatformId = 0;
+					// reset output to null and free kernel32 for good practice
+					SetVersionInfoToZeroAndSetSize(false);
 					// adds bytes but reasonable practice
 					FreeLibrary(kernel32);
 					return -5;
 				}
 				else
 				{
+					// define our pointer and try to get the RtlVersion.     If nay, we're done, free kernenl32 and ntdll.
 					RtlGetVersion_PTR RtlGetVersion = (RtlGetVersion_PTR)GetProcAddress(ntdll, "RtlGetVersion");
 					if (RtlGetVersion == nullptr)
 					{
@@ -64,8 +141,14 @@ int FetchVersionInfo(MyOSVERSIONINFO* Output, bool* UseUnicode)
 					}
 					else
 					{
+						// call the routine and set to output
 						*UseUnicode = true;
 						RtlGetVersion(&Output->W);
+						if (Output != &GlobalVersionInfo)
+						{
+							// copy our version data to the global version info on call if not the same
+							SetVersionInfoFromAnother(Output, true);
+						}
 						FreeLibrary(kernel32);
 						FreeLibrary(ntdll);
 						return 1;
@@ -80,7 +163,7 @@ int FetchVersionInfo(MyOSVERSIONINFO* Output, bool* UseUnicode)
 			}
 		}
 
-		return false;
+		return 0;
 	}
 }
 

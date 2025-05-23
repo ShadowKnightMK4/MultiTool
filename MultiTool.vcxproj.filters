@@ -25,6 +25,9 @@
     <Filter Include="Source Files\EmptyRecylingBin">
       <UniqueIdentifier>{ad4d89e7-2e69-4c79-a51c-2a2ed6f6a1eb}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\uptime">
+      <UniqueIdentifier>{f633c14e-4f88-471c-866c-5fb2aa39fac2}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -75,6 +78,9 @@
     <ClCompile Include="Recyclinbin.cpp">
       <Filter>Source Files\EmptyRecylingBin</Filter>
     </ClCompile>
+    <ClCompile Include="uptime.cpp">
+      <Filter>Source Files\uptime</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="common.h">
@@ -93,6 +99,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="tool_dispatch.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="osver.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
