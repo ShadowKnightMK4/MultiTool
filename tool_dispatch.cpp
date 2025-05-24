@@ -30,6 +30,8 @@ ToolEntry Entries[100] =
 	{ "-osBuild", ReportVersionBuildViaExit },
 	{ "-osPlatform", ReportVersionPlatformIDViaExit },
 	{ "-killprocess", KillProcess },
+	{ "-upTime", ReportUpTimeToStdout },
+	{ "-upTimeExitCode", ReportUpTimeAsExitCode },
 	{ "-help", 0 },
 	{ "--help", 0 },
 	{0, 0}

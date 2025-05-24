@@ -16,6 +16,11 @@ extern "C" {
 	extern bool ReportVersionMinorViaExit(int* result, const char** message_result, const char* argv[], int argc);
 	extern bool ReportVersionMajorViaExit(int* result, const char** message_result, const char* argv[], int argc);
 
+
+	extern bool ReportUpTimeAsExitCode(int* result, const char** message_result, const char* argv[], int argc);
+
+	extern bool ReportUpTimeToStdout(int* result, const char** message_result, const char* argv[], int argc);
+
 	extern bool KillProcess(int* result, const char** message_result, const char* argv[], int argc);
 }
 
@@ -26,7 +31,5 @@ extern "C" {
 /// </summary>
 extern bool SILENCE;
 
-extern bool VERISON_INFO_IS_UNICODE = false;
-extern bool VERSION_INFO_WAS_GOTTON = false;
-
-extern MyOSVERSIONINFO GlobalVersionInfo = { 0, 0, 0, 0 };
+extern bool VERISON_INFO_IS_UNICODE;
+extern bool VERSION_INFO_WAS_GOTTON;

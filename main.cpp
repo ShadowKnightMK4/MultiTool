@@ -37,7 +37,7 @@ int main(int argc, const char* argv[])
 		}
 		else
 		{
-			WriteStderr("Unknown command line flag");
+			WriteStderr(Message_UnknownCommandLineFlag);
 			return -1;
 		}
 		

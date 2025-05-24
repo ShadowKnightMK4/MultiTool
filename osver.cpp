@@ -144,6 +144,7 @@ int FetchVersionInfo(MyOSVERSIONINFO* Output, bool* UseUnicode)
 						// call the routine and set to output
 						*UseUnicode = true;
 						RtlGetVersion(&Output->W);
+						VERSION_INFO_WAS_GOTTON = true;
 						if (Output != &GlobalVersionInfo)
 						{
 							// copy our version data to the global version info on call if not the same
@@ -157,6 +158,7 @@ int FetchVersionInfo(MyOSVERSIONINFO* Output, bool* UseUnicode)
 			}
 			else
 			{
+				VERSION_INFO_WAS_GOTTON = true;
 				*UseUnicode = false;
 				FreeLibrary(kernel32);
 

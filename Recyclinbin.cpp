@@ -16,7 +16,7 @@ extern "C" {
 			if (message_result != nullptr)
 			{
 
-				*message_result = Shell32_DLL_FAIL_LOAD;
+				*message_result = Message_CantLoadShell32;
 			}
 			if (result != nullptr)
 			{
@@ -62,7 +62,7 @@ extern "C" {
 
 			if (message_result != nullptr)
 			{
-				*message_result = RecycleBin_Empty_Success;
+				*message_result = Message_RecycleBin_Empty_Success;
 			}
 			return true;
 		}
@@ -70,7 +70,7 @@ extern "C" {
 		{
 			if (message_result != nullptr)
 			{
-				*message_result = RecycleBin_Empty_Failure;
+				*message_result = Message_RecycleBin_Empty_Failure;
 			}
 			return false;
 		}
