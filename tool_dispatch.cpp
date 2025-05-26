@@ -24,7 +24,7 @@ struct ToolEntry
 ToolEntry Entries[100] =
 {
 	{ "-EmptyRecyling", EmptyBin },
-	{ "-osver", ReportVersionStdout },
+	{ "-OsVer", ReportVersionStdout },
 	{ "-osMajor", ReportVersionMajorViaExit },
 	{ "-osMinor", ReportVersionMinorViaExit },
 	{ "-osBuild", ReportVersionBuildViaExit },

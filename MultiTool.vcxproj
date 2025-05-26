@@ -161,7 +161,7 @@
     <ClCompile Include="Recyclinbin.cpp" />
     <ClCompile Include="stdpipe.cpp" />
     <ClCompile Include="string_data.cpp" />
-    <ClCompile Include="string_wrapper.cpp" />
+    <ClCompile Include="string_tools.cpp" />
     <ClCompile Include="SystemEntry.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="tool_dispatch.cpp" />
@@ -175,6 +175,7 @@
     <ClInclude Include="osver.h" />
     <ClInclude Include="stdpipe.h" />
     <ClInclude Include="string_data.h" />
+    <ClInclude Include="string_tools.h" />
     <ClInclude Include="tool_dispatch.h" />
     <ClInclude Include="tool_functions.h" />
   </ItemGroup>

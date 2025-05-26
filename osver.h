@@ -11,6 +11,9 @@ typedef union MyOSVERSIONINFO
 	OSVERSIONINFOW W;
 };
 
+/// <summary>
+/// If VERSION_INFO_WAS_GOTTON is true, this will be the version info.  If not, this is undefined .
+/// </summary>
 extern MyOSVERSIONINFO GlobalVersionInfo;
 
 
@@ -20,5 +23,6 @@ extern MyOSVERSIONINFO GlobalVersionInfo;
 /// <param name="Output"></param>
 /// <param name="UseUnicode"></param>
 /// <returns></returns>
+/// <remarks>The variable GlobalVersionInfo is where this will copy its sucesfull result to if you pass something other than that. The osver tool also uses this routine </remarks>
 int FetchVersionInfo(MyOSVERSIONINFO* Output, bool* UseUnicode);
 #endif

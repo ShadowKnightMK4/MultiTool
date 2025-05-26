@@ -51,9 +51,6 @@
     <ClCompile Include="mylib_string.cpp">
       <Filter>mylibc</Filter>
     </ClCompile>
-    <ClCompile Include="string_wrapper.cpp">
-      <Filter>mylibc</Filter>
-    </ClCompile>
     <ClCompile Include="tool_dispatch.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -81,6 +78,9 @@
     <ClCompile Include="uptime.cpp">
       <Filter>Source Files\uptime</Filter>
     </ClCompile>
+    <ClCompile Include="string_tools.cpp">
+      <Filter>mylibc</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="common.h">
@@ -102,6 +102,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="osver.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="string_tools.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

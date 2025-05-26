@@ -3,17 +3,50 @@
 typedef ULONGLONG(WINAPI* GetTickCount64_PTR)();
 typedef DWORD(WINAPI* GetTickCount_PTR)();
 
+#define WINDOWS_VISTA_MAJOR 6
+#define WINDOWS_VISTA_MINOR 0
+
+
+/// <summary>
+/// GetTickCount or GetTickCount64() and return it in out. 
+/// </summary>
+/// <param name="out">result of the call. IF GetTickCount, upper ULONG is 0</param>
+/// <param name="message_result">message to display if needed</param>
+/// <param name="result"></param>
+/// <returns></returns>
 int GetUptime(ULONGLONG* out, const char** message_result, int* result)
 {
 	bool Probe64 = false;
 	ULONGLONG uptime = 0;
+	// arg validate
+
+	if (result == nullptr)
+	{
+		return -3;
+	}
+
+	if (out == nullptr)
+	{
+		return -1;
+	}
+
+	if (message_result == nullptr)
+	{
+		return -2;
+	}
+
+	*message_result = nullptr;
+	*result = 0;
+
+	// check if we have the version info. If not, get it.
+
 	if (!VERSION_INFO_WAS_GOTTON)
-		FetchVersionInfo(&GlobalVersionInfo, &VERISON_INFO_IS_UNICODE);
+		FetchVersionInfo(&GlobalVersionInfo, &VERISON_INFO_IS_UNICODE); // note this is the same routien osver tool uses.
 	if (!VERSION_INFO_WAS_GOTTON)
 	{
-		return false;
+		return -4;
 	}
-	if ((GlobalVersionInfo.A.dwMajorVersion >= 6) && (GlobalVersionInfo.A.dwMinorVersion >= 0))
+	if ((GlobalVersionInfo.A.dwMajorVersion >= WINDOWS_VISTA_MAJOR) && (GlobalVersionInfo.A.dwMinorVersion >= WINDOWS_VISTA_MINOR))
 	{
 		// Vista+. Dynamticly Preference is GetTickCount64.
 		Probe64 = true;
@@ -29,9 +62,9 @@ int GetUptime(ULONGLONG* out, const char** message_result, int* result)
 		}
 		if (result != nullptr)
 		{
-			*result = -1;
+			*result = -5;
 		}
-		return false;
+		return -6;
 	}
 	else
 	{
@@ -50,7 +83,7 @@ int GetUptime(ULONGLONG* out, const char** message_result, int* result)
 		}
 		FreeLibrary(kernel32);
 	}
-
+	return -99;
 }
 
 bool ReportUpTimeAsExitCode(int* result, const char** message_result, const char* argv[], int argc)
@@ -89,7 +122,7 @@ bool ReportUpTimeToStdout(int* result, const char** message_result, const char* 
 			LocalFree(local);
 			return true;
 		}
-
+		return false;
 	}
 }
 

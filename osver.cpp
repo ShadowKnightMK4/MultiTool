@@ -1,5 +1,5 @@
 #include "common.h"
-
+#include "osver.h"
 #define WINDOWS_8_MAJOR 6
 #define WINDOWS_8_MINOR 2
 
@@ -23,20 +23,20 @@ typedef int (WINAPI* GetVersionInfOExA_PTR)(
 	);
 typedef NTSTATUS(WINAPI* RtlGetVersion_PTR)(OSVERSIONINFOW*);
 
-void SetVersionInfoToZeroAndSetSize(bool Unicode)
+void SetVersionInfoToZeroAndSetSize(bool Unicode, MyOSVERSIONINFO* GlobalVersionInfo)
 {
-	GlobalVersionInfo.A.dwBuildNumber = GlobalVersionInfo.A.dwMajorVersion = GlobalVersionInfo.A.dwMinorVersion = GlobalVersionInfo.A.dwPlatformId = 0;
+	GlobalVersionInfo->A.dwBuildNumber = GlobalVersionInfo->A.dwMajorVersion = GlobalVersionInfo->A.dwMinorVersion = GlobalVersionInfo->A.dwPlatformId = 0;
 	if (Unicode)
 	{
-		GlobalVersionInfo.W.szCSDVersion[0] = 0;
+		GlobalVersionInfo->W.szCSDVersion[0] = 0;
 		for (int i = 0; i < 128; i++)
 		{
-			GlobalVersionInfo.W.szCSDVersion[i] = 0;
+			GlobalVersionInfo->W.szCSDVersion[i] = 0;
 		}
 	}
 	else
 	{
-		GlobalVersionInfo.A.szCSDVersion[0] = 0;
+		GlobalVersionInfo->A.szCSDVersion[0] = 0;
 	}
 }
 
@@ -69,8 +69,96 @@ void SetVersionInfoFromAnother(MyOSVERSIONINFO* Source, bool Unicode)
 
 int FetchVersionInfo(MyOSVERSIONINFO* Output, bool* UseUnicode)
 {
+	bool ProbeNtVerison = false;
 	if (Output == nullptr)
-		return -1;
+		return 0;
+	if (UseUnicode == nullptr)
+		return 0;
+	// why this:: no libc means memset.  Why not MemorySet or Zeromemory? That resolves to RtlXXXX which on windows resolves to well memset
+	SetVersionInfoToZeroAndSetSize(false, Output);
+
+	/*
+	* Our plan is this:
+	* try loading kernel32 for GetVersionExA.
+	*	if it fails (how???) we give it up.
+	* 
+	*	Next we try to GetProcAddress the GetVersionExA routine. If it works, we call it, if not we set our check ntdll flag (ProbeNtVerison) to true.
+	*	Additionally, GetVersionExA is known to return 6.2 for Windows 8 if no manifest is set.  We check for that and set the ProbeNtVerison flag to true which triggers the RtlGetVerison call if possible
+	*/
+	HMODULE kernel32 = LoadLibraryA("kernel32.dll");
+	if (kernel32 == 0)
+	{
+		return 0;
+	}
+	GetVersionInfOExA_PTR GetVersionExA = (GetVersionInfOExA_PTR)GetProcAddress(kernel32, "GetVersionExA");
+	if (GetVersionExA == 0)
+	{
+		ProbeNtVerison = true; // worth a shot
+	}
+	else
+	{
+		Output->A.dwOSVersionInfoSize = sizeof(OSVERSIONINFOA);
+		
+		if (GetVersionExA(&Output->A) == 0)
+		{
+			ProbeNtVerison = true; // worth a shot
+		}
+		else
+		{
+			if (Output->A.dwMajorVersion == WINDOWS_8_MAJOR && Output->A.dwMinorVersion == WINDOWS_8_MINOR)
+			{
+				ProbeNtVerison = true;
+			}
+			else
+			{
+				VERSION_INFO_WAS_GOTTON = true;
+				*UseUnicode = false;
+				return 1;
+			}
+		}
+		FreeLibrary(kernel32);
+	}
+
+	if (ProbeNtVerison)
+	{
+		HMODULE ntdll = LoadLibraryA("ntdll.dll");
+		if (ntdll == 0)
+		{
+			return 0;
+		}
+		else
+		{
+			RtlGetVersion_PTR RtlGetVersion = (RtlGetVersion_PTR)GetProcAddress(ntdll, "RtlGetVersion");
+			if (RtlGetVersion == 0)
+			{
+				FreeLibrary(ntdll);
+				return 0;
+			}
+			else
+			{
+				RtlGetVersion(&Output->W);
+				VERSION_INFO_WAS_GOTTON = true;
+				*UseUnicode = true;
+				if (Output != &GlobalVersionInfo)
+				{
+					// copy our version data to the global version info on call if not the same
+					SetVersionInfoFromAnother(Output, true);
+				}
+				FreeLibrary(ntdll);
+				return 1;
+			}
+		}
+	}
+	return 0;
+}
+int OldFetchVersionInfo(MyOSVERSIONINFO* Output, bool* UseUnicode)
+{
+	if (Output == nullptr)
+		return 0;
+	if (UseUnicode == nullptr)
+	{
+		return 0;
+	}
 	if (VERSION_INFO_WAS_GOTTON)
 	{
 		// we already got the version info, no need to do it again. Not like the Windows version can change while running right?
@@ -80,12 +168,12 @@ int FetchVersionInfo(MyOSVERSIONINFO* Output, bool* UseUnicode)
 			Output->A = GlobalVersionInfo.A;
 
 		
-		return 0;
+		return 1;
 	}
 
 
 	// why this:: no libc means memset.  Why not MemorySet or Zeromemory? That resolves to RtlXXXX which on windows resolves to well memset
-	SetVersionInfoToZeroAndSetSize(false);
+	//SetVersionInfoToZeroAndSetSize(false);
 	*UseUnicode = false;
 
 
@@ -93,13 +181,13 @@ int FetchVersionInfo(MyOSVERSIONINFO* Output, bool* UseUnicode)
 	HMODULE kernel32 = LoadLibraryA("kernel32.dll");
 	if (kernel32 == NULL)
 	{
-		return -2;
+		return 0;
 	}
 	// get the function pointer and bail if we can't
 	GetVersionInfOExA_PTR GetVersionExA = (GetVersionInfOExA_PTR)GetProcAddress(kernel32, "GetVersionExA");
 	if (GetVersionExA == nullptr)
 	{
-		return -3;
+		return 0;
 	}
 	else
 	{
@@ -107,7 +195,7 @@ int FetchVersionInfo(MyOSVERSIONINFO* Output, bool* UseUnicode)
 		Output->A.dwOSVersionInfoSize = sizeof(OSVERSIONINFOA);
 		if (GetVersionExA(&Output->A) == 0)
 		{
-			return -4;
+			return 0;
 		}
 		else
 		{
@@ -124,10 +212,10 @@ int FetchVersionInfo(MyOSVERSIONINFO* Output, bool* UseUnicode)
 				if (ntdll == NULL)
 				{
 					// reset output to null and free kernel32 for good practice
-					SetVersionInfoToZeroAndSetSize(false);
+					SetVersionInfoToZeroAndSetSize(false, Output);
 					// adds bytes but reasonable practice
 					FreeLibrary(kernel32);
-					return -5;
+					return 0;
 				}
 				else
 				{
@@ -137,7 +225,7 @@ int FetchVersionInfo(MyOSVERSIONINFO* Output, bool* UseUnicode)
 					{
 						FreeLibrary(kernel32);
 						FreeLibrary(ntdll);
-						return -6;
+						return 0;
 					}
 					else
 					{
@@ -165,7 +253,7 @@ int FetchVersionInfo(MyOSVERSIONINFO* Output, bool* UseUnicode)
 			}
 		}
 
-		return 0;
+		return 1;
 	}
 }
 

@@ -13,18 +13,84 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="OriginalSources">
+      <UniqueIdentifier>{6bc69b6a-492d-4c0f-babc-f29bc1dcc8c2}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Tests.cpp">
+    <ClCompile Include="ConverstionTests.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="pch.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="..\iosys.cpp">
+      <Filter>OriginalSources</Filter>
+    </ClCompile>
+    <ClCompile Include="..\killprocess.cpp">
+      <Filter>OriginalSources</Filter>
+    </ClCompile>
+    <ClCompile Include="..\main.cpp">
+      <Filter>OriginalSources</Filter>
+    </ClCompile>
+    <ClCompile Include="..\mylib_string.cpp">
+      <Filter>OriginalSources</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Numbers.cpp">
+      <Filter>OriginalSources</Filter>
+    </ClCompile>
+    <ClCompile Include="..\osver.cpp">
+      <Filter>OriginalSources</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Recyclinbin.cpp">
+      <Filter>OriginalSources</Filter>
+    </ClCompile>
+    <ClCompile Include="..\stdpipe.cpp">
+      <Filter>OriginalSources</Filter>
+    </ClCompile>
+    <ClCompile Include="..\string_data.cpp">
+      <Filter>OriginalSources</Filter>
+    </ClCompile>
+    <ClCompile Include="..\string_tools.cpp">
+      <Filter>OriginalSources</Filter>
+    </ClCompile>
+    <ClCompile Include="..\SystemEntry.cpp">
+      <Filter>OriginalSources</Filter>
+    </ClCompile>
+    <ClCompile Include="..\tool_dispatch.cpp">
+      <Filter>OriginalSources</Filter>
+    </ClCompile>
+    <ClCompile Include="..\tool_functions.cpp">
+      <Filter>OriginalSources</Filter>
+    </ClCompile>
+    <ClCompile Include="..\uptime.cpp">
+      <Filter>OriginalSources</Filter>
+    </ClCompile>
+    <ClCompile Include="..\WinApiStubbs.cpp">
+      <Filter>OriginalSources</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\iosys.h">
+      <Filter>OriginalSources</Filter>
+    </ClInclude>
+    <ClInclude Include="..\numbers.h">
+      <Filter>OriginalSources</Filter>
+    </ClInclude>
+    <ClInclude Include="..\osver.h">
+      <Filter>OriginalSources</Filter>
+    </ClInclude>
+    <ClInclude Include="..\stdpipe.h">
+      <Filter>OriginalSources</Filter>
+    </ClInclude>
+    <ClInclude Include="..\string_data.h">
+      <Filter>OriginalSources</Filter>
+    </ClInclude>
+    <ClInclude Include="..\tool_dispatch.h">
+      <Filter>OriginalSources</Filter>
+    </ClInclude>
+    <ClInclude Include="..\tool_functions.h">
+      <Filter>OriginalSources</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
