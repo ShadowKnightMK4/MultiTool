@@ -77,6 +77,6 @@ void WriteStderr(const wchar_t* message)
 	if (STDERR != 0)
 	{
 		SETUP_PIPES();
-		WriteToStream(STDOUT, message);
+		WriteToStream(STDERR, message);
 	}
 }

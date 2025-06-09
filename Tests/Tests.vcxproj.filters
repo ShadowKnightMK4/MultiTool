@@ -16,6 +16,9 @@
     <Filter Include="OriginalSources">
       <UniqueIdentifier>{6bc69b6a-492d-4c0f-babc-f29bc1dcc8c2}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\detours">
+      <UniqueIdentifier>{8f5639b1-3394-4e48-8db1-0b0a9ed9379c}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ConverstionTests.cpp">
@@ -66,6 +69,45 @@
     <ClCompile Include="..\WinApiStubbs.cpp">
       <Filter>OriginalSources</Filter>
     </ClCompile>
+    <ClCompile Include="MutexContainer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="DetoursHelp\src\modules.cpp">
+      <Filter>Source Files\detours</Filter>
+    </ClCompile>
+    <ClCompile Include="DetoursHelp\src\image.cpp">
+      <Filter>Source Files\detours</Filter>
+    </ClCompile>
+    <ClCompile Include="DetoursHelp\src\disolx86.cpp">
+      <Filter>Source Files\detours</Filter>
+    </ClCompile>
+    <ClCompile Include="DetoursHelp\src\disolx64.cpp">
+      <Filter>Source Files\detours</Filter>
+    </ClCompile>
+    <ClCompile Include="DetoursHelp\src\disolia64.cpp">
+      <Filter>Source Files\detours</Filter>
+    </ClCompile>
+    <ClCompile Include="DetoursHelp\src\disolarm64.cpp">
+      <Filter>Source Files\detours</Filter>
+    </ClCompile>
+    <ClCompile Include="DetoursHelp\src\disolarm.cpp">
+      <Filter>Source Files\detours</Filter>
+    </ClCompile>
+    <ClCompile Include="DetoursHelp\src\detours.cpp">
+      <Filter>Source Files\detours</Filter>
+    </ClCompile>
+    <ClCompile Include="DetoursHelp\src\disasm.cpp">
+      <Filter>Source Files\detours</Filter>
+    </ClCompile>
+    <ClCompile Include="DetoursHelp\src\creatwth.cpp">
+      <Filter>Source Files\detours</Filter>
+    </ClCompile>
+    <ClCompile Include="ToolTests.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\whoami.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h">
@@ -91,6 +133,18 @@
     </ClInclude>
     <ClInclude Include="..\tool_functions.h">
       <Filter>OriginalSources</Filter>
+    </ClInclude>
+    <ClInclude Include="MutexContainer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="DetoursHelp\src\detours.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="DetoursHelp\src\detver.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\whoami.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

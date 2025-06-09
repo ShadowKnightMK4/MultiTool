@@ -98,7 +98,7 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
       <AdditionalIncludeDirectories>$(VCInstallDir)UnitTest\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>WIN32;NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;NDEBUG;%(PreprocessorDefinitions);DETOURS_VERSION=0x4c0c1</PreprocessorDefinitions>
       <UseFullPaths>true</UseFullPaths>
     </ClCompile>
     <Link>
@@ -113,7 +113,7 @@
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
       <AdditionalIncludeDirectories>$(VCInstallDir)UnitTest\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>WIN32;_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;_DEBUG;%(PreprocessorDefinitions);DETOURS_VERSION=0x4c0c1</PreprocessorDefinitions>
       <UseFullPaths>true</UseFullPaths>
     </ClCompile>
     <Link>
@@ -127,7 +127,7 @@
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
       <AdditionalIncludeDirectories>$(VCInstallDir)UnitTest\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions);DETOURS_VERSION=0x4c0c1</PreprocessorDefinitions>
       <UseFullPaths>true</UseFullPaths>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
     </ClCompile>
@@ -144,7 +144,7 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
       <AdditionalIncludeDirectories>$(VCInstallDir)UnitTest\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions);DETOURS_VERSION=0x4c0c1</PreprocessorDefinitions>
       <UseFullPaths>true</UseFullPaths>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
     </ClCompile>
@@ -170,8 +170,21 @@
     <ClCompile Include="..\tool_dispatch.cpp" />
     <ClCompile Include="..\tool_functions.cpp" />
     <ClCompile Include="..\uptime.cpp" />
+    <ClCompile Include="..\whoami.cpp" />
     <ClCompile Include="..\WinApiStubbs.cpp" />
     <ClCompile Include="ConverstionTests.cpp" />
+    <ClCompile Include="DetoursHelp\src\creatwth.cpp" />
+    <ClCompile Include="DetoursHelp\src\detours.cpp" />
+    <ClCompile Include="DetoursHelp\src\disasm.cpp" />
+    <ClCompile Include="DetoursHelp\src\disolarm.cpp" />
+    <ClCompile Include="DetoursHelp\src\disolarm64.cpp" />
+    <ClCompile Include="DetoursHelp\src\disolia64.cpp" />
+    <ClCompile Include="DetoursHelp\src\disolx64.cpp" />
+    <ClCompile Include="DetoursHelp\src\disolx86.cpp" />
+    <ClCompile Include="DetoursHelp\src\image.cpp" />
+    <ClCompile Include="DetoursHelp\src\modules.cpp" />
+    <ClCompile Include="MutexContainer.cpp" />
+    <ClCompile Include="ToolTests.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\iosys.h" />
@@ -181,6 +194,10 @@
     <ClInclude Include="..\string_data.h" />
     <ClInclude Include="..\tool_dispatch.h" />
     <ClInclude Include="..\tool_functions.h" />
+    <ClInclude Include="..\whoami.h" />
+    <ClInclude Include="DetoursHelp\src\detours.h" />
+    <ClInclude Include="DetoursHelp\src\detver.h" />
+    <ClInclude Include="MutexContainer.h" />
     <ClInclude Include="pch.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

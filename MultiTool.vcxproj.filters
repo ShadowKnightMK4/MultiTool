@@ -28,6 +28,12 @@
     <Filter Include="Source Files\uptime">
       <UniqueIdentifier>{f633c14e-4f88-471c-866c-5fb2aa39fac2}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\whoami">
+      <UniqueIdentifier>{4b73c43f-e6f9-4bb7-9c6f-e8a04c2cb7aa}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="mylibc\ANSI_STRING">
+      <UniqueIdentifier>{34ba3323-ee8f-4e61-b248-07a0b2d7d065}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -81,6 +87,12 @@
     <ClCompile Include="string_tools.cpp">
       <Filter>mylibc</Filter>
     </ClCompile>
+    <ClCompile Include="whoami.cpp">
+      <Filter>Source Files\whoami</Filter>
+    </ClCompile>
+    <ClCompile Include="ANSI_STRING.CPP">
+      <Filter>mylibc\ANSI_STRING</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="common.h">
@@ -105,6 +117,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="string_tools.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="whoami.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

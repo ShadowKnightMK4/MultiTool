@@ -22,6 +22,8 @@ extern "C" {
 	extern bool ReportUpTimeToStdout(int* result, const char** message_result, const char* argv[], int argc);
 
 	extern bool KillProcess(int* result, const char** message_result, const char* argv[], int argc);
+
+	extern bool WhoAmI_WriteStdout(int* result, const char** message_result, const char* argv[], int argc);
 }
 
 
