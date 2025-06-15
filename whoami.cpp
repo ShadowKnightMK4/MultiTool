@@ -55,18 +55,21 @@ PrivText PrivDecrip[] =
 };
 
 NameType NameTypes[] = {
-	{ NameFullyQualifiedDN, "Fully Qualified Distinguished Name" },
-	{ NameSamCompatible, "SAM or Legacy Account Name" },
-	{ NameDisplay, "Display Name" },
-	{ NameUniqueId, "Unique Account GUID" },
-	{ NameCanonical, "Canonical Name" },
-	{ NameUserPrincipal, "User Principal Name" },
-	{ NameServicePrincipal, "Service Principal Name" },
-	{ NameDnsDomain, "DNS Domain Name" },
-	{ NameGivenName, "Given Name"},
-	{ NameSurname, "Surname " },
-	{ NameUnknown, "NameUnknown" }
-};
+  { NameUnknown, "NameUnknown" },
+  { NameFullyQualifiedDN, "Fully Qualified Distinguished Name" },
+  { NameSamCompatible, "SAM or Legacy Account Name" },
+  { NameDisplay, "Display Name" },
+  { NameUniqueId, "Unique Account GUID" },
+  { NameCanonical, "Canonical Name" },
+  { NameCanonicalEx, "Canonical Name (Extended)" }, // MISSING
+  { NameUserPrincipal, "User Principal Name" },
+  { NameServicePrincipal, "Service Principal Name" },
+  { NameDnsDomain, "DNS Domain Name" },
+  { NameGivenName, "Given Name" },
+  { NameSurname, "Surname" },
+  { NameUnknown, 0 } // sentinel
+}; // also missing user perincibple
+
 
 #include <windows.h>
 #include <ntsecapi.h> // For TOKEN_MANDATORY_LABEL
@@ -440,8 +443,7 @@ bool helper_WhoAmi_ShowUserPriv(int* result, const char** message_result, const 
 	}
 }
 #undef SELF
-
-#error helper_WhoAmi_UserInformation is glitchy in resolving display name to proper. It dumps what it finds ok but it's not pretty.
+.
 bool helper_WhoAmi_UserInformation(int* result, const char** message_result, const char* argv[], int argc, LWAnsiString* Output)
 {
 	DWORD SIZE;
@@ -475,8 +477,12 @@ bool helper_WhoAmi_UserInformation(int* result, const char** message_result, con
 		
 		if (GetUserNameExPtr != 0)
 		{
-			for (EXTENDED_NAME_FORMAT step = NameFullyQualifiedDN; step <= NameSurname; )
+			for (EXTENDED_NAME_FORMAT step = NameFullyQualifiedDN; step <= NameSurname; step = (EXTENDED_NAME_FORMAT)((int)step + 1))
 			{
+				if (step == 4)
+					continue;
+				if (step == 5)
+					continue;
 				SetLastError(0);
 				SIZE = 0;
 				if ((!GetUserNameExPtr(step, nullptr, &SIZE)))
@@ -507,17 +513,21 @@ bool helper_WhoAmi_UserInformation(int* result, const char** message_result, con
 					{
 						for (int i = 1; ; i++)
 						{
-							if (NameTypes[step - 1].Type == NameUnknown)
+							const char* cdebug = NameTypes[i].DisplayType;
+							EXTENDED_NAME_FORMAT kdebug = NameTypes[i].Type;
+							if ( (NameTypes[i].Type == NameUnknown) && (NameTypes[i].DisplayType == nullptr))
 							{
+								// the long line is over. There's no more
 								break;
 							}
 							else
 							{
-								if (NameTypes[step - 1].Type == step)
+								if (NameTypes[i].Type == step)
 								{
-									LWAnsiString_Append(Output, NameTypes[step - 1].DisplayType);
+									LWAnsiString_Append(Output, NameTypes[i].DisplayType);
+									break;
 								}
-								break;
+								
 							}
 						}
 						LWAnsiString_Append(Output, ": ");
@@ -526,7 +536,7 @@ bool helper_WhoAmi_UserInformation(int* result, const char** message_result, con
 						LWAnsiString_ZeroString(UserNameStuff);
 					}
 				}
-				step = (EXTENDED_NAME_FORMAT)((int)step + 1);
+				
 			}
 		}
 		else
