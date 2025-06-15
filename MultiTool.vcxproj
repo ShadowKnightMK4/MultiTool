@@ -76,6 +76,20 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <TargetName>midas</TargetName>
+    <IncludePath>C:\Users\Thoma\source\repos\LWAnsiString;$(IncludePath)</IncludePath>
+    <ExternalIncludePath>C:\Users\Thoma\source\repos\LWAnsiString;$(VC_IncludePath);$(WindowsSDK_IncludePath);</ExternalIncludePath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <IncludePath>C:\Users\Thoma\source\repos\LWAnsiString;$(IncludePath)</IncludePath>
+    <ExternalIncludePath>C:\Users\Thoma\source\repos\LWAnsiString;$(VC_IncludePath);$(WindowsSDK_IncludePath);</ExternalIncludePath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <IncludePath>C:\Users\Thoma\source\repos\LWAnsiString;$(IncludePath)</IncludePath>
+    <ExternalIncludePath>C:\Users\Thoma\source\repos\LWAnsiString;$(VC_IncludePath);$(WindowsSDK_IncludePath);</ExternalIncludePath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <IncludePath>C:\Users\Thoma\source\repos\LWAnsiString;$(IncludePath)</IncludePath>
+    <ExternalIncludePath>C:\Users\Thoma\source\repos\LWAnsiString;$(VC_IncludePath);$(WindowsSDK_IncludePath);</ExternalIncludePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -85,6 +99,10 @@
       <ConformanceMode>true</ConformanceMode>
       <BufferSecurityCheck>false</BufferSecurityCheck>
       <BasicRuntimeChecks>Default</BasicRuntimeChecks>
+      <AdditionalIncludeDirectories>C:\Users\Thoma\source\repos\LWAnsiString;</AdditionalIncludeDirectories>
+      <AdditionalHeaderUnitDependencies>
+      </AdditionalHeaderUnitDependencies>
+      <ScanSourceForModuleDependencies>true</ScanSourceForModuleDependencies>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -103,6 +121,10 @@
       <ConformanceMode>true</ConformanceMode>
       <Optimization>MinSpace</Optimization>
       <BufferSecurityCheck>false</BufferSecurityCheck>
+      <AdditionalIncludeDirectories>C:\Users\Thoma\source\repos\LWAnsiString;</AdditionalIncludeDirectories>
+      <AdditionalHeaderUnitDependencies>
+      </AdditionalHeaderUnitDependencies>
+      <ScanSourceForModuleDependencies>true</ScanSourceForModuleDependencies>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -122,6 +144,10 @@
       <ConformanceMode>true</ConformanceMode>
       <BufferSecurityCheck>false</BufferSecurityCheck>
       <BasicRuntimeChecks>Default</BasicRuntimeChecks>
+      <AdditionalIncludeDirectories>C:\Users\Thoma\source\repos\LWAnsiString;</AdditionalIncludeDirectories>
+      <AdditionalHeaderUnitDependencies>
+      </AdditionalHeaderUnitDependencies>
+      <ScanSourceForModuleDependencies>true</ScanSourceForModuleDependencies>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -139,6 +165,10 @@
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <BufferSecurityCheck>false</BufferSecurityCheck>
+      <AdditionalIncludeDirectories>C:\Users\Thoma\source\repos\LWAnsiString;</AdditionalIncludeDirectories>
+      <AdditionalHeaderUnitDependencies>
+      </AdditionalHeaderUnitDependencies>
+      <ScanSourceForModuleDependencies>true</ScanSourceForModuleDependencies>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -151,7 +181,6 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="ANSI_STRING.CPP" />
     <ClCompile Include="common.cpp" />
     <ClCompile Include="iosys.cpp" />
     <ClCompile Include="killprocess.cpp" />
@@ -172,6 +201,7 @@
     <ClCompile Include="WinApiStubbs.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\LWAnsiString\LWAnsiString.h" />
     <ClInclude Include="common.h" />
     <ClInclude Include="iosys.h" />
     <ClInclude Include="osver.h" />
@@ -181,6 +211,11 @@
     <ClInclude Include="tool_dispatch.h" />
     <ClInclude Include="tool_functions.h" />
     <ClInclude Include="whoami.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\LWAnsiString\LWAnsiString.vcxproj">
+      <Project>{2422c8de-e681-4704-b090-6e811ee041aa}</Project>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

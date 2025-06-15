@@ -1,5 +1,7 @@
 #include "common.h"
 #include "osver.h"
+#include <LWAnsiString.h>
+
 #define WINDOWS_8_MAJOR 6
 #define WINDOWS_8_MINOR 2
 
@@ -308,6 +310,7 @@ extern "C" {
 	{
 		bool use_unicode = false;
 		MyOSVERSIONINFO osvi;
+		LWAnsiString* OutputString = LWAnsiString_CreateString(0); // it'll grow
 		int ret = FetchVersionInfo(&osvi, &use_unicode);
 		if (ret != 1)
 		{
@@ -329,21 +332,103 @@ extern "C" {
 			NumberToString(osvi.A.dwMajorVersion, &local, &size);
 			if (local != 0)
 			{
-				WriteStdout("Version: ");
-				WriteStdout(local);
+				LWAnsiString_Append(OutputString, "Version: ");
+				LWAnsiString_Append(OutputString, local);
+				LocalFree(local);
+				local = 0;
+				LWAnsiString_Append(OutputString, ".");
+			}
+			else
+			{
+				LWAnsiString_Append(OutputString, "Version: <failed to get it>\r\n");
+			}
+			
+			NumberToString(osvi.A.dwMinorVersion, &local, &size);
+			if (local != 0)
+			{
+				LWAnsiString_Append(OutputString, local);
+				LocalFree(local);
+			}
+			LWAnsiString_Append(OutputString, "\r\nBuild Version: ");
+			NumberToString(osvi.A.dwBuildNumber, &local, &size);
+			if (local != 0)
+			{
+				LWAnsiString_Append(OutputString, local);
+				LocalFree(local);
+			}
+			LWAnsiString_Append(OutputString, "\r\n");
+			if (osvi.A.dwPlatformId == VER_PLATFORM_WIN32_NT)
+			{
+				LWAnsiString_Append(OutputString, "Platform: NT\r\n");
+			}
+			else if (osvi.A.dwPlatformId == VER_PLATFORM_WIN32_WINDOWS)
+			{
+				LWAnsiString_Append(OutputString, "Platform: Windows 95/98/ME\r\n");
+			}
+			else
+			{
+				LWAnsiString_Append(OutputString, "Platform: Unknown\r\n");
+			}
+			LWAnsiString_Append(OutputString, "Service Pack: ");
+
+			if ((osvi.A.szCSDVersion[0] != 0) || (osvi.W.szCSDVersion[0] != 0))
+			{
+				if (use_unicode)
+				{
+					WriteStdout(LWAnsiString_ToCStr(OutputString));
+					LWAnsiString_ZeroString(OutputString);
+				}
+			}
+		}
+		LWAnsiString_FreeString(OutputString);
+		return true;
+	}
+	bool OldReportVersionStdout(int* result, const char** message_result, const char* argv[], int argc)
+	{
+		bool use_unicode = false;
+		MyOSVERSIONINFO osvi;
+		LWAnsiString* OutputString = LWAnsiString_CreateString(50);
+		int ret = FetchVersionInfo(&osvi, &use_unicode);
+		if (ret != 1)
+		{
+			if (message_result != nullptr)
+			{
+				*message_result = "Failed to get version info";
+			}
+			if (result != nullptr)
+			{
+				*result = ret;
+			}
+			return false;
+		}
+		else
+		{
+			int size = 0;
+			char* local;
+
+			NumberToString(osvi.A.dwMajorVersion, &local, &size);
+			if (local != 0)
+			{
+				LWAnsiString_Append(OutputString, "Version: ");
+				LWAnsiString_Append(OutputString, local);
+				//WriteStdout("Version: ");
+				//WriteStdout(local);
 
 				LocalFree(local);
 			}
 
-			WriteStdout(".");
+			LWAnsiString_Append(OutputString, ".");
+			//WriteStdout(".");
 
 			NumberToString(osvi.A.dwMinorVersion, &local, &size);
 			if (local != 0)
 			{
 				if (local != 0)
 				{
-					WriteStdout(local);
-					WriteStdout("\r\n");
+					LWAnsiString_Append(OutputString, local);
+					LWAnsiString_Append(OutputString, "\r\n");
+					//WriteStdout(local);
+					//WriteStdout("\r\n");
 					LocalFree(local);
 				}
 			}
@@ -351,39 +436,61 @@ extern "C" {
 			NumberToString(osvi.A.dwBuildNumber, &local, &size);
 			if (local != 0)
 			{
-				WriteStdout("Build Version: ");
-				WriteStdout(local);
-				WriteStdout("\r\n");
+				LWAnsiString_Append(OutputString, "Build Version: ");
+				LWAnsiString_Append(OutputString, local);
+				LWAnsiString_Append(OutputString, "\r\n");
+				//WriteStdout("Build Version: ");
+				//WriteStdout(local);
+				//WriteStdout("\r\n");
 				LocalFree(local);
 			}
 
 			if (osvi.A.dwPlatformId == VER_PLATFORM_WIN32_NT)
 			{
-				WriteStdout("Platform: NT\n");
+				LWAnsiString_Append(OutputString, "Platform: NT\r\n");
+				//WriteStdout("Platform: NT\n");
 			}
 			else if (osvi.A.dwPlatformId == VER_PLATFORM_WIN32_WINDOWS)
 			{
-				WriteStdout("Platform: Windows 32bit\r\n");
+				LWAnsiString_Append(OutputString, "Platform: Windows 95/98/ME\r\n");
+				//WriteStdout("Platform: Windows 32bit\r\n");
 			}
 			else
 			{
-				WriteStdout("Platform: Unknown\r\n");
+				LWAnsiString_Append(OutputString, "Platform: Unknown\r\n");
+				//WriteStdout("Platform: Unknown\r\n");
 			}
 
-			WriteStdout("Service Pack: ");
+			LWAnsiString_Append(OutputString, "Service Pack: ");
+			//WriteStdout("Service Pack: ");
 
 			if ((osvi.A.szCSDVersion[0] != 0) || (osvi.W.szCSDVersion[0] != 0))
 			{
 				if (use_unicode)
 				{
+					WriteStdout(LWAnsiString_ToCStr(OutputString));
+					LWAnsiString_ZeroString(OutputString);
+//					#warning You need to define some unicode to ANSI conversion routine here
+					//LWAnsiString_Append(OutputString, osvi.W.szCSDVersion);
 					WriteStdout(osvi.W.szCSDVersion);
+					LWAnsiString_Append(OutputString, "\r\n");
 				}
 				else
 				{
+					LWAnsiString_Append(OutputString, osvi.A.szCSDVersion);
 					WriteStdout(osvi.A.szCSDVersion);
+					LWAnsiString_Append(OutputString, "\r\n");
 				}
-				WriteStdout("\r\n");
+				//WriteStdout("\r\n");
+				LWAnsiString_Append(OutputString, "\r\n");
+				WriteStdout(LWAnsiString_ToCStr(OutputString));
 			}
+			else
+			{
+				LWAnsiString_Append(OutputString, "\r\n");
+				WriteStdout(LWAnsiString_ToCStr(OutputString));
+			}
+			
 
 			if (result != nullptr)
 			{
@@ -394,6 +501,11 @@ extern "C" {
 				*message_result = "Success";
 			}
 			return true;
+		}
+		if (OutputString != nullptr)
+		{
+			LWAnsiString_FreeString(OutputString);
+			OutputString = nullptr;
 		}
 	}
 

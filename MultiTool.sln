@@ -11,6 +11,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "LWAnsiString", "..\LWAnsiSt
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "UnitTestsLWString", "..\LightWeightAnsiStringLib\UnitTestsLWString\UnitTestsLWString.vcxproj", "{881CCC94-5E70-2A24-A7A7-490B85DDCF4C}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "LWAnsiStringProject", "LWAnsiStringProject", "{02EA681E-C7D8-13C7-8484-4AC65E1B71E8}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -54,6 +56,10 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{2422C8DE-E681-4704-B090-6E811EE041AA} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
+		{881CCC94-5E70-2A24-A7A7-490B85DDCF4C} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {E35BE0EF-F9CE-434C-89B9-8CF1C42B782C}

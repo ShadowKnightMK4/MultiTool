@@ -1,7 +1,7 @@
 
 #include "common.h"
 #include "osver.h"
-
+#include <LWAnsiString.h>
 #define SECURITY_WIN32 1
 #include <security.h>
 typedef BOOL(WINAPI* GetUserNameAPTR)(LPSTR, LPDWORD);
@@ -441,7 +441,150 @@ bool helper_WhoAmi_ShowUserPriv(int* result, const char** message_result, const 
 }
 #undef SELF
 
-bool helper_WhoAmi_UserInformation(int* result, const char** message_result, const char* argv[], int argc)
+#error helper_WhoAmi_UserInformation is glitchy in resolving display name to proper. It dumps what it finds ok but it's not pretty.
+bool helper_WhoAmi_UserInformation(int* result, const char** message_result, const char* argv[], int argc, LWAnsiString* Output)
+{
+	DWORD SIZE;
+	SIZE = 50;
+	
+	if (result == nullptr || message_result == nullptr || Output == nullptr)
+	{
+		// because there's no meninafly way to set a return falue
+		return false;
+	}
+	LWAnsiString* UserNameStuff = LWAnsiString_CreateString(SIZE);
+	*result = 0;
+	*message_result = nullptr;
+	HMODULE ADVAPI32 = LoadLibraryA("advapi32.dll");
+	HMODULE SECUR32 = LoadLibraryA("secur32.dll");
+	GetUserNameAPTR GetUserNameAPtr = 0;
+	GetUserNameEX_PTR GetUserNameExPtr = 0;
+	if (ADVAPI32 != 0)
+		GetUserNameAPtr = (GetUserNameAPTR)GetProcAddress(ADVAPI32, "GetUserNameA");
+	if (SECUR32 != 0)
+		GetUserNameExPtr = (GetUserNameEX_PTR)GetProcAddress(SECUR32, "GetUserNameExA");
+	// if we failed to get both, we can't do anything
+	if (GetUserNameAPtr == nullptr && GetUserNameExPtr == nullptr)
+	{
+		*message_result = "Failed to get user name";
+		*result = GetLastError();
+		LWAnsiString_FreeString(UserNameStuff); 
+	}
+	else
+	{
+		
+		if (GetUserNameExPtr != 0)
+		{
+			for (EXTENDED_NAME_FORMAT step = NameFullyQualifiedDN; step <= NameSurname; )
+			{
+				SetLastError(0);
+				SIZE = 0;
+				if ((!GetUserNameExPtr(step, nullptr, &SIZE)))
+				{
+					if ( (GetLastError() == ERROR_INSUFFICIENT_BUFFER) || (GetLastError() == ERROR_MORE_DATA))
+					{
+						if (!LWAnsiString_Reserve(UserNameStuff, SIZE))
+						{
+							FreeLibrary(ADVAPI32);
+							FreeLibrary(SECUR32);
+							*result = -1;
+							*message_result = "Out of memory";
+							return false;
+						}
+					}
+					else
+					{
+						// skip it. Mayne not supported
+				
+	
+					}
+				}
+
+				LWAnsiString_Reserve(UserNameStuff, SIZE);
+				if (SIZE != 0)
+				{
+					if (GetUserNameExPtr(step, UserNameStuff->Data, &SIZE))
+					{
+						for (int i = 1; ; i++)
+						{
+							if (NameTypes[step - 1].Type == NameUnknown)
+							{
+								break;
+							}
+							else
+							{
+								if (NameTypes[step - 1].Type == step)
+								{
+									LWAnsiString_Append(Output, NameTypes[step - 1].DisplayType);
+								}
+								break;
+							}
+						}
+						LWAnsiString_Append(Output, ": ");
+						LWAnsiString_Append(Output, LWAnsiString_ToCStr(UserNameStuff));
+						LWAnsiString_Append(Output, "\r\n");
+						LWAnsiString_ZeroString(UserNameStuff);
+					}
+				}
+				step = (EXTENDED_NAME_FORMAT)((int)step + 1);
+			}
+		}
+		else
+		{
+			if (GetUserNameAPtr != 0)
+			{
+				SetLastError(0);
+				SIZE = GetUserNameAPtr(nullptr, &SIZE);
+				if (GetLastError() != ERROR_INSUFFICIENT_BUFFER)
+				{
+					// something went wrong
+					*message_result = "Failed to get user name";
+					*result = GetLastError();
+					if (ADVAPI32) FreeLibrary(ADVAPI32);
+					if (SECUR32) FreeLibrary(SECUR32);
+					return false;
+				}
+				else
+				{
+					LWAnsiString_Reserve(UserNameStuff, SIZE);
+					if(UserNameStuff == nullptr)
+					{
+						*message_result = "Failed to allocate memory for user name";
+						*result = GetLastError();
+						if (ADVAPI32) FreeLibrary(ADVAPI32);
+						if (SECUR32) FreeLibrary(SECUR32);
+						return false;
+					}
+					else
+					{
+						SetLastError(0);
+						if (GetUserNameAPtr(UserNameStuff->Data, &SIZE))
+						{
+							LWAnsiString_Append(Output, "self: ");
+							LWAnsiString_Append(Output, LWAnsiString_ToCStr(UserNameStuff));
+							LWAnsiString_Append(Output, "\r\n");
+						}
+						else
+						{
+							*message_result = "Failed to get user name";
+							*result = GetLastError();
+							if (ADVAPI32) FreeLibrary(ADVAPI32);
+							if (SECUR32) FreeLibrary(SECUR32);
+							return false;
+						}
+					}
+				}
+			}
+		}
+	}
+
+	if (UserNameStuff != 0)
+	{
+		LWAnsiString_FreeString(UserNameStuff);
+		UserNameStuff = nullptr;
+	}
+}
+bool Oldhelper_WhoAmi_UserInformation(int* result, const char** message_result, const char* argv[], int argc)
 {
 
 	if (result == nullptr || message_result == nullptr)
@@ -543,13 +686,15 @@ bool helper_WhoAmi_UserInformation(int* result, const char** message_result, con
 /// <returns>true if it worked and false if it failed</returns>
 bool WhoAmI_WriteStdout(int* result, const char** message_result, const char* argv[], int argc)
 {
+	LWAnsiString* OutputString = LWAnsiString_CreateFromString("WhoAmI: \r\n");
 	// some of the code is version dependend. Let's go fetch the version first
 	FetchVersionInfo(&GlobalVersionInfo, &VERISON_INFO_IS_UNICODE);
-
-	// the entry point of whoami - tokens to display values
-	if (!helper_WhoAmi_UserInformation(result, message_result, argv, argc))
-		return false;
 	
+	// the entry point of whoami - tokens to display values
+	if (!helper_WhoAmi_UserInformation(result, message_result, argv, argc, OutputString))
+		return false;
+	WriteStdout(LWAnsiString_ToCStr(OutputString));
+	LWAnsiString_FreeString(OutputString);
 	return true;
 
 }
