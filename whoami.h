@@ -92,40 +92,49 @@ struct PrivText
 	FlagType Flags;
 };
 
-extern bool WhoAmI_WriteStdout(int* result, const char** message_result, const char* argv[], int argc);
+extern "C" {
+	extern bool WhoAmI_WriteStdout(int* result, const char** message_result, const char* argv[], int argc);
 
-/// <summary>
-/// This will loop thru https://learn.microsoft.com/en-us/windows/win32/api/secext/nf-secext-getusernameexa and it's possible choices, output descriptions of what's reported if valid to the output string
-/// </summary>
-/// <param name="result"></param>
-/// <param name="message_result"></param>
-/// <param name="argv"></param>
-/// <param name="argc"></param>
-/// <param name="Output"></param>
-/// <remarks>https://learn.microsoft.com/en-us/windows/win32/api/secext/ne-secext-extended_name_format</remarks>
-extern bool helper_WhoAmi_UserAccountName(int* result, const char** message_result, const char* argv[], int argc, LWAnsiString* Output);
+	/// <summary>
+	/// This will loop thru https://learn.microsoft.com/en-us/windows/win32/api/secext/nf-secext-getusernameexa and it's possible choices, output descriptions of what's reported if valid to the output string
+	/// </summary>
+	/// <param name="result"></param>
+	/// <param name="message_result"></param>
+	/// <param name="argv"></param>
+	/// <param name="argc"></param>
+	/// <param name="Output"></param>
+	/// <remarks>https://learn.microsoft.com/en-us/windows/win32/api/secext/ne-secext-extended_name_format</remarks>
+	extern bool helper_WhoAmi_UserAccountName(int* result, const char** message_result, const char* argv[], int argc, LWAnsiString* Output);
 
-extern bool helper_WhoAmi_UserAccountName(int* result, const char** message_result, const char* argv[], int argc, LWAnsiString* Output);
+	extern bool helper_WhoAmi_UserAccountName(int* result, const char** message_result, const char* argv[], int argc, LWAnsiString* Output);
 
-extern void helper_who_ami_usertoken_token_groups_string(int* result, const char** message_result, const char* argv[], int argc, TOKEN_GROUPS* target, LookupAccountSidA_PTR LookupSid, LWAnsiString* Output); 
+	extern void helper_who_ami_usertoken_token_groups_string(int* result, const char** message_result, const char* argv[], int argc, TOKEN_GROUPS* target, LookupAccountSidA_PTR LookupSid, LWAnsiString* Output);
 
-extern void OutputPrivDescription(PLUID_AND_ATTRIBUTES x, LWAnsiString* output, const char* name);
-extern bool ResolveTokenDlls(HMODULE* Advapi32, GetTokenInfoPtr* GetTokenInfoAPI, LookupAccountSidA_PTR* LookupSIDAPI, LookUPPrivnameA* LookUpPriv, const char** result);
-extern bool helper_WhoAmi_PrivString(int* result, const char** message_result, const char* argv[], int argc, const char* TokenName, HANDLE Token, LWAnsiString* Output);
-
-
-extern void helper_who_ami_usertoken_token_groups_string(int* result, const char** message_result, const char* argv[], int argc, TOKEN_GROUPS* target, LookupAccountSidA_PTR LookupSid, LWAnsiString* Output);
-void helper_who_ami_usertoken_token_groups_string(int* result, const char** message_result, const char* argv[], int argc, TOKEN_GROUPS* target, LookupAccountSidA_PTR LookupSid, LWAnsiString* Output);
-
-extern bool WhoAmi_Write_Priv_common_string(int* result, const char** message_result, const char* argv[], int argc, LWAnsiString* Output, const char* source_from, bool IncludeSOCDesc, bool IncludeSOCRiskSetNotice, HANDLE TargetToken);
-
-extern bool helper_WhoAmi_PrivString(int* result, const char** message_result, const char* argv[], int argc, const char* TokenName, HANDLE Token, LWAnsiString* Output);
-
-extern void helper_who_ami_usertoken_token_groups_string(int* result, const char** message_result, const char* argv[], int argc, TOKEN_GROUPS* target, LookupAccountSidA_PTR LookupSid, LWAnsiString* Output);
+	extern void OutputPrivDescription(PLUID_AND_ATTRIBUTES x, LWAnsiString* output, const char* name);
+	extern bool ResolveTokenDlls(HMODULE* Advapi32, GetTokenInfoPtr* GetTokenInfoAPI, LookupAccountSidA_PTR* LookupSIDAPI, LookUPPrivnameA* LookUpPriv, const char** result);
+	extern bool helper_WhoAmi_PrivString(int* result, const char** message_result, const char* argv[], int argc, const char* TokenName, HANDLE Token, LWAnsiString* Output);
 
 
-extern bool helper_lookup_sid(LookupAccountSidA_PTR lookup, PSID Target, HANDLE Unused, const char* PrefixName, const char* SuffixName, const char* PrefixDomain, const char* SuffixDomain, bool IncludeDomain, LWAnsiString* Output);
+	extern void helper_who_ami_usertoken_token_groups_string(int* result, const char** message_result, const char* argv[], int argc, TOKEN_GROUPS* target, LookupAccountSidA_PTR LookupSid, LWAnsiString* Output);
+	extern void helper_who_ami_usertoken_token_groups_string(int* result, const char** message_result, const char* argv[], int argc, TOKEN_GROUPS* target, LookupAccountSidA_PTR LookupSid, LWAnsiString* Output);
+
+	extern bool WhoAmi_Write_Priv_common_string(int* result, const char** message_result, const char* argv[], int argc, LWAnsiString* Output, const char* source_from, bool IncludeSOCDesc, bool IncludeSOCRiskSetNotice, HANDLE TargetToken);
+
+	extern bool helper_WhoAmi_PrivString(int* result, const char** message_result, const char* argv[], int argc, const char* TokenName, HANDLE Token, LWAnsiString* Output);
+
+	extern void helper_who_ami_usertoken_token_groups_string(int* result, const char** message_result, const char* argv[], int argc, TOKEN_GROUPS* target, LookupAccountSidA_PTR LookupSid, LWAnsiString* Output);
 
 
-extern bool WhoAmi_WriteStdout_Priv(int* result, const char** message_result, const char* argv[], int argc);
+	extern bool helper_lookup_sid(LookupAccountSidA_PTR lookup, PSID Target, HANDLE Unused, const char* PrefixName, const char* SuffixName, const char* PrefixDomain, const char* SuffixDomain, bool IncludeDomain, LWAnsiString* Output);
 
+
+	extern bool WhoAmi_WriteStdout_Priv(int* result, const char** message_result, const char* argv[], int argc);
+
+
+	extern bool WhoAmi_Writestdout_TokenElevatedQuestion(int* result, const char** message_result, const char* argv[], int argc);
+
+
+	extern bool WhoAmi_Write_TokenElevatedQuestion_string(int* result, const char** message_result, const char* argv[], int argc, LWAnsiString* Output, const char* Prefix, HANDLE TargetToken);
+
+
+}

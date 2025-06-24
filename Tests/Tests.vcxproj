@@ -156,13 +156,6 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="..\whoami.h" />
-    <ClInclude Include="DetoursHelp\src\detours.h" />
-    <ClInclude Include="DetoursHelp\src\detver.h" />
-    <ClInclude Include="MutexContainer.h" />
-    <ClInclude Include="pch.h" />
-  </ItemGroup>
-  <ItemGroup>
     <ProjectReference Include="..\..\LWAnsiString\LWAnsiString.vcxproj">
       <Project>{2422c8de-e681-4704-b090-6e811ee041aa}</Project>
     </ProjectReference>
@@ -185,11 +178,26 @@
     <ClCompile Include="..\uptime.cpp" />
     <ClCompile Include="..\whoami.cpp" />
     <ClCompile Include="..\Whoami_common.cpp" />
+    <ClCompile Include="..\whoami_Elvation.cpp" />
+    <ClCompile Include="..\whoami_helper.cpp" />
     <ClCompile Include="..\whoami_TokenPrivileges.cpp" />
     <ClCompile Include="..\whoami_TokenUser.cpp" />
-    <ClCompile Include="..\whoami_TokenVirtAllowed.cpp" />
     <ClCompile Include="..\whoani_TokenUserGroup.cpp" />
     <ClCompile Include="..\WinApiStubbs.cpp" />
+    <ClCompile Include="ConverstionTests.cpp" />
+    <ClCompile Include="DetoursHelp\src\creatwth.cpp" />
+    <ClCompile Include="DetoursHelp\src\detours.cpp" />
+    <ClCompile Include="DetoursHelp\src\disasm.cpp" />
+    <ClCompile Include="DetoursHelp\src\disolarm.cpp" />
+    <ClCompile Include="DetoursHelp\src\disolarm64.cpp" />
+    <ClCompile Include="DetoursHelp\src\disolia64.cpp" />
+    <ClCompile Include="DetoursHelp\src\disolx64.cpp" />
+    <ClCompile Include="DetoursHelp\src\disolx86.cpp" />
+    <ClCompile Include="DetoursHelp\src\image.cpp" />
+    <ClCompile Include="DetoursHelp\src\modules.cpp" />
+    <ClCompile Include="MutexContainer.cpp" />
+    <ClCompile Include="pch.cpp" />
+    <ClCompile Include="ToolTests.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

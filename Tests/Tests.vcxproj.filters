@@ -10,23 +10,18 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="pch.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="MutexContainer.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="DetoursHelp\src\detours.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="DetoursHelp\src\detver.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\whoami.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-  </ItemGroup>
-  <ItemGroup>
+    <ClCompile Include="ConverstionTests.cpp">
+      <Filter>OriginalSources</Filter>
+    </ClCompile>
+    <ClCompile Include="MutexContainer.cpp">
+      <Filter>OriginalSources</Filter>
+    </ClCompile>
+    <ClCompile Include="pch.cpp">
+      <Filter>OriginalSources</Filter>
+    </ClCompile>
+    <ClCompile Include="ToolTests.cpp">
+      <Filter>OriginalSources</Filter>
+    </ClCompile>
     <ClCompile Include="..\common.cpp">
       <Filter>OriginalSources</Filter>
     </ClCompile>
@@ -78,19 +73,52 @@
     <ClCompile Include="..\Whoami_common.cpp">
       <Filter>OriginalSources</Filter>
     </ClCompile>
+    <ClCompile Include="..\whoami_Elvation.cpp">
+      <Filter>OriginalSources</Filter>
+    </ClCompile>
+    <ClCompile Include="..\whoami_helper.cpp">
+      <Filter>OriginalSources</Filter>
+    </ClCompile>
     <ClCompile Include="..\whoami_TokenPrivileges.cpp">
       <Filter>OriginalSources</Filter>
     </ClCompile>
     <ClCompile Include="..\whoami_TokenUser.cpp">
       <Filter>OriginalSources</Filter>
     </ClCompile>
-    <ClCompile Include="..\whoami_TokenVirtAllowed.cpp">
-      <Filter>OriginalSources</Filter>
-    </ClCompile>
     <ClCompile Include="..\whoani_TokenUserGroup.cpp">
       <Filter>OriginalSources</Filter>
     </ClCompile>
     <ClCompile Include="..\WinApiStubbs.cpp">
+      <Filter>OriginalSources</Filter>
+    </ClCompile>
+    <ClCompile Include="DetoursHelp\src\creatwth.cpp">
+      <Filter>OriginalSources</Filter>
+    </ClCompile>
+    <ClCompile Include="DetoursHelp\src\detours.cpp">
+      <Filter>OriginalSources</Filter>
+    </ClCompile>
+    <ClCompile Include="DetoursHelp\src\disasm.cpp">
+      <Filter>OriginalSources</Filter>
+    </ClCompile>
+    <ClCompile Include="DetoursHelp\src\disolarm.cpp">
+      <Filter>OriginalSources</Filter>
+    </ClCompile>
+    <ClCompile Include="DetoursHelp\src\disolarm64.cpp">
+      <Filter>OriginalSources</Filter>
+    </ClCompile>
+    <ClCompile Include="DetoursHelp\src\disolia64.cpp">
+      <Filter>OriginalSources</Filter>
+    </ClCompile>
+    <ClCompile Include="DetoursHelp\src\disolx64.cpp">
+      <Filter>OriginalSources</Filter>
+    </ClCompile>
+    <ClCompile Include="DetoursHelp\src\disolx86.cpp">
+      <Filter>OriginalSources</Filter>
+    </ClCompile>
+    <ClCompile Include="DetoursHelp\src\image.cpp">
+      <Filter>OriginalSources</Filter>
+    </ClCompile>
+    <ClCompile Include="DetoursHelp\src\modules.cpp">
       <Filter>OriginalSources</Filter>
     </ClCompile>
   </ItemGroup>

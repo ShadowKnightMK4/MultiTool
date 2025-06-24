@@ -1,0 +1,104 @@
+Passport **full token dump**:
+
+--------------------User Account IDs:--------------------
+SAM or Legacy Account Name: DESKTOP-REDGAMI\Thoma
+Display Name: Thomas Betterly
+Given Name: Thomas
+Surname: Betterly
+
+--------------------User Groups: --------------------
+Groups in this Token::
+--------------------
+Group: **Mandatory Label\\Medium Mandatory Level**
+--------------------
+Attrib: ['ENABLED SID', 'DEFAULT ENABLE', 'REQUIRED SID', 'ACTIVE REQUIRED SID' ]
+
+--------------------
+Group: **Everyone**
+--------------------
+Attrib: ['ENABLED SID', 'DEFAULT ENABLE', 'REQUIRED SID', 'ACTIVE REQUIRED SID', 'LOGON SID', 'UNADJUSTABLE SID' ]
+
+--------------------
+Group: **NT AUTHORITY\\Local account and member of Administrators group**
+--------------------
+Attrib: ['ENABLED SID', 'DEFAULT ENABLE', 'REQUIRED SID', 'ACTIVE REQUIRED SID', 'LOGON SID', 'UNADJUSTABLE SID', 'GROUP OWNER', GroupResource ]
+
+--------------------
+Group: **BUILTIN\\Administrators**
+--------------------
+Attrib: ['ENABLED SID', 'DEFAULT ENABLE', 'REQUIRED SID', 'ACTIVE REQUIRED SID', 'LOGON SID', 'UNADJUSTABLE SID', 'GROUP OWNER', GroupResource ]
+
+--------------------
+Group: **BUILTIN\\Performance Log Users**
+--------------------
+Attrib: ['ENABLED SID', 'DEFAULT ENABLE', 'REQUIRED SID', 'ACTIVE REQUIRED SID', 'LOGON SID', 'UNADJUSTABLE SID' ]
+
+--------------------
+Group: **BUILTIN\\Users**
+--------------------
+Attrib: ['ENABLED SID', 'DEFAULT ENABLE', 'REQUIRED SID', 'ACTIVE REQUIRED SID', 'LOGON SID', 'UNADJUSTABLE SID' ]
+
+--------------------
+Group: **NT AUTHORITY\\INTERACTIVE**
+--------------------
+Attrib: ['ENABLED SID', 'DEFAULT ENABLE', 'REQUIRED SID', 'ACTIVE REQUIRED SID', 'LOGON SID', 'UNADJUSTABLE SID' ]
+
+--------------------
+Group: **CONSOLE LOGON**
+--------------------
+Attrib: ['ENABLED SID', 'DEFAULT ENABLE', 'REQUIRED SID', 'ACTIVE REQUIRED SID', 'LOGON SID', 'UNADJUSTABLE SID' ]
+
+--------------------
+Group: **NT AUTHORITY\\Authenticated Users**
+--------------------
+Attrib: ['ENABLED SID', 'DEFAULT ENABLE', 'REQUIRED SID', 'ACTIVE REQUIRED SID', 'LOGON SID', 'UNADJUSTABLE SID' ]
+
+--------------------
+Group: **NT AUTHORITY\\This Organization**
+--------------------
+Attrib: ['ENABLED SID', 'DEFAULT ENABLE', 'REQUIRED SID', 'ACTIVE REQUIRED SID', 'LOGON SID', 'UNADJUSTABLE SID' ]
+
+--------------------
+Group: **MicrosoftAccount\\thomasbetterly@aol.com**
+--------------------
+Attrib: ['ENABLED SID', 'DEFAULT ENABLE', 'REQUIRED SID', 'ACTIVE REQUIRED SID', 'LOGON SID', 'UNADJUSTABLE SID' ]
+
+--------------------
+Group: **NT AUTHORITY\\Local account**
+--------------------
+Attrib: ['ENABLED SID', 'DEFAULT ENABLE', 'REQUIRED SID', 'ACTIVE REQUIRED SID', 'LOGON SID', 'UNADJUSTABLE SID' ]
+
+--------------------
+Group: **NT AUTHORITY\\LogonSessionId_0_608149**
+--------------------
+Attrib: ['ENABLED SID', 'DEFAULT ENABLE', 'REQUIRED SID', 'ACTIVE REQUIRED SID', 'LOGON SID', 'UNADJUSTABLE SID' ]
+
+--------------------
+Group: **LOCAL**
+--------------------
+Attrib: ['ENABLED SID', 'DEFAULT ENABLE', 'REQUIRED SID', 'ACTIVE REQUIRED SID', 'LOGON SID', 'UNADJUSTABLE SID' ]
+
+--------------------
+Group: **NT AUTHORITY\\Cloud Account Authentication**
+--------------------
+Attrib: ['ENABLED SID', 'DEFAULT ENABLE', 'REQUIRED SID', 'ACTIVE REQUIRED SID', 'LOGON SID', 'UNADJUSTABLE SID' ]
+
+--------------------User Privileges: --------------------
+Privilege NAME: "SeShutdownPrivilege" Attributes: [ DISABLED ]
+Privilege NAME: "SeChangeNotifyPrivilege" Attributes: [ENABLED, ENABLED BY DEFAULT]
+Privilege NAME: "SeUndockPrivilege" Attributes: [ DISABLED ]
+Privilege NAME: "SeIncreaseWorkingSetPrivilege" Attributes: [ DISABLED ]
+Privilege NAME: "SeTimeZonePrivilege" Attributes: [ DISABLED ]
+
+
+
+*****
+Description of Privileges enabled
+*****
+
+SeChangeNotifyPrivilege [ ]  -  Bypasses directory traversal checks and enables file change notifications.
+
+
+
+C:\Users\Thoma\source\repos\MultiTool\Debug\MultiTool.exe (process 32508) exited with code 0 (0x0).
+Press any key to close this window . . .

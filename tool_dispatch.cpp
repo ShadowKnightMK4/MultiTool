@@ -21,6 +21,21 @@ struct ToolEntry
 	ToolFunction FunctionPointer;
 };
 
+bool Disabled(int* result, const char** message_result, const char* argv[], int argc)
+{
+	*result = -1;
+	*message_result = "This Feature is Disabled.";
+	return true;
+}
+
+bool NoSupport(int* result, const char** message_result, const char* argv[], int argc)
+{
+	*result = -1;
+	*message_result = "This Feature is unsupported.";
+	return true;
+}
+
+
 ToolEntry Entries[100] =
 {
 	{ "-EmptyRecyling", EmptyBin },
@@ -34,11 +49,14 @@ ToolEntry Entries[100] =
 	{ "-upTimeExitCode", ReportUpTimeAsExitCode },
 	{ "-whoami", WhoAmI_WriteStdout},
 	{ "-whoami_priv", WhoAmi_WriteStdout_Priv},
-	{ "-help", 0 },
-	{ "--help", 0 },
+	{ "-help", NoSupport },
+	{ "-elevated", WhoAmi_Writestdout_TokenElevatedQuestion},
 #ifdef EXPERIMENT
 	{ "-whoami_priv_system", WhoAmi_WriteStdout_PrivSystemToken },
 	{ "-whoami_user_group", WhoAmi_WriteStdout_UserGroups },
+#else
+	{ "-whoami_priv_system", Disabled },
+	{ "-whoami_user_group", Disabled },
 #endif
 	{0, 0}
 };

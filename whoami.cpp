@@ -13,8 +13,7 @@
 
 
 
-
-
+extern "C" {
 
 bool helper_WhoAmi_UserTokenEnumAllParts_Dump(int* result, const char** message_result, const char* argv[], int argc, LWAnsiString* Output)
 {
@@ -24,6 +23,7 @@ bool helper_WhoAmi_UserTokenEnumAllParts_Dump(int* result, const char** message_
 	LookupAccountSidA_PTR LookupSIDAPI = 0;
 	LookUPPrivnameA LookUpPriv = 0;
 	BYTE Buffer[256];
+	bool WasHandled_TokenElevate = false; // for TokenElevate and TokenElevateType.
 	if (!ResolveTokenDlls(&Advapi32, &GetTokenInfoAPI, &LookupSIDAPI, &LookUpPriv, message_result))
 		return false;
 	if (!OpenProcessToken(GetCurrentProcess(), TOKEN_QUERY | TOKEN_QUERY_SOURCE, &selfToken))
@@ -81,17 +81,50 @@ bool helper_WhoAmi_UserTokenEnumAllParts_Dump(int* result, const char** message_
 						{
 						case TokenUser:
 						{
+							LWAnsiString_Pad(Output, '-', 20);
+							LWAnsiString_Append(Output, "User Account IDs:");
+							LWAnsiString_Pad(Output, '-', 20);
+							LWAnsiString_AppendNewLine(Output);
 							helper_WhoAmi_UserAccountName(result, message_result, argv, argc, Output);
+							LWAnsiString_AppendNewLine(Output);
 							break;
 						}
 						case TokenGroups:
 						{
+							LWAnsiString_Pad(Output, '-', 20);
+							LWAnsiString_Append(Output, "User Groups: ");
+							LWAnsiString_Pad(Output, '-', 20);
+							LWAnsiString_AppendNewLine(Output);
 							helper_who_ami_usertoken_token_groups_string(result, message_result, argv, argc, tokenInfo.TokenGroups, LookupSIDAPI, Output);
+							LWAnsiString_AppendNewLine(Output);
 							break;
 						}
 						case TokenPrivileges:
 						{
-							helper_WhoAmi_PrivString(result, message_result, argv, argc, "Process Token", selfToken, Output);
+							LWAnsiString_Pad(Output, '-', 20);
+							LWAnsiString_Append(Output, "User Privileges: ");
+							LWAnsiString_Pad(Output, '-', 20);
+							LWAnsiString_AppendNewLine(Output);
+							helper_WhoAmi_PrivString(result, message_result, argv, argc, 0, selfToken, Output);
+							LWAnsiString_AppendNewLine(Output);
+							break;
+						}
+						case TokenElevation:
+						case TokenElevationType:
+						{
+
+							// yep intentially. First pass is handle *both* and the second pass just skips if
+							if (!WasHandled_TokenElevate)
+							{
+								LWAnsiString_Pad(Output, '-', 20);
+								LWAnsiString_Append(Output, "Token Elevation Type: ");
+								LWAnsiString_Pad(Output, '-', 20);
+								LWAnsiString_AppendNewLine(Output);
+								WasHandled_TokenElevate = true;
+								WhoAmi_Write_TokenElevatedQuestion_string(result, message_result, argv, argc,Output, 0, 0); // note pasing 0 for target token means open the process toke 
+								LWAnsiString_AppendNewLine(Output);
+
+							}
 							break;
 						}
 						default:
@@ -115,6 +148,7 @@ bool helper_WhoAmi_UserTokenEnumAllParts_Dump(int* result, const char** message_
 		}
 	}
 }
+
 
 
 
@@ -211,7 +245,7 @@ bool WhoAmi_WriteStdout_PrivSystemToken(int* result, const char** message_result
 /// <returns>true if it worked and false if it failed</returns>
 bool WhoAmI_WriteStdout(int* result, const char** message_result, const char* argv[], int argc)
 {
-	LWAnsiString* OutputString = LWAnsiString_CreateFromString("WhoAmI: \r\n");
+	LWAnsiString* OutputString = LWAnsiString_CreateFromString("Passport **full token dump**: \r\n\r\n");
 	// some of the code is version dependend. Let's go fetch the version first
 	FetchVersionInfo(&GlobalVersionInfo, &VERISON_INFO_IS_UNICODE);
 	
@@ -228,8 +262,11 @@ bool WhoAmI_WriteStdout(int* result, const char** message_result, const char* ar
 		LWAnsiString_FreeString(OutputString);
 		return false;
 	}
+	
 	WriteStdout(LWAnsiString_ToCStr(OutputString));
 	LWAnsiString_FreeString(OutputString);
 	return true;
+
+}
 
 }

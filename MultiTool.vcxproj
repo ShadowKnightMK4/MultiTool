@@ -201,7 +201,7 @@
     <ClCompile Include="Whoami_common.cpp" />
     <ClCompile Include="whoami_TokenPrivileges.cpp" />
     <ClCompile Include="whoami_TokenUser.cpp" />
-    <ClCompile Include="whoami_TokenVirtAllowed.cpp" />
+    <ClCompile Include="whoami_Elvation.cpp" />
     <ClCompile Include="whoani_TokenUserGroup.cpp" />
     <ClCompile Include="WinApiStubbs.cpp" />
   </ItemGroup>

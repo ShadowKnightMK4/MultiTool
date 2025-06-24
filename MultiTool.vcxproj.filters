@@ -31,9 +31,6 @@
     <Filter Include="Source Files\whoami">
       <UniqueIdentifier>{4b73c43f-e6f9-4bb7-9c6f-e8a04c2cb7aa}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\whoami\whoami_virtcheck">
-      <UniqueIdentifier>{f18a6b39-06df-4e2c-bf55-40b5fd84597f}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Source Files\whoami\who_ami_privledge">
       <UniqueIdentifier>{d03d2508-5c39-4690-96cb-be6c0646e0bc}</UniqueIdentifier>
     </Filter>
@@ -42,6 +39,9 @@
     </Filter>
     <Filter Include="Source Files\whoami\whoami_user_groups">
       <UniqueIdentifier>{cc093e47-27b9-4dc6-a997-c21a82e950c2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\whoami\whoami_Elevation">
+      <UniqueIdentifier>{f18a6b39-06df-4e2c-bf55-40b5fd84597f}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -99,8 +99,8 @@
     <ClCompile Include="whoami.cpp">
       <Filter>Source Files\whoami</Filter>
     </ClCompile>
-    <ClCompile Include="whoami_TokenVirtAllowed.cpp">
-      <Filter>Source Files\whoami\whoami_virtcheck</Filter>
+    <ClCompile Include="whoami_Elvation.cpp">
+      <Filter>Source Files\whoami\whoami_Elevation</Filter>
     </ClCompile>
     <ClCompile Include="Whoami_common.cpp">
       <Filter>Source Files\whoami</Filter>

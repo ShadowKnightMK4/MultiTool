@@ -5,7 +5,7 @@
 #include "common.h"
 
 
-
+extern "C" {
 
 bool helper_lookup_priv(LookUPPrivnameA lookup, PSID Target, HANDLE Unused, const char* PrefixName, const char* SuffixName)
 {
@@ -476,4 +476,7 @@ bool WhoAmi_WriteStdout_Priv(int* result, const char** message_result, const cha
 		return res;
 	}
 	return false;
+}
+
+
 }
