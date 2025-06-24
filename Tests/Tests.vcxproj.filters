@@ -1,28 +1,34 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <Filter Include="Source Files">
-      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
-      <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
-    </Filter>
     <Filter Include="Header Files">
       <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
       <Extensions>h;hh;hpp;hxx;h++;hm;inl;inc;ipp;xsd</Extensions>
     </Filter>
-    <Filter Include="Resource Files">
-      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
-      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
-    </Filter>
     <Filter Include="OriginalSources">
       <UniqueIdentifier>{6bc69b6a-492d-4c0f-babc-f29bc1dcc8c2}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\detours">
-      <UniqueIdentifier>{8f5639b1-3394-4e48-8db1-0b0a9ed9379c}</UniqueIdentifier>
-    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="ConverstionTests.cpp">
-      <Filter>Source Files</Filter>
+    <ClInclude Include="pch.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="MutexContainer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="DetoursHelp\src\detours.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="DetoursHelp\src\detver.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\whoami.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\common.cpp">
+      <Filter>OriginalSources</Filter>
     </ClCompile>
     <ClCompile Include="..\iosys.cpp">
       <Filter>OriginalSources</Filter>
@@ -66,85 +72,26 @@
     <ClCompile Include="..\uptime.cpp">
       <Filter>OriginalSources</Filter>
     </ClCompile>
+    <ClCompile Include="..\whoami.cpp">
+      <Filter>OriginalSources</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Whoami_common.cpp">
+      <Filter>OriginalSources</Filter>
+    </ClCompile>
+    <ClCompile Include="..\whoami_TokenPrivileges.cpp">
+      <Filter>OriginalSources</Filter>
+    </ClCompile>
+    <ClCompile Include="..\whoami_TokenUser.cpp">
+      <Filter>OriginalSources</Filter>
+    </ClCompile>
+    <ClCompile Include="..\whoami_TokenVirtAllowed.cpp">
+      <Filter>OriginalSources</Filter>
+    </ClCompile>
+    <ClCompile Include="..\whoani_TokenUserGroup.cpp">
+      <Filter>OriginalSources</Filter>
+    </ClCompile>
     <ClCompile Include="..\WinApiStubbs.cpp">
       <Filter>OriginalSources</Filter>
     </ClCompile>
-    <ClCompile Include="MutexContainer.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="DetoursHelp\src\modules.cpp">
-      <Filter>Source Files\detours</Filter>
-    </ClCompile>
-    <ClCompile Include="DetoursHelp\src\image.cpp">
-      <Filter>Source Files\detours</Filter>
-    </ClCompile>
-    <ClCompile Include="DetoursHelp\src\disolx86.cpp">
-      <Filter>Source Files\detours</Filter>
-    </ClCompile>
-    <ClCompile Include="DetoursHelp\src\disolx64.cpp">
-      <Filter>Source Files\detours</Filter>
-    </ClCompile>
-    <ClCompile Include="DetoursHelp\src\disolia64.cpp">
-      <Filter>Source Files\detours</Filter>
-    </ClCompile>
-    <ClCompile Include="DetoursHelp\src\disolarm64.cpp">
-      <Filter>Source Files\detours</Filter>
-    </ClCompile>
-    <ClCompile Include="DetoursHelp\src\disolarm.cpp">
-      <Filter>Source Files\detours</Filter>
-    </ClCompile>
-    <ClCompile Include="DetoursHelp\src\detours.cpp">
-      <Filter>Source Files\detours</Filter>
-    </ClCompile>
-    <ClCompile Include="DetoursHelp\src\disasm.cpp">
-      <Filter>Source Files\detours</Filter>
-    </ClCompile>
-    <ClCompile Include="DetoursHelp\src\creatwth.cpp">
-      <Filter>Source Files\detours</Filter>
-    </ClCompile>
-    <ClCompile Include="ToolTests.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\whoami.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="pch.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\iosys.h">
-      <Filter>OriginalSources</Filter>
-    </ClInclude>
-    <ClInclude Include="..\numbers.h">
-      <Filter>OriginalSources</Filter>
-    </ClInclude>
-    <ClInclude Include="..\osver.h">
-      <Filter>OriginalSources</Filter>
-    </ClInclude>
-    <ClInclude Include="..\stdpipe.h">
-      <Filter>OriginalSources</Filter>
-    </ClInclude>
-    <ClInclude Include="..\string_data.h">
-      <Filter>OriginalSources</Filter>
-    </ClInclude>
-    <ClInclude Include="..\tool_dispatch.h">
-      <Filter>OriginalSources</Filter>
-    </ClInclude>
-    <ClInclude Include="..\tool_functions.h">
-      <Filter>OriginalSources</Filter>
-    </ClInclude>
-    <ClInclude Include="MutexContainer.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="DetoursHelp\src\detours.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="DetoursHelp\src\detver.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\whoami.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
   </ItemGroup>
 </Project>

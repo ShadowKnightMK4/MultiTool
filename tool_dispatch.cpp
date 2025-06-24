@@ -1,5 +1,5 @@
 #include "common.h"
-
+#include "whoami.h"
 /*
 	This file is reached via main.cpp.		
 
@@ -33,8 +33,13 @@ ToolEntry Entries[100] =
 	{ "-upTime", ReportUpTimeToStdout },
 	{ "-upTimeExitCode", ReportUpTimeAsExitCode },
 	{ "-whoami", WhoAmI_WriteStdout},
+	{ "-whoami_priv", WhoAmi_WriteStdout_Priv},
 	{ "-help", 0 },
 	{ "--help", 0 },
+#ifdef EXPERIMENT
+	{ "-whoami_priv_system", WhoAmi_WriteStdout_PrivSystemToken },
+	{ "-whoami_user_group", WhoAmi_WriteStdout_UserGroups },
+#endif
 	{0, 0}
 };
 

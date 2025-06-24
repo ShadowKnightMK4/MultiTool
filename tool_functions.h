@@ -1,5 +1,7 @@
 #pragma once
 #include "common.h"
+
+
 extern "C" {
 	extern bool EmptyBin(int* result, const char** message_result, const char* argv[],  int argc);
 
@@ -23,7 +25,14 @@ extern "C" {
 
 	extern bool KillProcess(int* result, const char** message_result, const char* argv[], int argc);
 
+	extern bool WhoAmi_WriteStdout_Priv(int* result, const char** message_result, const char* argv[], int argc);
 	extern bool WhoAmI_WriteStdout(int* result, const char** message_result, const char* argv[], int argc);
+
+#if EXPERIMENT
+	// expriemental stuff can be busty, edgy or just plan outside of the normal constrains for the project.
+	extern bool WhoAmi_WriteStdout_UserGroups(int* result, const char** message_result, const char* argv[], int argc);
+	extern bool WhoAmi_WriteStdout_PrivSystemToken(int* result, const char** message_result, const char* argv[], int argc);
+#endif 
 }
 
 
