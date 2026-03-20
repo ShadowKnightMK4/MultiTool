@@ -21,13 +21,14 @@ bool VERSION_INFO_WAS_GOTTON;
 MyOSVERSIONINFO GlobalVersionInfo = { 0, 0, 0, 0 };
 
 typedef int (WINAPI* GetVersionInfOExA_PTR)(
-	LPOSVERSIONINFOA lpVersionInformation
+	LPOSVERSIONINFOEXA lpVersionInformation
 	);
-typedef NTSTATUS(WINAPI* RtlGetVersion_PTR)(OSVERSIONINFOW*);
+typedef NTSTATUS(WINAPI* RtlGetVersion_PTR)(LPOSVERSIONINFOEXW);
 
 void SetVersionInfoToZeroAndSetSize(bool Unicode, MyOSVERSIONINFO* GlobalVersionInfo)
 {
 	GlobalVersionInfo->A.dwBuildNumber = GlobalVersionInfo->A.dwMajorVersion = GlobalVersionInfo->A.dwMinorVersion = GlobalVersionInfo->A.dwPlatformId = 0;
+	GlobalVersionInfo->A.wSuiteMask = GlobalVersionInfo->A.wServicePackMajor = GlobalVersionInfo->A.wServicePackMinor = 0;
 	if (Unicode)
 	{
 		GlobalVersionInfo->W.szCSDVersion[0] = 0;
@@ -40,6 +41,7 @@ void SetVersionInfoToZeroAndSetSize(bool Unicode, MyOSVERSIONINFO* GlobalVersion
 	{
 		GlobalVersionInfo->A.szCSDVersion[0] = 0;
 	}
+	GlobalVersionInfo->A.dwOSVersionInfoSize = sizeof(OSVERSIONINFOEXA);
 }
 
 void SetVersionInfoFromAnother(MyOSVERSIONINFO* Source, bool Unicode)
@@ -99,7 +101,7 @@ int FetchVersionInfo(MyOSVERSIONINFO* Output, bool* UseUnicode)
 	}
 	else
 	{
-		Output->A.dwOSVersionInfoSize = sizeof(OSVERSIONINFOA);
+		Output->A.dwOSVersionInfoSize = sizeof(OSVERSIONINFOEXA);
 		
 		if (GetVersionExA(&Output->A) == 0)
 		{
@@ -282,7 +284,7 @@ extern "C" {
 			}
 			return false;
 		}
-		*result = (int)  *((unsigned char*)(&osvi.A)+offset);
+		*result = (int)*((unsigned char*)(&osvi.A) + offset);
 		*message_result = "Success";
 		return true;
 	}
@@ -326,63 +328,53 @@ extern "C" {
 		}
 		else
 		{
-			int size = 0;
-			char* local;
 
-			NumberToString(osvi.A.dwMajorVersion, &local, &size);
-			if (local != 0)
+
+
 			{
 				LWAnsiString_Append(OutputString, "Version: ");
-				LWAnsiString_Append(OutputString, local);
-				LocalFree(local);
-				local = 0;
+				LWAnsiString_AppendNumber(osvi.A.dwMajorVersion, OutputString, 0);
 				LWAnsiString_Append(OutputString, ".");
-			}
-			else
-			{
-				LWAnsiString_Append(OutputString, "Version: <failed to get it>\r\n");
-			}
-			
-			NumberToString(osvi.A.dwMinorVersion, &local, &size);
-			if (local != 0)
-			{
-				LWAnsiString_Append(OutputString, local);
-				LocalFree(local);
-			}
-			LWAnsiString_Append(OutputString, "\r\nBuild Version: ");
-			NumberToString(osvi.A.dwBuildNumber, &local, &size);
-			if (local != 0)
-			{
-				LWAnsiString_Append(OutputString, local);
-				LocalFree(local);
-			}
-			LWAnsiString_Append(OutputString, "\r\n");
-			if (osvi.A.dwPlatformId == VER_PLATFORM_WIN32_NT)
-			{
-				LWAnsiString_Append(OutputString, "Platform: NT\r\n");
-			}
-			else if (osvi.A.dwPlatformId == VER_PLATFORM_WIN32_WINDOWS)
-			{
-				LWAnsiString_Append(OutputString, "Platform: Windows 95/98/ME\r\n");
-			}
-			else
-			{
-				LWAnsiString_Append(OutputString, "Platform: Unknown\r\n");
-			}
-			LWAnsiString_Append(OutputString, "Service Pack: ");
 
-			if ((osvi.A.szCSDVersion[0] != 0) || (osvi.W.szCSDVersion[0] != 0))
-			{
-				if (use_unicode)
+
+				LWAnsiString_AppendNumber(osvi.A.dwMinorVersion, OutputString, 0);
+
+				LWAnsiString_Append(OutputString, "\r\nBuild Version: ");
+
+
+
+
+				LWAnsiString_AppendNumber(osvi.A.dwBuildNumber, OutputString, 0);
+
+				LWAnsiString_Append(OutputString, "\r\n");
+				if (osvi.A.dwPlatformId == VER_PLATFORM_WIN32_NT)
 				{
-					WriteStdout(LWAnsiString_ToCStr(OutputString));
-					LWAnsiString_ZeroString(OutputString);
+					LWAnsiString_Append(OutputString, "Platform: NT\r\n");
+				}
+				else if (osvi.A.dwPlatformId == VER_PLATFORM_WIN32_WINDOWS)
+				{
+					LWAnsiString_Append(OutputString, "Platform: Windows 95/98/ME\r\n");
+				}
+				else
+				{
+					LWAnsiString_Append(OutputString, "Platform: Unknown\r\n");
+				}
+				LWAnsiString_Append(OutputString, "Service Pack: ");
+
+				if ((osvi.A.szCSDVersion[0] != 0) || (osvi.W.szCSDVersion[0] != 0))
+				{
+					if (use_unicode)
+					{
+						WriteStdout(LWAnsiString_ToCStr(OutputString));
+						LWAnsiString_ZeroString(OutputString);
+					}
 				}
 			}
+			LWAnsiString_FreeString(OutputString);
+			return true;
 		}
-		LWAnsiString_FreeString(OutputString);
-		return true;
+
+
 	}
-	
 
 }

@@ -29,20 +29,20 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v143</PlatformToolset>
+    <PlatformToolset>v145</PlatformToolset>
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v143</PlatformToolset>
+    <PlatformToolset>v145</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v143</PlatformToolset>
+    <PlatformToolset>v145</PlatformToolset>
     <CharacterSet>MultiByte</CharacterSet>
     <PreferredToolArchitecture>
     </PreferredToolArchitecture>
@@ -50,7 +50,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v143</PlatformToolset>
+    <PlatformToolset>v145</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>MultiByte</CharacterSet>
     <PreferredToolArchitecture>
@@ -148,6 +148,7 @@
       <AdditionalHeaderUnitDependencies>
       </AdditionalHeaderUnitDependencies>
       <ScanSourceForModuleDependencies>true</ScanSourceForModuleDependencies>
+      <PrecompiledHeaderFile> </PrecompiledHeaderFile>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -162,13 +163,14 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions);EXPERIMENT;SECURITY_WIN32</PreprocessorDefinitions>
+      <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions);SECURITY_WIN32</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <BufferSecurityCheck>false</BufferSecurityCheck>
       <AdditionalIncludeDirectories>C:\Users\Thoma\source\repos\LWAnsiString;</AdditionalIncludeDirectories>
       <AdditionalHeaderUnitDependencies>
       </AdditionalHeaderUnitDependencies>
       <ScanSourceForModuleDependencies>true</ScanSourceForModuleDependencies>
+      <PrecompiledHeaderFile />
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -188,6 +190,8 @@
     <ClCompile Include="Numbers.cpp" />
     <ClCompile Include="numbers.h" />
     <ClCompile Include="osver.cpp" />
+    <ClCompile Include="ProcessProfile.cpp" />
+    <ClCompile Include="ProcessProfile_WalkDependants.cpp" />
     <ClCompile Include="Recyclinbin.cpp" />
     <ClCompile Include="stdpipe.cpp" />
     <ClCompile Include="string_data.cpp" />

@@ -12,3 +12,10 @@ typedef bool (*ToolFunction)(int* result, const char** message_result, const cha
 /// <param name="flag_name">flag to look up</param>
 /// <returns>0 on no match, void* to function of bool name(int* exit_code_to_return, const char*argv[])</returns>
 ToolFunction GetFunctionPointer(const char* flag_name);
+
+/// <summary
+/// return help text for this flag
+/// </summary>
+/// <param name="flag_name">flag to look up</param>
+/// <returns>const string english description of the flag</returns>
+const char* GetFunctionHelp(const char* flag_name);

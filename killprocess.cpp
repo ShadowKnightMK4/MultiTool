@@ -1,10 +1,11 @@
 #include "common.h"
-
+#include "numbers.h"
 bool DebugSnipe(int PIDLIST, int* result, const char** message_result)
 {
 	// al we care about is attaching as debugger and if we works. Windows will kill said process when we exit
-	if (DebugActiveProcess(PIDLIST))
+	if (DebugActiveProcess(PIDLIST) != 0)
 	{
+		DebugSetProcessKillOnExit(true);
 		*message_result = "Attached as Debugger to Target. It should exit when we do so";
 		*result = 0;
 		return true;

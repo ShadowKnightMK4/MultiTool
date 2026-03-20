@@ -1,5 +1,7 @@
 #include "common.h"	
 #include "osver.h"
+#include "LWAnsiString.h"
+
 typedef ULONGLONG(WINAPI* GetTickCount64_PTR)();
 typedef DWORD(WINAPI* GetTickCount_PTR)();
 
@@ -112,14 +114,26 @@ bool ReportUpTimeToStdout(int* result, const char** message_result, const char* 
 	}
 	else
 	{
+		LWAnsiString* output = LWAnsiString_CreateFromString("Uptime (millseconds): "); // create a new string to hold the output
 		char* local = nullptr;
 		int size = 0;
-		bool res = NumberToString(update, &local, &size);
-		if (res)
+		if (output == nullptr)
 		{
-			WriteStdout("Uptime (millseconds): ");
-			WriteStdout(local);
-			LocalFree(local);
+			if (message_result != nullptr)
+			{
+				*message_result = "Failed to create output string";
+			}
+			if (result != nullptr)
+			{
+				*result = -2;
+			}
+			return false;
+		}
+		else
+		{
+			LWAnsiString_AppendNumber(update, output, &size); // append the number to the output string
+			WriteStdout(LWAnsiString_ToCStr(output)); // write the output to stdout
+			LWAnsiString_FreeString(output); // free the output string
 			return true;
 		}
 		return false;

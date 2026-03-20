@@ -9,38 +9,69 @@ int main(int argc, const char* argv[])
 	{
 		return -1;
 	}
+
+	// first check for the help flag;
+	bool HelpWanted = false;
+	for (int i = 1; i < argc; i++)
+	{
+		if (lstrcmpiA(argv[i], "-help") == 0)
+		{
+			HelpWanted = true;
+			break;
+		}
+	}
+
 	for (int i = 1; i < argc; i++)
 	{
 		const char* current = argv[i];
-		ToolFunction function = (ToolFunction) GetFunctionPointer(current);
-		if (function != 0)
+		if (HelpWanted)
 		{
-			int result = 0;
-			const char* message_result = nullptr;
-			bool res = function(&result, &message_result, argv, argc);
-			if (res)
+			if (lstrcmpiA(argv[i], "-help") != 0)
 			{
-				if (message_result != nullptr)
+				const char* help_text = GetFunctionHelp(current);
+				if (help_text != nullptr)
 				{
-					WriteStdout(message_result);
+					WriteStdout(help_text);
 				}
-				return result;
-			}
-			else
-			{
-				if (message_result != nullptr)
+				else
 				{
-					WriteStderr(message_result);
+					WriteStderr(Message_UnknownCommandLineFlag);
 				}
-				return result;
 			}
+			continue;
 		}
 		else
 		{
-			WriteStderr(Message_UnknownCommandLineFlag);
-			return -1;
+			ToolFunction function = (ToolFunction)GetFunctionPointer(current);
+			if (function != 0)
+			{
+				int result = 0;
+				const char* message_result = nullptr;
+				bool res = function(&result, &message_result, argv, argc);
+				if (res)
+				{
+					if (message_result != nullptr)
+					{
+						WriteStdout(message_result);
+					}
+					return result;
+				}
+				else
+				{
+					if (message_result != nullptr)
+					{
+						WriteStderr(message_result);
+					}
+					return result;
+				}
+			}
+			else
+			{
+				WriteStderr(Message_UnknownCommandLineFlag);
+				return -1;
+			}
 		}
-		
+		break;
 	}
 
 	

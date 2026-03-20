@@ -43,6 +43,9 @@
     <Filter Include="Source Files\whoami\whoami_Elevation">
       <UniqueIdentifier>{f18a6b39-06df-4e2c-bf55-40b5fd84597f}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\ProcessProfile">
+      <UniqueIdentifier>{0b54512c-8de1-4051-a093-e89ede2429aa}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -113,6 +116,12 @@
     </ClCompile>
     <ClCompile Include="whoani_TokenUserGroup.cpp">
       <Filter>Source Files\whoami\whoami_user_groups</Filter>
+    </ClCompile>
+    <ClCompile Include="ProcessProfile.cpp">
+      <Filter>Source Files\ProcessProfile</Filter>
+    </ClCompile>
+    <ClCompile Include="ProcessProfile_WalkDependants.cpp">
+      <Filter>Source Files\ProcessProfile</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

@@ -1,0 +1,64 @@
+Module: 1 (MultiTool.exe) from: "C:\Users\Thoma\source\repos\MultiTool\Debug\MultiTool.exe"
+Verification Checks: Module is not a known DLL
+
+Module: 2 (ntdll.dll) from: "C:\WINDOWS\SYSTEM32\ntdll.dll"
+Verification Checks: Module is not a known DLL
+
+Module: 3 (KERNEL32.DLL) from: "C:\WINDOWS\System32\KERNEL32.DLL"
+Verification Checks: Module is a known DLL
+
+Module: 4 (aswhook.dll) from: "C:\Program Files\Norton\Suite\x86\aswhook.dll"
+Verification Checks: Module is not a known DLL
+
+Module: 5 (KERNELBASE.dll) from: "C:\WINDOWS\System32\KERNELBASE.dll"
+Verification Checks: Module is not a known DLL
+
+Module: 6 (ADVAPI32.dll) from: "C:\WINDOWS\System32\ADVAPI32.dll"
+Verification Checks: Module is a known DLL
+
+Module: 7 (msvcrt.dll) from: "C:\WINDOWS\System32\msvcrt.dll"
+Verification Checks: Module is a known DLL
+
+Module: 8 (sechost.dll) from: "C:\WINDOWS\System32\sechost.dll"
+Verification Checks: Module is a known DLL
+
+Module: 9 (RPCRT4.dll) from: "C:\WINDOWS\System32\RPCRT4.dll"
+Verification Checks: Module is a known DLL
+
+Module: 10 (bcrypt.dll) from: "C:\WINDOWS\System32\bcrypt.dll"
+Verification Checks: Module is not a known DLL
+
+Module: 11 (SHELL32.dll) from: "C:\WINDOWS\System32\SHELL32.dll"
+Verification Checks: Module is a known DLL
+
+Module: 12 (msvcp_win.dll) from: "C:\WINDOWS\System32\msvcp_win.dll"
+Verification Checks: Module is not a known DLL
+
+Module: 13 (ucrtbase.dll) from: "C:\WINDOWS\System32\ucrtbase.dll"
+Verification Checks: Module is not a known DLL
+
+Module: 14 (USER32.dll) from: "C:\WINDOWS\System32\USER32.dll"
+Verification Checks: Module is a known DLL
+
+Module: 15 (win32u.dll) from: "C:\WINDOWS\System32\win32u.dll"
+Verification Checks: Module is not a known DLL
+
+Module: 16 (GDI32.dll) from: "C:\WINDOWS\System32\GDI32.dll"
+Verification Checks: Module is a known DLL
+
+Module: 17 (gdi32full.dll) from: "C:\WINDOWS\System32\gdi32full.dll"
+Verification Checks: Module is not a known DLL
+
+Module: 18 (IMM32.DLL) from: "C:\WINDOWS\System32\IMM32.DLL"
+Verification Checks: Module is a known DLL
+
+Module: 19 (shcore.dll) from: "C:\WINDOWS\System32\shcore.dll"
+Verification Checks: Module is a known DLL
+
+Module: 20 (combase.dll) from: "C:\WINDOWS\System32\combase.dll"
+Verification Checks: Module is a known DLL
+
+
+C:\Users\Thoma\source\repos\MultiTool\Debug\MultiTool.exe (process 24724) exited with code 0 (0x0).
+To automatically close the console when debugging stops, enable Tools->Options->Debugging->Automatically close the console when debugging stops.
+Press any key to close this window . . .

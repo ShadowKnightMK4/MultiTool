@@ -127,6 +127,9 @@ bool helper_WhoAmi_UserTokenEnumAllParts_Dump(int* result, const char** message_
 							}
 							break;
 						}
+						case TokenOwner:
+							break;
+
 						default:
 							break;
 						}

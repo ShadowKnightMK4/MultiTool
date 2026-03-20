@@ -28,6 +28,8 @@ extern "C" {
 	extern bool WhoAmi_WriteStdout_Priv(int* result, const char** message_result, const char* argv[], int argc);
 	extern bool WhoAmI_WriteStdout(int* result, const char** message_result, const char* argv[], int argc);
 
+	extern bool ProcessProfileEntryPoint(int* result, const char** message_result, const char* argv[], int argc);
+	extern bool CheckSafeLoadPath_PipeStdout(int* result, const char** message_result, const char* argv[], int argc);
 #if EXPERIMENT
 	// expriemental stuff can be busty, edgy or just plan outside of the normal constrains for the project.
 	extern bool WhoAmi_WriteStdout_UserGroups(int* result, const char** message_result, const char* argv[], int argc);

@@ -1,0 +1,50 @@
+WhoAmI Privs:
+System Token Source
+Privilege NAME: "SeIncreaseQuotaPrivilege" Attributes: [ DISABLED ]
+Privilege NAME: "SeSecurityPrivilege" Attributes: [ DISABLED ]
+Privilege NAME: "SeTakeOwnershipPrivilege" Attributes: [ DISABLED ]
+Privilege NAME: "SeLoadDriverPrivilege" Attributes: [ DISABLED ]
+Privilege NAME: "SeSystemProfilePrivilege" Attributes: [ DISABLED ]
+Privilege NAME: "SeSystemtimePrivilege" Attributes: [ DISABLED ]
+Privilege NAME: "SeProfileSingleProcessPrivilege" Attributes: [ DISABLED ]
+Privilege NAME: "SeIncreaseBasePriorityPrivilege" Attributes: [ DISABLED ]
+Privilege NAME: "SeCreatePagefilePrivilege" Attributes: [ DISABLED ]
+Privilege NAME: "SeBackupPrivilege" Attributes: [ DISABLED ]
+Privilege NAME: "SeRestorePrivilege" Attributes: [ DISABLED ]
+Privilege NAME: "SeShutdownPrivilege" Attributes: [ DISABLED ]
+Privilege NAME: "SeDebugPrivilege" Attributes: [ENABLED]
+Privilege NAME: "SeSystemEnvironmentPrivilege" Attributes: [ DISABLED ]
+Privilege NAME: "SeChangeNotifyPrivilege" Attributes: [ENABLED, ENABLED BY DEFAULT]
+Privilege NAME: "SeRemoteShutdownPrivilege" Attributes: [ DISABLED ]
+Privilege NAME: "SeUndockPrivilege" Attributes: [ DISABLED ]
+Privilege NAME: "SeManageVolumePrivilege" Attributes: [ DISABLED ]
+Privilege NAME: "SeImpersonatePrivilege" Attributes: [ENABLED, ENABLED BY DEFAULT]
+Privilege NAME: "SeCreateGlobalPrivilege" Attributes: [ENABLED, ENABLED BY DEFAULT]
+Privilege NAME: "SeIncreaseWorkingSetPrivilege" Attributes: [ DISABLED ]
+Privilege NAME: "SeTimeZonePrivilege" Attributes: [ DISABLED ]
+Privilege NAME: "SeCreateSymbolicLinkPrivilege" Attributes: [ DISABLED ]
+Privilege NAME: "SeDelegateSessionUserImpersonatePrivilege" Attributes: [ DISABLED ]
+
+
+
+*****
+Description of Privileges enabled
+*****
+
+SeDebugPrivilege [!!!!]  -  Allows debugging and code injection into any process.
+  Risk: Effectively a free pass to access or inject into any process, including SYSTEM services.
+SeChangeNotifyPrivilege [ ]  -  Bypasses directory traversal checks and enables file change notifications.
+SeImpersonatePrivilege [!!!!]  -  Allows impersonation of authenticated clients.
+  Risk: Commonly abused by malware and lateral tools (e.g., potato family) to escalate.
+SeCreateGlobalPrivilege [!]  -  Allows creation of named global objects.
+  Risk: Sometimes abused in terminal service or sandbox escape contexts, but usually benign.
+
+
+*****
+Notice: A priv in a process or user token is not cause for alarm by itself. Ensure the Windows object (user/process) the token is from holds enabled privs as part of normal operation.
+
+ For example calc.exe having that SeDebugPrivilege could be compromise. While WinDbg.exe is probably fine having it if needed and actively in use in its role.
+*****
+
+C:\Users\Thoma\source\repos\MultiTool\Debug\MultiTool.exe (process 10384) exited with code 0 (0x0).
+Press any key to close this window . . .
