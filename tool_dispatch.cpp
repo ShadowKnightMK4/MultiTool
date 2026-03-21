@@ -37,7 +37,7 @@ bool NoSupport(int* result, const char** message_result, const char* argv[], int
 
 bool ShowHelp_(int* result, const char** message_result, const char* argv[], int argc);
 
-ToolEntry Entries[18] =
+ToolEntry Entries[19] =
 {
 	{ "-EmptyRecyling", EmptyBin, "Empty the Recylling bin"},
 	{ "-OsVer", ReportVersionStdout, "Report what version of Windows is running to stdout."},
@@ -45,7 +45,7 @@ ToolEntry Entries[18] =
 	{ "-osMinor", ReportVersionMinorViaExit , "Report the minor version of Windows as exit code. "},
 	{ "-osBuild", ReportVersionBuildViaExit , "Report the build verison Windows as exit code. "},
 	{ "-osPlatform", ReportVersionPlatformIDViaExit , "Report if Windows ix NT based or older."},
-	{ "-killprocess", KillProcess , "Assasinate the target process. Tries playing nice"},
+	{ "-killprocess", KillProcess , "Terminate the target process. Tries playing nice 1st"},
 	{ "-upTime", ReportUpTimeToStdout , "How long has this system been up for."},
 	{ "-upTimeExitCode", ReportUpTimeAsExitCode , "Report length of time system running as exit code cap to 32-bit"},
 	{ "-whoami", WhoAmI_WriteStdout,  "Short for decoding current token of this application (and user)"},
@@ -55,9 +55,11 @@ ToolEntry Entries[18] =
 #ifdef EXPERIMENT
 	{ "-whoami_priv_system", WhoAmi_WriteStdout_PrivSystemToken ,  "Open hard coded winlogon.exe target and use as target of whoami."},
 	{ "-whoami_user_group", WhoAmi_WriteStdout_UserGroups ,  "Output Group info of the user."},
+	{ "-which", SearchPath_EntryPoint, "When given a file/folder, asks windows where it's at."},
 #else
 	{ "-whoami_priv_system", Disabled , feature_disabled },
-	{ "-whoami_user_group", Disabled, feature_disabled},
+	{ "-whoami_user_group", WhoAmi_WriteStdout_UserGroups ,  "Output Group info of the user."},
+    { "-which", Disabled, feature_disabled},
 #endif
 	{ "-processprofile", ProcessProfileEntryPoint, "Run Process Profile on self"},
 	{ "-checkSafeLoadPath", CheckSafeLoadPath_PipeStdout, "Check if SafeDllSearchMode is active and report to stdout."},

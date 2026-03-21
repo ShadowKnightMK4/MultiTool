@@ -123,6 +123,12 @@
     <ClCompile Include="ProcessProfile_WalkDependants.cpp">
       <Filter>Source Files\ProcessProfile</Filter>
     </ClCompile>
+    <ClCompile Include="PeWalking.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="SearchPath.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="common.h">

@@ -35,6 +35,7 @@ extern "C" {
 	extern bool WhoAmi_WriteStdout_UserGroups(int* result, const char** message_result, const char* argv[], int argc);
 	extern bool WhoAmi_WriteStdout_PrivSystemToken(int* result, const char** message_result, const char* argv[], int argc);
 #endif 
+	extern bool SearchPath_EntryPoint(int* result, const char** message_result, const char* argv[], int argc);
 }
 
 

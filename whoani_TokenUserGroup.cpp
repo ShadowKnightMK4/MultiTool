@@ -207,8 +207,8 @@ extern "C" {
 		{
 			*result = -1;
 			*message_result = "Failure fetching Groups.";
-			FreeLibrary(ADVAPI32);
-			FreeLibrary(SECUR32);
+			if (ADVAPI32 != 0) FreeLibrary(ADVAPI32);
+			if (SECUR32 != 0) FreeLibrary(SECUR32);
 			return false;
 		}
 		else
