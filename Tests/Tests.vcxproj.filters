@@ -121,5 +121,17 @@
     <ClCompile Include="DetoursHelp\src\modules.cpp">
       <Filter>OriginalSources</Filter>
     </ClCompile>
+    <ClCompile Include="..\PeWalking.cpp">
+      <Filter>OriginalSources</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ProcessProfile.cpp">
+      <Filter>OriginalSources</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ProcessProfile_WalkDependants.cpp">
+      <Filter>OriginalSources</Filter>
+    </ClCompile>
+    <ClCompile Include="..\SearchPath.cpp">
+      <Filter>OriginalSources</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

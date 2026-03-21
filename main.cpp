@@ -3,6 +3,29 @@
 #include "tool_functions.h"
 #include "tool_dispatch.h"
 
+extern "C" {
+#ifdef EXPERIMENT
+#ifdef DEBUG
+	#define WaterMarkString  "DebugBuild,ExperimentOn";
+#else
+#error AS a preference, release build and EXPERIMENT flag not supported.
+#define  WaterMarkString  "WARNINGReleaseBuild,ExperimentOn";
+#endif 
+
+
+#else
+#ifdef DEBUG
+#define  WaterMarkString "DebugBuild,ExperimentOff";
+#else
+#define  WaterMarkString "ReleaseBuild,ExperimentOff";
+
+#endif
+#endif
+}
+
+extern "C" __declspec(dllexport) const char WaterMark[] = WaterMarkString;
+#undef WaterMarkString
+
 int main(int argc, const char* argv[])
 {
 	if (argc < 2)

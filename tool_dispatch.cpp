@@ -59,10 +59,10 @@ ToolEntry Entries[19] =
 #else
 	{ "-whoami_priv_system", Disabled , feature_disabled },
 	{ "-whoami_user_group", WhoAmi_WriteStdout_UserGroups ,  "Output Group info of the user."},
-    { "-which", Disabled, feature_disabled},
+	{ "-which", SearchPath_EntryPoint, "Find out where in the path a series on names is"},
 #endif
 	{ "-processprofile", ProcessProfileEntryPoint, "Run Process Profile on self"},
-	{ "-checkSafeLoadPath", CheckSafeLoadPath_PipeStdout, "Check if SafeDllSearchMode is active and report to stdout."},
+	{ "-checkSafeLoadPath", CheckSafeLoadPath_PipeStdout, "Check if SafeDllSearchMode is active or available and report to stdout."},
 	{0, 0, feature_disabled}
 };
 

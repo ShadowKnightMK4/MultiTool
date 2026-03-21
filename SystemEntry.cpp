@@ -2,6 +2,9 @@
 
 extern int main(int argc, const char* argv[]);
 extern void SETUP_PIPES();
+
+// water mark for compile flags. defined in main.cpp
+extern const char* WaterMarkString;
 #define DEBUG
 
 
