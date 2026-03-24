@@ -104,6 +104,7 @@
       <AdditionalHeaderUnitDependencies>
       </AdditionalHeaderUnitDependencies>
       <ScanSourceForModuleDependencies>true</ScanSourceForModuleDependencies>
+      <ExceptionHandling>false</ExceptionHandling>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -126,6 +127,7 @@
       <AdditionalHeaderUnitDependencies>
       </AdditionalHeaderUnitDependencies>
       <ScanSourceForModuleDependencies>true</ScanSourceForModuleDependencies>
+      <ExceptionHandling>false</ExceptionHandling>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -188,6 +190,8 @@
     <ClCompile Include="common.cpp" />
     <ClCompile Include="iosys.cpp" />
     <ClCompile Include="killprocess.cpp" />
+    <ClCompile Include="minibug_server.cpp" />
+    <ClCompile Include="whichdll.cpp" />
     <ClCompile Include="mylib_string.cpp" />
     <ClCompile Include="Numbers.cpp" />
     <ClCompile Include="numbers.h" />
@@ -217,6 +221,7 @@
     <ClInclude Include="..\LWAnsiString\LWAnsiString.h" />
     <ClInclude Include="common.h" />
     <ClInclude Include="iosys.h" />
+    <ClInclude Include="minibug.h" />
     <ClInclude Include="osver.h" />
     <ClInclude Include="stdpipe.h" />
     <ClInclude Include="string_data.h" />

@@ -133,5 +133,7 @@
     <ClCompile Include="..\SearchPath.cpp">
       <Filter>OriginalSources</Filter>
     </ClCompile>
+    <ClCompile Include="..\minibug_server.cpp" />
+    <ClCompile Include="..\whichdll.cpp" />
   </ItemGroup>
 </Project>

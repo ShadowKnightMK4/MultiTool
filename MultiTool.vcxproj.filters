@@ -46,6 +46,9 @@
     <Filter Include="Source Files\ProcessProfile">
       <UniqueIdentifier>{0b54512c-8de1-4051-a093-e89ede2429aa}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\minibug">
+      <UniqueIdentifier>{afcd0e44-4b66-4115-9509-356266a8602d}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -129,6 +132,12 @@
     <ClCompile Include="SearchPath.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="whichdll.cpp">
+      <Filter>Source Files\minibug</Filter>
+    </ClCompile>
+    <ClCompile Include="minibug_server.cpp">
+      <Filter>Source Files\minibug</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="common.h">
@@ -159,6 +168,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\LWAnsiString\LWAnsiString.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="minibug.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

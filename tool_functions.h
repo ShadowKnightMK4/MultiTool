@@ -35,7 +35,9 @@ extern "C" {
 	// expriemental stuff can be busty, edgy or just plan outside of the normal constrains for the project.
 
 	extern bool WhoAmi_WriteStdout_PrivSystemToken(int* result, const char** message_result, const char* argv[], int argc);
-#endif 
+#endif
+	extern bool whichdll_entrypoint(int* result, const char** message_result, const char* argv[], int argc);
+ 
 	extern bool SearchPath_EntryPoint(int* result, const char** message_result, const char* argv[], int argc);
 }
 

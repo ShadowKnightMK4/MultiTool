@@ -37,7 +37,7 @@ bool NoSupport(int* result, const char** message_result, const char* argv[], int
 
 bool ShowHelp_(int* result, const char** message_result, const char* argv[], int argc);
 
-ToolEntry Entries[19] =
+ToolEntry Entries[20] =
 {
 	{ "-EmptyRecyling", EmptyBin, "Empty the Recylling bin"},
 	{ "-OsVer", ReportVersionStdout, "Report what version of Windows is running to stdout."},
@@ -56,10 +56,12 @@ ToolEntry Entries[19] =
 	{ "-whoami_priv_system", WhoAmi_WriteStdout_PrivSystemToken ,  "Open hard coded winlogon.exe target and use as target of whoami."},
 	{ "-whoami_user_group", WhoAmi_WriteStdout_UserGroups ,  "Output Group info of the user."},
 	{ "-which", SearchPath_EntryPoint, "When given a file/folder, asks windows where it's at."},
+	{ "-whichdll", whichdll_entrypoint, "Using a helper, get the path of the dll you set that is loaded"},
 #else
 	{ "-whoami_priv_system", Disabled , feature_disabled },
 	{ "-whoami_user_group", WhoAmi_WriteStdout_UserGroups ,  "Output Group info of the user."},
 	{ "-which", SearchPath_EntryPoint, "Find out where in the path a series on names is"},
+	{ "-whichdll", whichdll_entrypoint, "Using a helper, get the path of the dll you set that is loaded"},
 #endif
 	{ "-processprofile", ProcessProfileEntryPoint, "Run Process Profile on self"},
 	{ "-checkSafeLoadPath", CheckSafeLoadPath_PipeStdout, "Check if SafeDllSearchMode is active or available and report to stdout."},

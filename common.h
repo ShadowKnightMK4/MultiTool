@@ -12,6 +12,6 @@
 #include "tool_dispatch.h"
 #include "string_tools.h"
 #include "numbers.h"
-
+#include "minibug.h"
 
 

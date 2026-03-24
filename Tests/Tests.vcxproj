@@ -165,6 +165,7 @@
     <ClCompile Include="..\iosys.cpp" />
     <ClCompile Include="..\killprocess.cpp" />
     <ClCompile Include="..\main.cpp" />
+    <ClCompile Include="..\minibug_server.cpp" />
     <ClCompile Include="..\mylib_string.cpp" />
     <ClCompile Include="..\Numbers.cpp" />
     <ClCompile Include="..\osver.cpp" />
@@ -180,6 +181,7 @@
     <ClCompile Include="..\tool_dispatch.cpp" />
     <ClCompile Include="..\tool_functions.cpp" />
     <ClCompile Include="..\uptime.cpp" />
+    <ClCompile Include="..\whichdll.cpp" />
     <ClCompile Include="..\whoami.cpp" />
     <ClCompile Include="..\Whoami_common.cpp" />
     <ClCompile Include="..\whoami_Elvation.cpp" />

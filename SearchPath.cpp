@@ -4,7 +4,7 @@
 extern "C" {
 
 	HMODULE Kernel32 = 0;
-#warning SearchPathsForTarget needs check and balances to ensure no acciently buffer overflow
+//#warning SearchPathsForTarget needs check and balances to ensure no acciently buffer overflow
 	bool SearchPathsForTarget(const char* filename, LWAnsiString* OutputIfOk, LWAnsiString* OutputIfNotFound)
 	{
 		DWORD already_happened = 0;

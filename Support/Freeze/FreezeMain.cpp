@@ -11,6 +11,7 @@ HANDLE TargetProcessHandle;
 bool LastHandleIsID = false;
 HANDLE StringToHandle(char* target)
 {
+	/*
 	LONGLONG x = 0;
 	if (target[0] == 'i')
 	{
@@ -39,7 +40,8 @@ HANDLE StringToHandle(char* target)
 		}
 	}
 	return (HANDLE)x;
-	
+	*/
+	return 0;
 }
 
 /* from https://learn.microsoft.com/en-us/windows/win32/secauthz/enabling-and-disabling-privileges-in-c-- */
@@ -49,9 +51,12 @@ BOOL SetPrivilege(
 	BOOL bEnablePrivilege   // to enable or disable privilege
 )
 {
+	
 	TOKEN_PRIVILEGES tp;
 	LUID luid;
-
+	tp.PrivilegeCount = 0;
+	tp.Privileges[0].Attributes = 0;
+	tp.Privileges[0].Luid.HighPart = tp.Privileges[0].Luid.LowPart = 0;
 	if (!LookupPrivilegeValue(
 		NULL,            // lookup privilege on local system
 		lpszPrivilege,   // privilege to lookup 
@@ -85,7 +90,7 @@ BOOL SetPrivilege(
 	{
 		return FALSE;
 	}
-
+	
 	return TRUE;
 }
 
@@ -103,6 +108,7 @@ bool SanityCheck(DWORD id)
 
 bool Grapple(HANDLE Target)
 {
+	
 	if (!IsHandleValid(Target))
 	{
 		return false;
@@ -143,19 +149,39 @@ bool Grapple(HANDLE Target)
 		}
 		return false;
 	}
+	
+	return false;
 }
 
 
 
-
 #define BYTE_SIZE 256
-BYTE HandleBuffer[BYTE_SIZE];
+BYTE HandleBuffer[BYTE_SIZE]{
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+};
+
 /// <summary>
 /// We receive the process to freeze via a int value from stdin
 /// </summary>
 /// <returns></returns>
 bool GetTargetProcessHandle()
 {
+
 	if (!IsHandleValid(stdin))
 	{
 		return false;
@@ -189,12 +215,11 @@ bool GetTargetProcessHandle()
 	}
 
 }
-int main()
+
+void _cdecl StartUpPoint()
 {
-	for (int i = 0; i < BYTE_SIZE; i++)
-	{
-		HandleBuffer[i] = 0;
-	}
+	
+
 	stdin = GetStdHandle(STD_INPUT_HANDLE);
 	stdout = GetStdHandle(STD_OUTPUT_HANDLE);
 	stderr = GetStdHandle(STD_ERROR_HANDLE);
@@ -209,4 +234,5 @@ int main()
 	}
 	Sleep(2000);
 	ExitProcess(0);
+	
 }
