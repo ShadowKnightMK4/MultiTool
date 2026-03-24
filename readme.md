@@ -24,7 +24,7 @@ Midas is a low-level system interrogation tool. It interacts heavily with Window
 ---
 
 ## ⚙️ Design Constraints & Philosophy (The "Dev Stuff")
-To achieve the extreme size and compatibility goals, this project strictly adheres to the following constraints:
+To achieve the extreme size and compatibility goals, this project adheres to the following constraints, albet imperfectly:
 
 *   **NO added LIBC & NO C++ Standard Library:** The tool completely rejects modern C-Runtime (CRT) abstractions, STL, RAII, and C++ exceptions to eliminate dependency hell and binary bloat.
 *   **Raw Windows API Only:** C and a dash of C++ . Memory is managed via `LocalAlloc`/`HeapAlloc`, and I/O is piped manually.
@@ -34,7 +34,7 @@ To achieve the extreme size and compatibility goals, this project strictly adher
     *   `ntdll.dll` is never guaranteed. Midas plays defensively, dynamically probing for APIs like `RtlGetVersion` and degrading gracefully if they don't exist.
     *   Other DLLs (like `advapi32.dll` or `shell32.dll`) are loaded dynamically only when executing a specific finished routine (e.g., emptying the recycle bin or checking tokens).
 *   **Zero-Trust Analysis:** Tools like `-whichdll` force the OS to resolve paths inside a heavily restricted Mini-Debugger sandbox (Job Objects and UI restrictions if supported, `KILL_ON_JOB_CLOSE`) using the Windows Debugger API to  help analyze potentially malicious payloads.
-
+*   If Midas imports something outside of kernel32 in its IAT sections (for example RegCloseKey), the plan is that's a temporay import, with late binding in progress
 ---
 
 ## 🛠️ Current Tool List & Capabilities
