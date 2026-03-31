@@ -21,9 +21,34 @@ typedef BOOL (WINAPI* WritePrivateProfileStringAPTR)(
 	 LPCSTR lpFileName
 );
 
+
+typedef HANDLE(WINAPI*  CreateFileAPTR)(
+                LPCSTR                lpFileName,
+                DWORD                 dwDesiredAccess,
+	               DWORD                 dwShareMode,
+	               LPSECURITY_ATTRIBUTES lpSecurityAttributes,
+	               DWORD                 dwCreationDisposition,
+	               DWORD                 dwFlagsAndAttributes,
+	               HANDLE                hTemplateFile
+);
+typedef DWORD(WINAPI* SetFilePointerPTR)(
+	                    HANDLE hFile,
+	                    LONG   lDistanceToMove,
+	                    PLONG  lpDistanceToMoveHigh,
+	                    DWORD  dwMoveMethod
+);
+typedef DWORD (WINAPI *GetShortPathNameAPTR)(
+	      LPCSTR lpszLongPath,
+	      LPSTR  lpszShortPath,
+	      DWORD   cchBuffer
+);
 MoveFileExA_ptr ptrMoveFileExA = 0;
-WritePrivateProfileStringAPTR ptrWritePrivateProfileStringA = 0;
+ 
 GetWindowsDirectoryAPTR ptrGetWindowsDirectoryA = 0;
+SetFilePointerPTR ptrSetFile = 0;
+CreateFileAPTR ptrCreateFile = 0;
+GetShortPathNameAPTR  ptrShortPath = 0;
+
 
 void LegacyMarkForDelete(const char* name, LWAnsiString* vebal)
 {
@@ -33,10 +58,13 @@ void LegacyMarkForDelete(const char* name, LWAnsiString* vebal)
 		kernel32 = LoadLibraryA("kernel32.dll");
 		WeLoadedIt = true;
 	}
-	ptrWritePrivateProfileStringA = (WritePrivateProfileStringAPTR)GetProcAddress(kernel32, "WritePrivateProfileStringA");
+ 
 	ptrGetWindowsDirectoryA = (GetWindowsDirectoryAPTR)GetProcAddress(kernel32, "GetWindowsDirectoryA");
+	ptrCreateFile = (CreateFileAPTR)GetProcAddress(kernel32, "CreateFileA");
+	ptrSetFile = (SetFilePointerPTR)GetProcAddress(kernel32, "SetFilePointer");
+	ptrShortPath = (GetShortPathNameAPTR)GetProcAddress(kernel32, "GetShortPathNameA");
 
-	if ((ptrWritePrivateProfileStringA == 0) || (ptrGetWindowsDirectoryA == 0))
+	if ((ptrCreateFile == 0) || (ptrGetWindowsDirectoryA == 0) || (ptrSetFile == 0) || (ptrShortPath == 0))
 	{
 		LWAnsiString_Append(vebal, name);
 		LWAnsiString_AppendWithNewLine(vebal, "---> Failed to sucessfully register this for legacy delete routine. ");
@@ -45,6 +73,7 @@ void LegacyMarkForDelete(const char* name, LWAnsiString* vebal)
 	else
 	{
 		LWAnsiString* WinDir = LWAnsiString_CreateString(MAX_PATH);
+		LWAnsiString_MarkLenDirty(WinDir);
 		DWORD size = ptrGetWindowsDirectoryA(WinDir->Data, MAX_PATH);
 		if (size > MAX_PATH)
 		{
@@ -56,15 +85,46 @@ void LegacyMarkForDelete(const char* name, LWAnsiString* vebal)
 				LWAnsiString_Append(WinDir, "\\");
 			}
 		}
+		else
+		{
+			if (!LWAnsiString_EndsWith(WinDir, "\\", false))
+			{
+				LWAnsiString_Append(WinDir, "\\");
+			}
+		}
+
 		// now the windir
 		LWAnsiString_Append(WinDir, "wininit.ini");
 
+		{
+			DWORD ShortPath = ptrShortPath(name, NULL, 0);
+			LWAnsiString* EntryLine = LWAnsiString_CreateString(1);
+			LWAnsiString_Append(EntryLine, "NUL=");
+			LWAnsiString_AddReserve(EntryLine, ShortPath + 1);
+			char* offset = (char*) LWAnsiString_EndingOffset(EntryLine);
+			ptrShortPath(name, offset, ShortPath);
+			LWAnsiString_MarkLenDirty(EntryLine);
 
-		ptrWritePrivateProfileStringA("rename", "NUL", name, WinDir->Data);
+			
+
+			HANDLE file = ptrCreateFile(LWAnsiString_ToCStr(WinDir), GENERIC_WRITE, 0, 0, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, 0);
+			if (file != INVALID_HANDLE_VALUE)
+			{
+				DWORD wrote = 0;
+				ptrSetFile(file, 0, 0, FILE_END);
+				WriteFile(file, LWAnsiString_ToCStr(EntryLine), EntryLine->Length * sizeof(char), &wrote, 0);
+				CloseHandle(file);
+			}
+			else
+			{
+
+			}
+		}
+		
 
 		// free
 		LWAnsiString_FreeString(WinDir);
-		if (WeLoadedIt)
+		if ((WeLoadedIt && (kernel32 != 0)))
 		{
 			FreeLibrary(kernel32);
 		}
@@ -137,7 +197,7 @@ bool DeleteOnReboot(int* result, const char** message_result, const char* argv[]
 						else
 						{
 							LWAnsiString_Append(vebal, argv[i]);
-							LWAnsiString_AppendWithNewLine(vebal, " Registered for deletion. ");
+							LWAnsiString_AppendWithNewLine(vebal, " Failed to Register for Deletion.");
 						}
 					}
 				}
@@ -147,6 +207,7 @@ bool DeleteOnReboot(int* result, const char** message_result, const char* argv[]
 			LWAnsiString_FreeString(vebal);
 		}
 		SetLastError(0);
+		return true;
 	}
 	
 
