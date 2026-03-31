@@ -37,7 +37,7 @@ bool NoSupport(int* result, const char** message_result, const char* argv[], int
 
 bool ShowHelp_(int* result, const char** message_result, const char* argv[], int argc);
 
-ToolEntry Entries[20] =
+ToolEntry Entries[21] =
 {
 	{ "-EmptyRecyling", EmptyBin, "Empty the Recylling bin"},
 	{ "-OsVer", ReportVersionStdout, "Report what version of Windows is running to stdout."},
@@ -65,6 +65,7 @@ ToolEntry Entries[20] =
 #endif
 	{ "-processprofile", ProcessProfileEntryPoint, "Run Process Profile on self"},
 	{ "-checkSafeLoadPath", CheckSafeLoadPath_PipeStdout, "Check if SafeDllSearchMode is active or available and report to stdout."},
+	{ "-deleteonreboot", DeleteOnReboot, "Register a file or folder to be deleted on reboot.  Folders should be empty "},
 	{0, 0, feature_disabled}
 };
 

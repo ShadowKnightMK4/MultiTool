@@ -104,7 +104,6 @@ void Start()
 
 	LoadDebuggerCode();
 	cmdline = GetCommandLineA();
-	Write(cmdline);
 	if (cmdline[0] == '\"')
 	{
 		bool HitEndQuote = false;

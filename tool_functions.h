@@ -32,13 +32,15 @@ extern "C" {
 	extern bool CheckSafeLoadPath_PipeStdout(int* result, const char** message_result, const char* argv[], int argc);
 	extern bool WhoAmi_WriteStdout_UserGroups(int* result, const char** message_result, const char* argv[], int argc);
 #if EXPERIMENT
-	// expriemental stuff can be busty, edgy or just plan outside of the normal constrains for the project.
+	// expriemental stuff can be busted, edgy or just plan outside of the normal constrains for the project.
 
 	extern bool WhoAmi_WriteStdout_PrivSystemToken(int* result, const char** message_result, const char* argv[], int argc);
 #endif
 	extern bool whichdll_entrypoint(int* result, const char** message_result, const char* argv[], int argc);
  
 	extern bool SearchPath_EntryPoint(int* result, const char** message_result, const char* argv[], int argc);
+
+	extern bool DeleteOnReboot(int* result, const char** message_result, const char* argv[], int argc);
 }
 
 

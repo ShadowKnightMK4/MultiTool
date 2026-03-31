@@ -49,6 +49,9 @@
     <Filter Include="Source Files\minibug">
       <UniqueIdentifier>{afcd0e44-4b66-4115-9509-356266a8602d}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\moveonreboot">
+      <UniqueIdentifier>{25178ddd-c26e-48fd-9f3f-647771e372e3}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -137,6 +140,9 @@
     </ClCompile>
     <ClCompile Include="minibug_server.cpp">
       <Filter>Source Files\minibug</Filter>
+    </ClCompile>
+    <ClCompile Include="moveonreboot.cpp">
+      <Filter>Source Files\moveonreboot</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
