@@ -41,6 +41,8 @@ extern "C" {
 	extern bool SearchPath_EntryPoint(int* result, const char** message_result, const char* argv[], int argc);
 
 	extern bool DeleteOnReboot(int* result, const char** message_result, const char* argv[], int argc);
+	extern bool ShowPendingDeletes(int* result, const char** message_result, const char* argv[], int argc);
+	
 }
 
 

@@ -192,6 +192,7 @@
     <ClCompile Include="killprocess.cpp" />
     <ClCompile Include="minibug_server.cpp" />
     <ClCompile Include="moveonreboot.cpp" />
+    <ClCompile Include="show_pending_deletes.cpp" />
     <ClCompile Include="whichdll.cpp" />
     <ClCompile Include="mylib_string.cpp" />
     <ClCompile Include="Numbers.cpp" />

@@ -37,7 +37,7 @@ bool NoSupport(int* result, const char** message_result, const char* argv[], int
 
 bool ShowHelp_(int* result, const char** message_result, const char* argv[], int argc);
 
-ToolEntry Entries[21] =
+ToolEntry Entries[22] =
 {
 	{ "-EmptyRecyling", EmptyBin, "Empty the Recylling bin"},
 	{ "-OsVer", ReportVersionStdout, "Report what version of Windows is running to stdout."},
@@ -57,11 +57,13 @@ ToolEntry Entries[21] =
 	{ "-whoami_user_group", WhoAmi_WriteStdout_UserGroups ,  "Output Group info of the user."},
 	{ "-which", SearchPath_EntryPoint, "When given a file/folder, asks windows where it's at."},
 	{ "-whichdll", whichdll_entrypoint, "Using a helper, get the path of the dll you set that is loaded"},
+	{ "-ShowPendingDeletes", ShowPendingDeletes, "(CURRENTLY NT ONLY) Show Pending file operations for the session (including deletes) that will trigger next reboot"},
 #else
 	{ "-whoami_priv_system", Disabled , feature_disabled },
 	{ "-whoami_user_group", WhoAmi_WriteStdout_UserGroups ,  "Output Group info of the user."},
 	{ "-which", SearchPath_EntryPoint, "Find out where in the path a series on names is"},
 	{ "-whichdll", whichdll_entrypoint, "Using a helper, get the path of the dll you set that is loaded"},
+	{ "-ShowPendingDeletes", 0, feature_disabled},
 #endif
 	{ "-processprofile", ProcessProfileEntryPoint, "Run Process Profile on self"},
 	{ "-checkSafeLoadPath", CheckSafeLoadPath_PipeStdout, "Check if SafeDllSearchMode is active or available and report to stdout."},

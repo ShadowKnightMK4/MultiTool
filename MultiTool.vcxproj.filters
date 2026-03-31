@@ -144,6 +144,9 @@
     <ClCompile Include="moveonreboot.cpp">
       <Filter>Source Files\moveonreboot</Filter>
     </ClCompile>
+    <ClCompile Include="show_pending_deletes.cpp">
+      <Filter>Source Files\moveonreboot</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="common.h">

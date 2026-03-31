@@ -58,7 +58,12 @@ void LegacyMarkForDelete(const char* name, LWAnsiString* vebal)
 		kernel32 = LoadLibraryA("kernel32.dll");
 		WeLoadedIt = true;
 	}
- 
+	
+	if (kernel32 == 0)
+	{
+		LWAnsiString_Append(vebal, "Somehow, kerne32 not found. We can't use delete.");
+	}
+
 	ptrGetWindowsDirectoryA = (GetWindowsDirectoryAPTR)GetProcAddress(kernel32, "GetWindowsDirectoryA");
 	ptrCreateFile = (CreateFileAPTR)GetProcAddress(kernel32, "CreateFileA");
 	ptrSetFile = (SetFilePointerPTR)GetProcAddress(kernel32, "SetFilePointer");
@@ -68,6 +73,10 @@ void LegacyMarkForDelete(const char* name, LWAnsiString* vebal)
 	{
 		LWAnsiString_Append(vebal, name);
 		LWAnsiString_AppendWithNewLine(vebal, "---> Failed to sucessfully register this for legacy delete routine. ");
+		if ((WeLoadedIt) && (kernel32 != 0))
+		{
+			FreeLibrary(kernel32);
+		}
 		return;
 	}
 	else
@@ -93,40 +102,88 @@ void LegacyMarkForDelete(const char* name, LWAnsiString* vebal)
 			}
 		}
 
+		LWAnsiString_ZeroString(WinDir);
+
 		// now the windir
 		LWAnsiString_Append(WinDir, "wininit.ini");
 
 		{
 			DWORD ShortPath = ptrShortPath(name, NULL, 0);
-			LWAnsiString* EntryLine = LWAnsiString_CreateString(1);
-			LWAnsiString_Append(EntryLine, "NUL=");
-			LWAnsiString_AddReserve(EntryLine, ShortPath + 1);
-			char* offset = (char*) LWAnsiString_EndingOffset(EntryLine);
-			ptrShortPath(name, offset, ShortPath);
-			LWAnsiString_MarkLenDirty(EntryLine);
-
-			
-
-			HANDLE file = ptrCreateFile(LWAnsiString_ToCStr(WinDir), GENERIC_WRITE, 0, 0, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, 0);
-			if (file != INVALID_HANDLE_VALUE)
+			if (ShortPath != 0)
 			{
-				DWORD wrote = 0;
-				ptrSetFile(file, 0, 0, FILE_END);
-				WriteFile(file, LWAnsiString_ToCStr(EntryLine), EntryLine->Length * sizeof(char), &wrote, 0);
-				CloseHandle(file);
+				LWAnsiString* EntryLine = LWAnsiString_CreateString(1);
+				LWAnsiString_Append(EntryLine, "NUL=");
+				LWAnsiString_AddReserve(EntryLine, ShortPath + 1);
+				char* offset = (char*)LWAnsiString_EndingOffset(EntryLine);
+				
+				if (ptrShortPath(name, offset, ShortPath) != 0)
+				{
+					LWAnsiString_MarkLenDirty(EntryLine);
+					LWAnsiString_AppendNewLine(EntryLine);
+
+
+
+					HANDLE file = ptrCreateFile(LWAnsiString_ToCStr(WinDir), GENERIC_WRITE, 0, 0, OPEN_ALWAYS, FILE_ATTRIBUTE_NORMAL, 0);
+					if (file != INVALID_HANDLE_VALUE)
+					{
+						DWORD wrote = 0;
+						if (GetLastError() != ERROR_ALREADY_EXISTS)
+						{
+							WriteFile(file, "[rename]\r\n", 10, &wrote, 0);
+						}
+						SetLastError(0);
+						if ((ptrSetFile(file, 0, 0, FILE_END) != INVALID_SET_FILE_POINTER) && (GetLastError() == NO_ERROR))
+						{
+							if (!WriteFile(file, LWAnsiString_ToCStr(EntryLine), EntryLine->Length * sizeof(char), &wrote, 0))
+							{
+								LWAnsiString_AppendWithNewLine(vebal, "Failed to write the new entry to delete on reboot");
+							}
+							else
+							{
+								LWAnsiString_Append(vebal, "");
+								LWAnsiString_Append(vebal, LWAnsiString_ToCStr(EntryLine));
+								LWAnsiString_Append(vebal, "----> registered for deletion in ");
+								LWAnsiString_Append(vebal, LWAnsiString_ToCStr(WinDir));
+								LWAnsiString_AppendWithNewLine(vebal, " OK ");
+							}
+						}
+						else
+						{
+							LWAnsiString_AppendWithNewLine(vebal, "Failed to seek to end of wininit.ini to write the pending delete on reboot");
+						}
+						CloseHandle(file);
+					}
+					else
+					{
+						LWAnsiString_Append(vebal, "Failed to Create / Open wininit.ini in the expected location of  ");
+						LWAnsiString_Append(vebal, LWAnsiString_ToCStr(WinDir));
+						LWAnsiString_AppendNewLine(vebal);
+						LWAnsiString_Append(vebal, "Error code in attempt is ");
+						LWAnsiString_AppendNumber(GetLastError(), vebal, 0);
+						LWAnsiString_AppendNewLine(vebal);
+					}
+
+				}
+				else
+				{
+					LWAnsiString_AppendWithNewLine(vebal, "Failed to get the short (8.3 DOS naming) size for the pending delete.");
+				}
+				LWAnsiString_FreeString(EntryLine);
 			}
 			else
 			{
-
+				LWAnsiString_AppendWithNewLine(vebal, "Failed to get the short (8.3 DOS naming) size for the pending delete.");
 			}
 		}
 		
 
 		// free
 		LWAnsiString_FreeString(WinDir);
+
 		if ((WeLoadedIt && (kernel32 != 0)))
 		{
 			FreeLibrary(kernel32);
+			kernel32 = 0;
 		}
 	}
 
