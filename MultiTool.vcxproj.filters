@@ -52,6 +52,12 @@
     <Filter Include="Source Files\moveonreboot">
       <UniqueIdentifier>{25178ddd-c26e-48fd-9f3f-647771e372e3}</UniqueIdentifier>
     </Filter>
+    <Filter Include="IAT">
+      <UniqueIdentifier>{4b8e1964-612d-40ae-a97b-d169b246a7f4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\IAT">
+      <UniqueIdentifier>{5e347743-5bea-4335-ad6b-4de419b433fd}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -147,6 +153,30 @@
     <ClCompile Include="show_pending_deletes.cpp">
       <Filter>Source Files\moveonreboot</Filter>
     </ClCompile>
+    <ClCompile Include="IAT_registry.cpp">
+      <Filter>IAT</Filter>
+    </ClCompile>
+    <ClCompile Include="IAT_Info.cpp">
+      <Filter>IAT</Filter>
+    </ClCompile>
+    <ClCompile Include="IAT_Files.cpp">
+      <Filter>IAT</Filter>
+    </ClCompile>
+    <ClCompile Include="IAT_SECTOKEN.CPP">
+      <Filter>IAT</Filter>
+    </ClCompile>
+    <ClCompile Include="IAT_JOBS.cpp">
+      <Filter>IAT</Filter>
+    </ClCompile>
+    <ClCompile Include="IAT_DLLS.cpp">
+      <Filter>IAT</Filter>
+    </ClCompile>
+    <ClCompile Include="IAT_VERSIONINFO.cpp">
+      <Filter>IAT</Filter>
+    </ClCompile>
+    <ClCompile Include="IAT_ENV.cpp">
+      <Filter>IAT</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="common.h">
@@ -181,6 +211,24 @@
     </ClInclude>
     <ClInclude Include="minibug.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="IAT_JOBS.H">
+      <Filter>Header Files\IAT</Filter>
+    </ClInclude>
+    <ClInclude Include="IAT_DLLS.H">
+      <Filter>Header Files\IAT</Filter>
+    </ClInclude>
+    <ClInclude Include="IAT_REGISTRY.H">
+      <Filter>Header Files\IAT</Filter>
+    </ClInclude>
+    <ClInclude Include="IAT_VERSIONINFO.H">
+      <Filter>Header Files\IAT</Filter>
+    </ClInclude>
+    <ClInclude Include="IAT_FILE.H">
+      <Filter>Header Files\IAT</Filter>
+    </ClInclude>
+    <ClInclude Include="IAT_ENV.H">
+      <Filter>Header Files\IAT</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

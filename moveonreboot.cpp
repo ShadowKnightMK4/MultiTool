@@ -50,6 +50,7 @@ CreateFileAPTR ptrCreateFile = 0;
 GetShortPathNameAPTR  ptrShortPath = 0;
 
 
+
 void LegacyMarkForDelete(const char* name, LWAnsiString* vebal)
 {
 	bool WeLoadedIt = false;
@@ -102,7 +103,7 @@ void LegacyMarkForDelete(const char* name, LWAnsiString* vebal)
 			}
 		}
 
-		LWAnsiString_ZeroString(WinDir);
+	
 
 		// now the windir
 		LWAnsiString_Append(WinDir, "wininit.ini");
@@ -209,7 +210,7 @@ bool DeleteOnReboot(int* result, const char** message_result, const char* argv[]
 		}
 		else
 		{
-			if ( (osvi.A.dwMajorVersion < 5) || (osvi.A.dwPlatformId != VER_PLATFORM_WIN32_NT))
+			if ( (osvi.A.dwMajorVersion < 5) || (osvi.A.dwPlatformId != VER_PLATFORM_WIN32_WINDOWS))
 			{
 				LWAnsiString_AppendWithNewLine(vebal, "Warning: Windows verison reports OS possibly older than Windows 2000. Modern register for delete might not work ");
 				LegacyOS = TRUE;

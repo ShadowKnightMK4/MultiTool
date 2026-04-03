@@ -1,7 +1,7 @@
 #include "common.h"
 #include "osver.h"
 #include <LWAnsiString.h>
-
+#include "IAT_VERSIONINFO.H"
 #define WINDOWS_8_MAJOR 6
 #define WINDOWS_8_MINOR 2
 
@@ -20,10 +20,10 @@ bool VERSION_INFO_WAS_GOTTON;
 /// </summary>
 MyOSVERSIONINFO GlobalVersionInfo = { 0, 0, 0, 0 };
 
-typedef int (WINAPI* GetVersionInfOExA_PTR)(
+/*typedef int (WINAPI* GetVersionInfOExA_PTR)(
 	LPOSVERSIONINFOEXA lpVersionInformation
 	);
-typedef NTSTATUS(WINAPI* RtlGetVersion_PTR)(LPOSVERSIONINFOEXW);
+typedef NTSTATUS(WINAPI* RtlGetVersion_PTR)(LPOSVERSIONINFOEXW);*/
 
 void SetVersionInfoToZeroAndSetSize(bool Unicode, MyOSVERSIONINFO* GlobalVersionInfo)
 {
@@ -89,21 +89,16 @@ int FetchVersionInfo(MyOSVERSIONINFO* Output, bool* UseUnicode)
 	*	Next we try to GetProcAddress the GetVersionExA routine. If it works, we call it, if not we set our check ntdll flag (ProbeNtVerison) to true.
 	*	Additionally, GetVersionExA is known to return 6.2 for Windows 8 if no manifest is set.  We check for that and set the ProbeNtVerison flag to true which triggers the RtlGetVerison call if possible
 	*/
-	HMODULE kernel32 = LoadLibraryA("kernel32.dll");
-	if (kernel32 == 0)
-	{
-		return 0;
-	}
-	GetVersionInfOExA_PTR GetVersionExA = (GetVersionInfOExA_PTR)GetProcAddress(kernel32, "GetVersionExA");
-	if (GetVersionExA == 0)
-	{
-		ProbeNtVerison = true; // worth a shot
-	}
-	else
+
+	if ( 
+		(
+			((IAT_DynamicLinkVersionInfo(IAT_VERSIONINFO_GETVERSIONEXA | IAT_VERSIONINFO_NTDLL_RTLVERSIONINFO)) && (IAT_VERSIONINFO_GETVERSIONEXA)))  == (IAT_VERSIONINFO_GETVERSIONEXA)
+		)
+		
 	{
 		Output->A.dwOSVersionInfoSize = sizeof(OSVERSIONINFOEXA);
-		
-		if (GetVersionExA(&Output->A) == 0)
+
+		if (IAT_GetVersionInfoExA(&Output->A) == 0)
 		{
 			ProbeNtVerison = true; // worth a shot
 		}
@@ -120,27 +115,23 @@ int FetchVersionInfo(MyOSVERSIONINFO* Output, bool* UseUnicode)
 				return 1;
 			}
 		}
-		FreeLibrary(kernel32);
 	}
+	else
+	{
+		ProbeNtVerison = true;
+	}
+
 
 	if (ProbeNtVerison)
 	{
-		HMODULE ntdll = LoadLibraryA("ntdll.dll");
-		if (ntdll == 0)
 		{
-			return 0;
-		}
-		else
-		{
-			RtlGetVersion_PTR RtlGetVersion = (RtlGetVersion_PTR)GetProcAddress(ntdll, "RtlGetVersion");
-			if (RtlGetVersion == 0)
+			if (IAT_RtlGetVersion == 0)
 			{
-				FreeLibrary(ntdll);
 				return 0;
 			}
 			else
 			{
-				RtlGetVersion(&Output->W);
+				IAT_RtlGetVersion(&Output->W);
 				VERSION_INFO_WAS_GOTTON = true;
 				*UseUnicode = true;
 				if (Output != &GlobalVersionInfo)
@@ -148,119 +139,12 @@ int FetchVersionInfo(MyOSVERSIONINFO* Output, bool* UseUnicode)
 					// copy our version data to the global version info on call if not the same
 					SetVersionInfoFromAnother(Output, true);
 				}
-				FreeLibrary(ntdll);
 				return 1;
 			}
 		}
 	}
 	return 0;
 }
-int OldFetchVersionInfo(MyOSVERSIONINFO* Output, bool* UseUnicode)
-{
-	if (Output == nullptr)
-		return 0;
-	if (UseUnicode == nullptr)
-	{
-		return 0;
-	}
-	if (VERSION_INFO_WAS_GOTTON)
-	{
-		// we already got the version info, no need to do it again. Not like the Windows version can change while running right?
-		if (VERISON_INFO_IS_UNICODE)
-			Output->W = GlobalVersionInfo.W;
-		else
-			Output->A = GlobalVersionInfo.A;
-
-		
-		return 1;
-	}
-
-
-	// why this:: no libc means memset.  Why not MemorySet or Zeromemory? That resolves to RtlXXXX which on windows resolves to well memset
-	//SetVersionInfoToZeroAndSetSize(false);
-	*UseUnicode = false;
-
-
-	// load and bail if we can't
-	HMODULE kernel32 = LoadLibraryA("kernel32.dll");
-	if (kernel32 == NULL)
-	{
-		return 0;
-	}
-	// get the function pointer and bail if we can't
-	GetVersionInfOExA_PTR GetVersionExA = (GetVersionInfOExA_PTR)GetProcAddress(kernel32, "GetVersionExA");
-	if (GetVersionExA == nullptr)
-	{
-		return 0;
-	}
-	else
-	{
-		// we want to mantain ANSI strings for compatibility when talking to OS.
-		Output->A.dwOSVersionInfoSize = sizeof(OSVERSIONINFOA);
-		if (GetVersionExA(&Output->A) == 0)
-		{
-			return 0;
-		}
-		else
-		{
-			// https://learn.microsoft.com/en-us/windows/win32/api/sysinfoapi/nf-sysinfoapi-getversionexa
-			/* we're checking for this 6.2, assuming the app (us) doesn't have a manifest
-				* and probing deapper with the RTLGetVersion if needed.
-				* 
-				* Why this? cause the GetVersionEx has meen modified to always return 6.2 aka windows 8 if no manifest and return the manifiest if set.
-				* We're looking for the true version. Anything below this 6.2 is likely legit.
-			*/
-			if (((Output->A.dwMajorVersion == WINDOWS_8_MAJOR)) && (Output->A.dwMinorVersion == WINDOWS_8_MINOR))
-			{
-				HMODULE ntdll = LoadLibraryA("ntdll.dll");
-				if (ntdll == NULL)
-				{
-					// reset output to null and free kernel32 for good practice
-					SetVersionInfoToZeroAndSetSize(false, Output);
-					// adds bytes but reasonable practice
-					FreeLibrary(kernel32);
-					return 0;
-				}
-				else
-				{
-					// define our pointer and try to get the RtlVersion.     If nay, we're done, free kernenl32 and ntdll.
-					RtlGetVersion_PTR RtlGetVersion = (RtlGetVersion_PTR)GetProcAddress(ntdll, "RtlGetVersion");
-					if (RtlGetVersion == nullptr)
-					{
-						FreeLibrary(kernel32);
-						FreeLibrary(ntdll);
-						return 0;
-					}
-					else
-					{
-						// call the routine and set to output
-						*UseUnicode = true;
-						RtlGetVersion(&Output->W);
-						VERSION_INFO_WAS_GOTTON = true;
-						if (Output != &GlobalVersionInfo)
-						{
-							// copy our version data to the global version info on call if not the same
-							SetVersionInfoFromAnother(Output, true);
-						}
-						FreeLibrary(kernel32);
-						FreeLibrary(ntdll);
-						return 1;
-					}
-				}
-			}
-			else
-			{
-				VERSION_INFO_WAS_GOTTON = true;
-				*UseUnicode = false;
-				FreeLibrary(kernel32);
-
-			}
-		}
-
-		return 1;
-	}
-}
-
 
 
 

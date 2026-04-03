@@ -1,5 +1,6 @@
 #include "common.h"
 #include "osver.h"
+#include "IAT_JOBS.H"
 #include <LWAnsiString.h>
 extern "C" {
 
@@ -14,9 +15,11 @@ extern "C" {
 
 
 
+	/*
 	typedef HANDLE(WINAPI* CreateJobAnsi)(VOID*, VOID*);
 	typedef HANDLE(WINAPI* AssignToJob)(HANDLE, HANDLE);
 	typedef BOOL(WINAPI* SetJobLimit)(HANDLE, JOBOBJECTINFOCLASS, VOID*, DWORD);
+	*/
 
 	void AssignBasicLimits(HANDLE Job, SetJobLimit* AssignLimiter, MyOSVERSIONINFO* VersionInfo)
 	{
@@ -71,6 +74,10 @@ extern "C" {
 		{
 			// try it
 			JOBOBJECT_NET_RATE_CONTROL_INFORMATION Limits;
+			for (size_t x = 0; x < sizeof(JOBOBJECT_NET_RATE_CONTROL_INFORMATION); x++)
+			{
+				((char*)&Limits)[x] = 0;
+			}
 			Limits.MaxBandwidth = Limits.DscpTag = Limits.ControlFlags = (JOB_OBJECT_NET_RATE_CONTROL_FLAGS)0;
 
 			Limits.MaxBandwidth = 0;//
@@ -91,43 +98,29 @@ extern "C" {
 	/// </summary>
 	/// <param name="Process"></param>
 	/// <returns></returns>
+	/// <remarks>call IAT_DynamicLinkJob first</remarks>
 	HANDLE AssignAsJob(HANDLE Process, MyOSVERSIONINFO* VersionInfo)
 	{
 		HANDLE JobObject = INVALID_HANDLE_VALUE;
-		HMODULE kernel32 = LoadLibraryA("kernel32.dll");
-		if (kernel32 == 0) // how!?
-		{
-			return INVALID_HANDLE_VALUE;
-		}
-		else
-		{
-			CreateJobAnsi MakeJob = (CreateJobAnsi)GetProcAddress(kernel32, "CreateJobObjectA");
-			AssignToJob AssignProcess = (AssignToJob)GetProcAddress(kernel32, "AssignProcessToJobObject");
-			SetJobLimit AssignLimits = (SetJobLimit)GetProcAddress(kernel32, "SetInformationJobObject");
 
-			if (MakeJob == 0)
-			{
-				goto cleanup;
-			}
 
-			JobObject = (*MakeJob)(NULL, NULL);
+		IAT_DynamicLinkJob(IAT_JOB_ALL_W | IAT_JOB_ALL_A);
+	
+
+			JobObject = (*IAT_CreateJobObjectA)(NULL, NULL);
 
 			if (JobObject != 0)
 			{
-				if (!(*AssignProcess)(JobObject, Process))
+				if ((*IAT_AssignProcessToJobObject)(JobObject, Process))
 				{
-					goto cleanup;
+					AssignMinJobRules(JobObject, &IAT_SetInformationJobObject, VersionInfo);
 				}
 			}
 
-			AssignMinJobRules(JobObject, &AssignLimits, VersionInfo);
-		cleanup:
-			if (kernel32 != nullptr)
-			{
-				FreeLibrary(kernel32);
-			}
+
+
 			return JobObject;
-		}
+		
 	}
 
 
@@ -140,6 +133,11 @@ extern "C" {
 		ptr.source = ((Args*)ptr_ptr)->source;
 		if (ptr_ptr != 0) HeapFree(GetProcessHeap(), 0, ptr_ptr);
 
+		if (IAT_DynamicLinkJob(IAT_JOB_CREATEJOBA) != IAT_JOB_CREATEJOBA)
+		{
+			return -1;
+		}
+		
 		MyOSVERSIONINFO ThreadInfo;
 		if (!VERSION_INFO_WAS_GOTTON)
 			FetchVersionInfo(&ThreadInfo, &VERISON_INFO_IS_UNICODE); // note this is the same routien osver tool uses.

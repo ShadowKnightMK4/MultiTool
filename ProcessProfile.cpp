@@ -3,6 +3,7 @@
 #include "LWAnsiString.h"
 
 #include "TlHelp32.h"
+#include "IAT_REGISTRY.H"
 
 /*
 * -processprofile.cpp   -target {PID|ProcessName} {PID|ProcessName} {PID|ProcessName} ... 
@@ -51,44 +52,6 @@ bool ResolveNTFallback()
 
 
 
-HMODULE ADVAPI32 = 0;
-typedef LONG (WINAPI* RegEnumKeyA_Ptr)(
-	HKEY   hKey,
-	DWORD  dwIndex,
-	LPSTR  lpName,
-	DWORD  cchName
-);
-typedef LSTATUS(WINAPI* RegOpenKeyA_Ptr)(
-	HKEY hKey,
-	LPCSTR lpSubKey,
-	HKEY* phkResult
-	);
-typedef LSTATUS (WINAPI* RegCloseKey_Ptr)(
-	HKEY hKey
-);
-typedef LSTATUS (WINAPI* RegEnumValueA_Ptr)(
-     HKEY    hKey,
-	DWORD   dwIndex,
-	  LPSTR   lpValueName,
-	LPDWORD lpcchValueName,
-	LPDWORD lpReserved,
-     LPDWORD lpType,
-	    LPBYTE  lpData,
-	LPDWORD lpcbData
-);
-typedef LSTATUS (WINAPI* RegQueryValueExA_Ptr)(
-       HKEY    hKey,
-                    LPCSTR  lpValueName,
-					LPDWORD lpReserved,
-                    LPDWORD lpType,
-                    LPBYTE  lpData,
-                    LPDWORD lpcbData
-);  
-RegOpenKeyA_Ptr RegOpenKeyA_Calling = nullptr;
-RegEnumKeyA_Ptr RegEnumKeyA_Calling = nullptr;
-RegCloseKey_Ptr RegCloseKey_Calling = nullptr;
-RegEnumValueA_Ptr RegEnumValueA_Calling = nullptr;
-RegQueryValueExA_Ptr RegQueryValueExA_Calling = nullptr;
 
 bool IsFolderWritable(const char* target)
 {
@@ -110,29 +73,7 @@ again:
 }
 bool LoadAdvapi32Needs()
 {
-	if (ADVAPI32 == 0)
-	{
-		ADVAPI32 = LoadLibraryA("advapi32.dll");
-		if (ADVAPI32 != 0)
-		{
-			RegEnumKeyA_Calling = (RegEnumKeyA_Ptr)GetProcAddress(ADVAPI32, "RegEnumKeyA");
-			RegOpenKeyA_Calling = (RegOpenKeyA_Ptr)GetProcAddress(ADVAPI32, "RegOpenKeyA");
-			RegCloseKey_Calling = (RegCloseKey_Ptr)GetProcAddress(ADVAPI32, "RegCloseKey");
-			RegEnumValueA_Calling = (RegEnumValueA_Ptr)GetProcAddress(ADVAPI32, "RegEnumValueA");
-			RegQueryValueExA_Calling = (RegQueryValueExA_Ptr)GetProcAddress(ADVAPI32, "RegQueryValueExA");
-			return (ADVAPI32 != nullptr && RegEnumKeyA_Calling != nullptr && RegOpenKeyA_Calling != nullptr && RegCloseKey_Calling != nullptr && RegEnumValueA_Calling != nullptr && RegQueryValueExA_Calling != nullptr);
-		}
-		else
-		{
-			return false;
-		}
-	}
-	else
-	{
-		return true;
-	}
-
-	return false;
+	return (IAT_DynamicLinkRegistry(IAT_REGISTRY_ANSI) & IAT_REGISTRY_ANSI) == IAT_REGISTRY_ANSI;
 }
 
 
@@ -165,7 +106,10 @@ retry:
 	{
 		*output = LWAnsiString_CreateFromString(MainEntry.szExePath);
 	}
-	CloseHandle(Snap);
+	if (Snap != 0)
+		if (Snap != INVALID_HANDLE_VALUE)
+			CloseHandle(Snap);
+
 	return true;
 
 }
@@ -223,11 +167,11 @@ bool ProcessProfileHelper_VerifySafeDllSearchFlag(bool *PostXpSpo2, bool *IsActi
 		*IsActive = false;
 		// go for tryting
 		HKEY hKey = 0;
-		if (RegOpenKeyA_Calling(HKEY_LOCAL_MACHINE, "SYSTEM\\CurrentControlSet\\Control\\Session Manager\\", &hKey) == ERROR_SUCCESS)
+		if (IAT_RegOpenKeyA(HKEY_LOCAL_MACHINE, "SYSTEM\\CurrentControlSet\\Control\\Session Manager\\", &hKey) == ERROR_SUCCESS)
 		{
 			DWORD Size = sizeof(DWORD);
 			DWORD Results = 0;
-			if (RegQueryValueExA_Calling(hKey, "SafeDllSearchMode", 0, 0, (LPBYTE)&Results, &Size) == ERROR_FILE_NOT_FOUND)
+			if (IAT_RegQueryValueExA(hKey, "SafeDllSearchMode", 0, 0, (LPBYTE)&Results, &Size) == ERROR_FILE_NOT_FOUND)
 			{
 				// somehow the key is not there, so we assume it's not active
 				*IsActive = false;
@@ -239,7 +183,7 @@ bool ProcessProfileHelper_VerifySafeDllSearchFlag(bool *PostXpSpo2, bool *IsActi
 					*IsActive = true;
 				}
 			}
-			RegCloseKey_Calling(hKey);
+			IAT_RegCloseKey(hKey);
 			return true;
 		}
 	}
@@ -274,14 +218,14 @@ bool ProcessProcefileHelper_IsKnownDLL(HANDLE Snapshot, DWORD ID, LWAnsiString* 
 
 	{
 		HKEY hKey = 0;
-		if (RegOpenKeyA_Calling(HKEY_LOCAL_MACHINE, "SYSTEM\\CurrentControlSet\\Control\\Session Manager\\KnownDLLs", &hKey) == ERROR_SUCCESS)
+		if (IAT_RegOpenKeyA(HKEY_LOCAL_MACHINE, "SYSTEM\\CurrentControlSet\\Control\\Session Manager\\KnownDLLs", &hKey) == ERROR_SUCCESS)
 		{
 			DWORD index = 0;
 			BOOL YAY = true;
 			while (YAY)
 			{
 				DWORD AllotSize = KeyName->AllocatedSize;
-				auto result = RegEnumValueA_Calling(hKey, index, KeyName->Data, &AllotSize, nullptr, nullptr, nullptr, nullptr);
+				auto result = IAT_RegEnumValueA (hKey, index, KeyName->Data, &AllotSize, nullptr, nullptr, nullptr, nullptr);
 				YAY = (result == ERROR_SUCCESS);
 				/*
 				* the probe length updates the stored length if its zero and we aint an empty string
@@ -333,7 +277,7 @@ bool ProcessProcefileHelper_IsKnownDLL(HANDLE Snapshot, DWORD ID, LWAnsiString* 
 				}
 				index++;
 			}
-			RegCloseKey(hKey);
+			IAT_RegCloseKey(hKey);
 		}
 	}
 	if (KeyName) LWAnsiString_FreeString(KeyName);
