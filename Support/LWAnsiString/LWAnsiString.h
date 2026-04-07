@@ -116,11 +116,11 @@ int main() {
 	typedef void*(WINAPI* LW_STRING_strcpy)(VOID* target, VOID* source);
 	typedef size_t(WINAPI* LW_STRING_INDEXOR)(VOID* Target, size_t Index);
 	typedef size_t(WINAPI* LW_STRING_WRITE_INDEX)(VOID* Target, size_t Index, size_t val);
-	typedef int (* LWSTRING_ICMP)(
+	typedef int (WINAPI* LWSTRING_ICMP)(
 		const char* string1,
 		const char* string2
 	);
-	typedef int (*LWSTRING_CMP)(
+	typedef int (WINAPI* LWSTRING_CMP)(
 		const char* string1,
 		const char* string2
 		);
@@ -144,11 +144,13 @@ int main() {
 	/// <summary>
 	/// This is the handler to pass for creating Ansi Strings
 	/// </summary>
-	extern AllocationHandler LWAnsiHandler;
+	extern AllocationHandler* LWAnsiHandler;
 	/// <summary>
 	/// This is the handler to pass for creating Unicode Strings
 	/// </summary>
-	extern AllocationHandler LWUnicodeHandler;
+	extern AllocationHandler* LWUnicodeHandler;
+
+	extern AllocationHandler DefaultHandler;
 
 	// LWAnsiString.cpp : Defines the functions for the static library.
 	//
@@ -178,7 +180,7 @@ int main() {
 	LWAnsiString* LWAnsiString_AddReserveCap(LWAnsiString* str, int new_size, int max);
 
 	/// <summary>
-	/// This will duplicate the passed string starting at offset, allocating a new string and copying the contents of the passed string into it starting at offset. The new string will be null terminated.
+	/// This will duplicate the passed string starting at offset, allocating a new string and copying the contents of the passed string into it starting at the char directly after offset. The new string will be null terminated.
 	/// </summary>
 	/// <param name="str">str to duplicatie</param>
 	/// <param name="offset">positive offset.</param>

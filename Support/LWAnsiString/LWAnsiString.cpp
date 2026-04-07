@@ -161,24 +161,25 @@ extern "C" {
 	}
 #pragma optimize("", on)  
 
-	typedef size_t(WINAPI* LW_STRING_WRITE_INDEX)(VOID* Target, int Index, size_t val);
 
-	size_t DefaultWriteIndex(CHAR* Target, size_t index, size_t val)
+	size_t WINAPI DefaultWriteIndex(void* Target, size_t index, size_t val)
+	{
+		char* t = (char*)Target;
+		t[index] = val;
+		return 0;
+	}
+	size_t WINAPI DefaultIndexer(void* TARGET, size_t index)
+	{
+		char* t = (char*)TARGET;
+		return (char) t[index];
+	}
+
+	size_t WINAPI UnicodeWriteIndex(wchar_t* Target, size_t index, size_t val)
 	{
 		Target[index] = val;
 		return 0;
 	}
-	char DefaultIndexer(CHAR* TARGET, size_t index)
-	{
-		return TARGET[index];
-	}
-
-	size_t UnicodeWriteIndex(wchar_t* Target, size_t index, size_t val)
-	{
-		Target[index] = val;
-		return 0;
-	}
-	wchar_t UnicodeIndexer(wchar_t* TARGET, size_t index)
+	wchar_t WINAPI UnicodeIndexer(wchar_t* TARGET, size_t index)
 	{
 		return TARGET[index];
 	}
@@ -187,6 +188,9 @@ extern "C" {
 	/// </summary>
 	AllocationHandler DefaultHandler = { 0 };
 	AllocationHandler UnicodeHandler{ 0 };
+
+	AllocationHandler* LWAnsiHandler = &DefaultHandler;
+	AllocationHandler* LWUnicodeHandler = &UnicodeHandler;
 
 	HANDLE LW_INTERNAL WINAPI DefaultMyHeapGet(DWORD Options, SIZE_T Start, SIZE_T Cap)
 	{
@@ -246,11 +250,12 @@ extern "C" {
 				//DefaultHandler.STRLEN = (LW_STRING_strlen)lstrlenA;
 				DefaultHandler.STRLEN = (LW_STRING_strlen)lstrlenA;
 				DefaultHandler.SingleCharacterLength = sizeof(char);
-				DefaultHandler.INDEX = (LW_STRING_INDEXOR)DefaultIndexer;
-				DefaultHandler.STRCMP = (LWSTRING_CMP)lstrcmpA;
-				DefaultHandler.STRICMP = (LWSTRING_ICMP)lstrcmpiA;
-				DefaultHandler.WriteToIndex = (LW_STRING_WRITE_INDEX)DefaultWriteIndex;
+				DefaultHandler.INDEX = DefaultIndexer;
+				DefaultHandler.STRCMP = lstrcmpA;
+				DefaultHandler.STRICMP = lstrcmpiA;
+				DefaultHandler.WriteToIndex = DefaultWriteIndex;
 
+				/*
 				UnicodeHandler.CustomFirstAlloc = DefaultAlloc;
 				UnicodeHandler.CustomGetHeap = DefaultMyHeapGet;
 				UnicodeHandler.CustomFree = DefaultFree;
@@ -265,7 +270,7 @@ extern "C" {
 				UnicodeHandler.INDEX = (LW_STRING_INDEXOR) UnicodeIndexer;
 				UnicodeHandler.STRICMP = (LWSTRING_CMP)lstrcmpiW;
 				UnicodeHandler.STRCMP = (LWSTRING_ICMP)lstrcmpW;
-				UnicodeHandler.WriteToIndex = (LW_STRING_WRITE_INDEX)UnicodeWriteIndex;
+				UnicodeHandler.WriteToIndex = (LW_STRING_WRITE_INDEX)UnicodeWriteIndex;*/
 			}
 		}
 
@@ -292,6 +297,7 @@ extern "C" {
 		if (str != nullptr)
 		{
 			str->Length = -1;
+			str->Flags |= LWANSI_FLAG_DIRTY;
 		}
 		return str;
 	}
@@ -307,7 +313,7 @@ extern "C" {
 		if (offset == 0)
 			return LWAnsiString_CreateFromStringEx(x, LWAnsiString_ToCStr(str)); // if offset is 0, just duplicate original
 
-		return LWAnsiString_CreateFromStringEx(x, LWAnsiString_ToCStr(str) + offset); // create a new string from the offset
+		return LWAnsiString_CreateFromStringEx(x, LWAnsiString_ToCStr(str) + (offset* ALLOC_PTR(str, SingleCharacterLength))); // create a new string from the offset
 
 	}
 
@@ -344,7 +350,7 @@ extern "C" {
 		}
 		else
 		{
-			Ans->Data = (char*)DefaultHandler.CustomFirstAlloc(StringHeap, HEAP_GENERATE_EXCEPTIONS | HEAP_ZERO_MEMORY, len + 1); // +1 for null terminator
+			Ans->Data = (char*)DefaultHandler.CustomFirstAlloc(StringHeap, HEAP_GENERATE_EXCEPTIONS | HEAP_ZERO_MEMORY, (len +1 )*x->SingleCharacterLength); // +1 for null terminator
 
 			Ans->AllocatedSize = len + 1; // +1 for null terminator
 			if (x != &DefaultHandler)
@@ -390,17 +396,18 @@ extern "C" {
 		{
 			return nullptr; // null string
 		}
-		int len = lstrlenA(str);
+		size_t len = lstrlenA(str);
 		LWAnsiString* Ans = LWAnsiString_CreateStringEx(x, len);
 		if (Ans != nullptr)
 		{
 
-			/*lstrcpyA(Ans->Data, str); // copy the string
-			Ans->Data[len] = 0; // null terminate
+			//lstrcpyA((char*) Ans->Data, str); // copy the string
+			/*Ans->Data[len] = 0; // null terminate
 			Ans->Length = len;*/
 			ALLOC_PTR(Ans, STRCPY)(Ans->Data, (void*)str);
+			Ans->Length = len;
 			LWAnsiString_ClampNull(Ans);
-			Ans->Length = 0;
+			
 		}
 		return Ans;
 	}
@@ -489,6 +496,7 @@ extern "C" {
 
 		if (str->Data != 0)
 		{
+			str->Flags &= ~LWANSI_FLAG_DIRTY;
 			if (ALLOC_PTR(str, INDEX)(str->Data, 0) == 0)
 			{
 				str->Length = 0;
@@ -497,7 +505,7 @@ extern "C" {
 			else
 			{
 				str->Length = ALLOC_PTR(str, STRLEN)(str->Data);
-				return 0;
+				return str->Length;
 			}
 		}
 
@@ -520,7 +528,7 @@ extern "C" {
 		return 0;
 	}
 
-	void LWAnsiString_ClampNull(LWAnsiString* str)
+	void  LWAnsiString_ClampNull(LWAnsiString* str)
 	{
 		if (str && str->Data)
 		{
@@ -571,7 +579,7 @@ extern "C" {
 				str->Data[i] = 0; // zero out the buffer
 			}
 			*/
-		local_memzero((unsigned char*)str->Data, str->AllocatedSize); // zero out the buffer using our local_memzero function
+		local_memzero((unsigned char*)str->Data, (str->AllocatedSize * ALLOC_PTR(str)SingleCharacterLength)); // zero out the buffer using our local_memzero function
 		str->Length = 0;
 	}
 
@@ -593,7 +601,7 @@ extern "C" {
 		if (new_size != str->AllocatedSize)
 		{
 			//char* newPtr = (char*)((AllocationHandler*)(str->AllocatedHandle))->CustomReAlloc(((AllocationHandler*)(str->AllocatedHandle))->CustomGetHeap(0, 0, 0), HEAP_GENERATE_EXCEPTIONS | HEAP_ZERO_MEMORY, str->Data, new_size + 1); // +1 for null terminator
-			char* newPtr = (char*)Handler->CustomReAlloc(Handler->CustomGetHeap(0, 0, 0), HEAP_GENERATE_EXCEPTIONS | HEAP_ZERO_MEMORY, str->Data, new_size + 1); // +1 for null terminator
+			char* newPtr = (char*)Handler->CustomReAlloc(Handler->CustomGetHeap(0, 0, 0), HEAP_GENERATE_EXCEPTIONS | HEAP_ZERO_MEMORY, str->Data, ( (new_size + 1) * ALLOC_PTR(str, SingleCharacterLength))); // +1 for null terminator
 
 			if (newPtr == nullptr)
 			{
@@ -904,6 +912,8 @@ extern "C" {
 		LWAnsiString_AppendNewLine(r); // append a new line
 		return r; // return the updated string
 	}
+
+
 	LWAnsiString* LWAnsiString_Reserve(LWAnsiString* str, int new_size)
 	{
 		/* UNIT TESTED THRU LWAnsiString_Reserve */
