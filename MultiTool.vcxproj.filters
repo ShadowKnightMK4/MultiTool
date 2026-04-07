@@ -177,6 +177,15 @@
     <ClCompile Include="IAT_ENV.cpp">
       <Filter>IAT</Filter>
     </ClCompile>
+    <ClCompile Include="IAT_PROCESS.cpp">
+      <Filter>IAT</Filter>
+    </ClCompile>
+    <ClCompile Include="IAT_THREAD.CPP">
+      <Filter>IAT</Filter>
+    </ClCompile>
+    <ClCompile Include="IAT_BOOTSTRAP_LOADER.cpp">
+      <Filter>IAT</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="common.h">
@@ -228,6 +237,9 @@
       <Filter>Header Files\IAT</Filter>
     </ClInclude>
     <ClInclude Include="IAT_ENV.H">
+      <Filter>Header Files\IAT</Filter>
+    </ClInclude>
+    <ClInclude Include="IAT_BOOSTRAP_LOADER.H">
       <Filter>Header Files\IAT</Filter>
     </ClInclude>
   </ItemGroup>

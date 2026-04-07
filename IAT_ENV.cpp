@@ -4,6 +4,8 @@
 extern "C"
 {
 	GetWindowsDirectoryAPtr IAT_GetWindowsDirectoryA = 0;
+	GetShortPathNameAPTR  IAT_GetShortPathA = 0;
+
 
 	DWORD IAT_DynamicLink_Environment(DWORD iat_settings)
 	{
@@ -23,6 +25,16 @@ extern "C"
 			if (IAT_GetWindowsDirectoryA != 0)
 			{
 				ret |= IAT_ENV_API_GETWINDOWSDIRA;
+			}
+		}
+
+		if ((iat_settings & IAT_ENV_API_GETSHORTPATHA) == (IAT_ENV_API_GETSHORTPATHA))
+		{
+
+			IAT_GetShortPathA = (GetShortPathNameAPTR)GetProcAddress(iatKernel32, "GetShortPathA");
+			if (IAT_GetShortPathA != 0)
+			{
+				ret |= IAT_ENV_API_GETSHORTPATHA;
 			}
 		}
 		return ret;

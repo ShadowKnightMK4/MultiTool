@@ -188,12 +188,15 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="common.cpp" />
+    <ClCompile Include="IAT_BOOTSTRAP_LOADER.cpp" />
     <ClCompile Include="IAT_DLLS.cpp" />
     <ClCompile Include="IAT_ENV.cpp" />
     <ClCompile Include="IAT_Files.cpp" />
     <ClCompile Include="IAT_Info.cpp" />
     <ClCompile Include="IAT_JOBS.cpp" />
+    <ClCompile Include="IAT_PROCESS.cpp" />
     <ClCompile Include="IAT_SECTOKEN.CPP" />
+    <ClCompile Include="IAT_THREAD.CPP" />
     <ClCompile Include="IAT_VERSIONINFO.cpp" />
     <ClCompile Include="iosys.cpp" />
     <ClCompile Include="killprocess.cpp" />
@@ -230,6 +233,7 @@
   <ItemGroup>
     <ClInclude Include="..\LWAnsiString\LWAnsiString.h" />
     <ClInclude Include="common.h" />
+    <ClInclude Include="IAT_BOOSTRAP_LOADER.H" />
     <ClInclude Include="IAT_DLLS.H" />
     <ClInclude Include="IAT_ENV.H" />
     <ClInclude Include="IAT_FILE.H" />
@@ -245,11 +249,6 @@
     <ClInclude Include="tool_dispatch.h" />
     <ClInclude Include="tool_functions.h" />
     <ClInclude Include="whoami.h" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\LWAnsiString\LWAnsiString.vcxproj">
-      <Project>{2422c8de-e681-4704-b090-6e811ee041aa}</Project>
-    </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

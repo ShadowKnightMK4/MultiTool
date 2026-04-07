@@ -1,5 +1,5 @@
 #include <Windows.h>
-
+#include "IAT_BOOSTRAP_LOADER.H"
 extern int main(int argc, const char* argv[]);
 extern void SETUP_PIPES();
 
@@ -84,6 +84,14 @@ LPCSTR* CommandLineAsArgv(LPSTR lpCmdLine, int* pArgc)
 
 int SystemStart()
 {
+	if ((IAT_DynamicLink_BootStrapLoader(IAT_BOOTSTRAP_LOADER_GETPROCADDRESS_UNICODE) & IAT_BOOTSTRAP_LOADER_GETPROCADDRESS_UNICODE) != IAT_BOOTSTRAP_LOADER_GETPROCADDRESS_UNICODE)
+	{
+		if ((IAT_DynamicLink_BootStrapLoader(IAT_BOOTSTRAP_LOADER_GETPROCADDRESS_ANSI) & IAT_BOOTSTRAP_LOADER_GETPROCADDRESS_ANSI) != IAT_BOOTSTRAP_LOADER_GETPROCADDRESS_ANSI)
+		{
+			return INT_MIN;
+		}
+	}
+
 	int argc = 0;
 	auto CmdLine = GetCommandLineA();
 
@@ -93,6 +101,7 @@ int SystemStart()
 	{
 		LocalFree((void*)Args[i]);
 	}
+	IAT_DynamicLink_BootStrapCleanup();
 	LocalFree(Args);
 	ExitProcess(ret);
 }
