@@ -60,6 +60,7 @@
  * 8. As a bit of a hard rule (that is still bendable,
  *    keep your strings the same type ie no trying to compare a unicode string with an ansi string for example)
  *   The code won't stop you BUT IT IS NOT RECOMMANDED!
+ * 9.  The 2 main Allocate handlers LWAnsi and LWUnicode have corosponding Append, compare, create stuff
  */
 
 /*
@@ -73,7 +74,7 @@
 #include "framework.h"
 #include <climits>
 #include "LWAnsiString.h"
-
+#include "LWAnsiString_Internal.h"
 #pragma optimize("", off)
 
 
@@ -92,12 +93,8 @@ extern "C" {
 	///<summary>
 	/// This macro is used to access the AllocationHandler functions from the LWAnsiString struct without excessively verbose code.
 	/// </summary>
-#define ALLOC_PTR( LW, Function)  ((AllocationHandler*)LW->AllocatedHandle)->Function
 
-	///<summary>
-	/// This blank macro is for me to mark certain functions as internal only. 
-	///</summary>
-#define LW_INTERNAL
+
 
 
 #pragma optimize("", off)
@@ -279,17 +276,7 @@ extern "C" {
 
 
 
-	LW_INTERNAL void ProbeIfDirtyLen(LWAnsiString* str)
-	{
-		
-		if (str != 0)
-		{
-			if ( (str->Length < 0) || ((str->Flags & LWANSI_FLAG_DIRTY) == LWANSI_FLAG_DIRTY))
-			{
-				LWAnsiString_ProbeLength(str);
-			}
-		}
-	}
+	
 
 
 	LWAnsiString* LWAnsiString_MarkLenDirty(LWAnsiString* str)
@@ -579,7 +566,7 @@ extern "C" {
 				str->Data[i] = 0; // zero out the buffer
 			}
 			*/
-		local_memzero((unsigned char*)str->Data, (str->AllocatedSize * ALLOC_PTR(str)SingleCharacterLength)); // zero out the buffer using our local_memzero function
+		local_memzero((unsigned char*)str->Data, (str->AllocatedSize * ALLOC_PTR(str,SingleCharacterLength))); // zero out the buffer using our local_memzero function
 		str->Length = 0;
 	}
 
@@ -640,7 +627,7 @@ extern "C" {
 	}
 
 
-	LWAnsiString* LWAnsiString_Pad(LWAnsiString* str, const char c, int len)
+	LWAnsiString* LWAnsiString_PadInternal(LWAnsiString* str, const char c, int len)
 	{
 		/* NOT UNITED TESTED - but proven in midas by appending '-' symboles*/
 		if (str == nullptr)
@@ -669,7 +656,7 @@ extern "C" {
 		return str; // return the updated string
 	}
 
-	LWAnsiString* LWAnsiString_PadNewLine(LWAnsiString* str, const char c, int len)
+	LWAnsiString* LWAnsiString_PadNewLineInternal(LWAnsiString* str, const wchar_t c, int len)
 	{
 		LWAnsiString* r = LWAnsiString_Pad(str, c, len); // pad the string with the character
 		ProbeIfDirtyLen(r);
@@ -791,8 +778,12 @@ extern "C" {
 	}
 
 
+	
+	
 
-	LWAnsiString* LWAnsiString_Append(LWAnsiString* str, const char* append)
+	
+
+	LWAnsiString* LW_INTERNAL LWAnsiString_AppendOld(LWAnsiString* str, const char* append)
 	{
 		/* INIT TESTED CAUSE WE USE IT THRUOUT MIDAS AND the unit tests for other stuff*/
 		if (str == nullptr)
@@ -935,7 +926,7 @@ extern "C" {
 				str->Data = newPtr; // set the new data pointer
 				str->AllocatedSize = new_size + 1; // update the allocated size
 				LWAnsiString_ClampNull(str);
-				local_memzero((unsigned char*) str->A + str->Length, str->AllocatedSize + (- 1 - str->Length)* ALLOC_PTR(str, SingleCharacterLength)); // zero out the rest of the buffer
+				local_memzero((unsigned char*) str->A + (str->Length*ALLOC_PTR(str, SingleCharacterLength)), str->AllocatedSize + (- 1 - str->Length)* ALLOC_PTR(str, SingleCharacterLength)); // zero out the rest of the buffer
 				LWAnsiString_ClampNull(str);
 				return str; // return the current string
 
@@ -1295,7 +1286,92 @@ extern "C" {
 
 	}
 
+#pragma region
 
+	LWAnsiString* LWAnsiString_AppendW(LWAnsiString* str, const wchar_t* append)
+	{
+		if (str->AllocatedHandle == LWUnicodeHandler)
+		{
+			LWAnsiString_AppendInternal(str, (const void*)append, ALLOC_PTR(str, STRLEN));
+		}
+		else
+		{
+
+			int res = WideCharToMultiByte(CP_ACP, WC_NO_BEST_FIT_CHARS, append, -1, 0, 0, "?", 0);
+			if (res > 0)
+			{
+				char* tmp = (char*)ALLOC_PTR(str, CustomFirstAlloc)(ALLOC_PTR(str, CustomGetHeap), 0, res);
+				LWAnsiString* self = str;
+				int do_res = WideCharToMultiByte(CP_ACP, WC_NO_BEST_FIT_CHARS, append, -1, tmp, res, "?", 0);
+
+				if (do_res != 0)
+				{
+					self = LWAnsiString_AppendInternal(str, (const void*)append, ALLOC_PTR(str, STRLEN));
+				}
+
+				if (tmp != 0) {
+					ALLOC_PTR(str, CustomFree)(ALLOC_PTR(str, CustomGetHeap), 0, tmp);
+				}
+				return self;
+			}
+		}
+		return nullptr;
+	}
+
+	LWAnsiString* LWAnsiString_AppendA(LWAnsiString* str, const char* append)
+	{
+		if (str->AllocatedHandle == LWAnsiHandler)
+		{
+			return LWAnsiString_AppendInternal(str, (const void*)append, ALLOC_PTR(str, STRLEN));
+		}
+		else
+		{
+
+			int res = MultiByteToWideChar(CP_ACP, 0, append, -1, 0, 0);
+			if (res > 0)
+			{
+				wchar_t* tmp = (wchar_t*)ALLOC_PTR(str, CustomFirstAlloc)(ALLOC_PTR(str, CustomGetHeap), 0, res);
+				LWAnsiString* self = str;
+				int do_res = MultiByteToWideChar(CP_ACP, 0, append, -1, tmp, -1);
+
+				if (do_res != 0)
+				{
+					 	self = LWAnsiString_AppendInternal(str, (const void*)append, ALLOC_PTR(str, STRLEN));
+				}
+
+				if (tmp != 0) {
+					ALLOC_PTR(str, CustomFree)(ALLOC_PTR(str, CustomGetHeap), 0, tmp);
+				}
+				return self;
+			}
+
+		}
+		return nullptr;
+	}
+
+	LWAnsiString* LWAnsiString_AppendWithNewLineA(LWAnsiString* str, const char* append)
+	{
+		LWAnsiString_AppendA(str, append);
+		return LWAnsiString_AppendA(str, "\r\n");
+	}
+
+	LWAnsiString* LWAnsiString_AppendWithNewLineW(LWAnsiString* str, const wchar_t* append)
+	{
+		LWAnsiString_AppendW(str, append);
+		return LWAnsiString_AppendW(str, L"\r\n");
+	}
+
+	LWAnsiString* LWAnsiString_PadNewLineA(LWAnsiString* str, const char c, int len)
+	{
+		return LWAnsiString_PadNewLineInternal(str, c, len);
+	}
+
+	LWAnsiString* LWAnsiString_PadNewLineW(LWAnsiString* str, const wchar_t c, int len)
+	{
+		return LWAnsiString_PadNewLineInternal(str, (const wchar_t)c, len);
+
+	}
+#pragma endregion
 	
 }
 

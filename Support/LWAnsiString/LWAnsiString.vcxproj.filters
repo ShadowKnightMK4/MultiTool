@@ -24,12 +24,18 @@
     <ClInclude Include="LWAnsiString.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="LWAnsiString_Internal.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="LWAnsiString.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="pch.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="LWAnsiString_Internal.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
