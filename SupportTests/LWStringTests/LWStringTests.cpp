@@ -177,7 +177,7 @@ namespace UnicodeTests
 
 		TEST_METHOD(CreateOffsetString_Unicode)
 		{
-			LWAnsiStringGuard AltPtr(250);
+			LWAnsiStringGuard AltPtr(LWAnsiString_CreateStringW(255));
 			LWAnsiStringGuard Vanguard1(nullptr);
 			LWAnsiString** TestMe = &Vanguard1.ptr;
 			LWAnsiString* Alt = AltPtr.ptr;

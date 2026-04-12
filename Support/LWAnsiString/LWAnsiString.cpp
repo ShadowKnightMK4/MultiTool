@@ -358,6 +358,9 @@ extern "C" {
 		if (offset == 0)
 			return LWAnsiString_CreateFromStringEx(x, LWAnsiString_ToCStr(str)); // if offset is 0, just duplicate original
 
+		{
+			DWORD part = (offset * ALLOC_PTR(str, SingleCharacterLength));
+		}
 		return LWAnsiString_CreateFromStringEx(x, LWAnsiString_ToCStr(str) + (offset* ALLOC_PTR(str, SingleCharacterLength))); // create a new string from the offset
 
 	}
@@ -454,6 +457,7 @@ extern "C" {
 
 
 
+#error this is broken LWAnsiString_CreateFromStringEx with unicode atm
 
 	LWAnsiString* LWAnsiString_CreateFromStringEx(AllocationHandler* x, const char* str)
 	{
@@ -462,7 +466,7 @@ extern "C" {
 		{
 			return nullptr; // null string
 		}
-		size_t len = lstrlenA(str);
+		size_t len = x->STRLEN((char*)str);
 		LWAnsiString* Ans = LWAnsiString_CreateStringEx(x, len);
 		if (Ans != nullptr)
 		{
@@ -1383,17 +1387,18 @@ extern "C" {
 			int res = WideCharToMultiByte(CP_ACP, WC_NO_BEST_FIT_CHARS, append, -1, 0, 0, "?", 0);
 			if (res > 0)
 			{
-				char* tmp = (char*)ALLOC_PTR(str, CustomFirstAlloc)(ALLOC_PTR(str, CustomGetHeap), 0, res);
+				res++; // null char.
+				char* tmp = (char*)ALLOC_PTR(str, CustomFirstAlloc)(ALLOC_PTR(str, CustomGetHeap)(0,0, res), 0, res);
 				LWAnsiString* self = str;
 				int do_res = WideCharToMultiByte(CP_ACP, WC_NO_BEST_FIT_CHARS, append, -1, tmp, res, "?", 0);
 
 				if (do_res != 0)
 				{
-					self = LWAnsiString_AppendInternal(str, (const void*)append, ALLOC_PTR(str, STRLEN));
+					self = LWAnsiString_AppendInternal(str, (const void*)tmp, ALLOC_PTR(str, STRLEN));
 				}
 
 				if (tmp != 0) {
-					ALLOC_PTR(str, CustomFree)(ALLOC_PTR(str, CustomGetHeap), 0, tmp);
+					ALLOC_PTR(str, CustomFree)(ALLOC_PTR(str, CustomGetHeap)(0,0,0), 0, tmp);
 				}
 				return self;
 			}
