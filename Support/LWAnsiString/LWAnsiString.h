@@ -172,6 +172,14 @@ int main() {
 	/// <returns></returns>
 	size_t LWAnsiString_GetAllocatedByteSize(LWAnsiString* str);
 
+
+	/// <summary>
+	/// Shortcut for using the unicode defines for creating len (in WIDE_CHARS)
+	/// </summary>
+	/// <param name="len"></param>
+	/// <returns></returns>
+	LWAnsiString* LWAnsiString_CreateStringW(int len);
+
 	/// <summary>
 	/// Trigger a realloc if needed to ensure the string has at least new_size characters available. If the string is null, it will return null. If new_size is less than or equal to the current size, it will return the string unchanged. Also allocated extra memory will zero it out
 	/// </summary>

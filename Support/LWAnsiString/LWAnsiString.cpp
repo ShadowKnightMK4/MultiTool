@@ -1,5 +1,6 @@
-// LWAnsiString.cpp : Defines the functions for the static library.
-
+// LWAnsiString.cpp : Defines the functions for the static library.]
+#include "pch.h"
+#include "LWAnsiString_Internal.h"
 /*
  * This file is part of the Midas project and is designed to be self-contained.
  * It presents a lightweight mechanism for creating and managing ANSI strings using
@@ -70,7 +71,14 @@
 * Proven in Midas -> thies mean the code is NOT UNIT TESTed but I've used it in my midas app with no issues.
 */
 
+/* defining this plugs the win32 routines that LWAnsiString uses into its own collection
+* UNDEFINE THIS TO GET BLANKS. 
+*/
 #define LWANSISTRING_HARDIMPORTS 
+#define LWANSISTRING_ANSIONLY
+#define LWANSISTRING_UNICODE
+
+
 
 #ifdef LWANSISTRING_HARDIMPORTS
 /*
@@ -79,13 +87,57 @@
 * Should you want to rip out the hard links fully (say going on the road to kernel mode (NOT TESTED THERE) or linux (or there)
 * undefining LWANSISTRING_HARDIMPORTS will get you code that will even get you code to complain of *hey * need this*
 */
+
+extern "C" {
+#ifndef LWANSISTRING_ANSIONLY
+#ifndef LWANSISTRING_UNICODE
+#error  In the project setting or code itself define LWANSISTRING_ANSI_TABLE for Ansi support and LWANSISTRING_UNICODE_TABLE for unicode support. Alternatively, If You're dropping the Win32 fully, undefine  LWANSISTRING_HARDIMPORTS,  #include "LWAnsiString_Internal.h", and Assign IAT_routine such as IAT_strlen, ect...
+#endif
 #endif
 
-#include "pch.h"
+	IAT_WideCharToMultiBytePtr IAT_WideCharToMultiByte = WideCharToMultiByte;
+	IAT_MultiByteToWideCharPtr IAT_MultiByteToWideChar = MultiByteToWideChar;
+
+
+	IAT_GetProcessHeapPtr IAT_GetProcessHeap = GetProcessHeap;
+	IAT_HeapAllocPtr IAT_HeapAlloc = HeapAlloc;
+	IAT_HeapReAllocPtr IAT_HeapReAlloc = HeapReAlloc;
+	IAT_HeapFreePtr IAT_HeapFree = HeapFree;
+
+#ifdef LWANSISTRING_ANSIONLY
+	IAT_lstrcatAPtr IAT_lstrcatA = lstrcatA;
+	IAT_lstrcmpAPTR IAT_lstrcmpA = lstrcmpA;
+	IAT_lstrcmpiAPTR IAT_lstrcmpiA = lstrcmpiA;
+	IAT_lstrlenAPtr IAT_lstrlenA = lstrlenA;
+#endif
+
+#ifdef LWANSISTRING_UNICODE
+	IAT_lstrlenWPtr IAT_lstrlenW = lstrlenW;
+	IAT_lstrcmpiWPTR IAT_lstrcmpiW = lstrcmpiW;
+	IAT_lstrcatWPtr IAT_lstrcatW = lstrcatW;
+	IAT_lstrcmpWPTR IAT_lstrcmpW = lstrcmpW;
+#endif
+
+
+#else
+
+IAT_WideCharToMultiBytePtr IAT_WideCharToMultiByte = nullptr;
+IAT_MultiByteToWideCharPtr IAT_MultiByteToWideChar = nullptr;
+IAT_GetProcessHeapPtr IAT_GetProcessHeap = nullptr;
+IAT_HeapAllocPtr IAT_HeapAlloc = nullptr;
+IAT_HeapReAllocPtr IAT_HeapReAlloc = nullptr;
+IAT_HeapFreePtr IAT_HeapFree = nullptr;
+
+
+#endif
+
+
+}
+
 #include "framework.h"
 #include <climits>
-#include "LWAnsiString.h"
-#include "LWAnsiString_Internal.h"
+
+
 #pragma optimize("", off)
 
 
@@ -95,15 +147,10 @@
 
 // if defined the Append flavors will double the length of the string memory size and take that or the reuqested memory size, whichever is bigger
 #define AGGRO_REALLOC
+
 extern "C" {
 	HANDLE StringHeap = 0;
 
-	//#define CONST_CAST(type, val) ((type)(uintptr_t)(const void *)(val))
-
-
-	///<summary>
-	/// This macro is used to access the AllocationHandler functions from the LWAnsiString struct without excessively verbose code.
-	/// </summary>
 
 
 
@@ -202,7 +249,7 @@ extern "C" {
 
 	HANDLE LW_INTERNAL WINAPI DefaultMyHeapGet(DWORD Options, SIZE_T Start, SIZE_T Cap)
 	{
-		return GetProcessHeap(); // fallback to the default heap
+		return IAT_GetProcessHeap(); // fallback to the default heap
 	}
 
 	/*
@@ -214,7 +261,7 @@ extern "C" {
 		{
 			return DefaultHandler.CustomFirstAlloc(hHeap, dwFlags, dwBytes);
 		}
-		return HeapAlloc(hHeap, dwFlags, dwBytes);
+		return IAT_HeapAlloc(hHeap, dwFlags, dwBytes);
 	}
 	LPVOID LW_INTERNAL WINAPI DefaultReAlloc(HANDLE hHeap, DWORD dwFlags, LPVOID lpMem, SIZE_T dwBytes)
 	{
@@ -222,7 +269,7 @@ extern "C" {
 		{
 			return DefaultHandler.CustomReAlloc(hHeap, dwFlags, lpMem, dwBytes);
 		}
-		return HeapReAlloc(hHeap, dwFlags, lpMem, dwBytes);
+		return IAT_HeapReAlloc(hHeap, dwFlags, lpMem, dwBytes);
 	}
 
 	BOOL LW_INTERNAL WINAPI DefaultFree(HANDLE hHeap, DWORD dwFlags, LPVOID lpMem)
@@ -231,7 +278,7 @@ extern "C" {
 		{
 			return DefaultHandler.CustomFree(hHeap, dwFlags, lpMem);
 		}
-		return HeapFree(hHeap, dwFlags, lpMem);
+		return IAT_HeapFree(hHeap, dwFlags, lpMem);
 	}
 
 
@@ -319,14 +366,20 @@ extern "C" {
 	{
 		ProbeIfDirtyLen(str);
 		/* UNIT TESTED.*/
-		return LWAnsiString_CreateFromOffsetEx(&DefaultHandler, str, offset);
+		return LWAnsiString_CreateFromOffsetEx((AllocationHandler*) str->AllocatedHandle, str, offset);
 	}
+
 
 
 	LWAnsiString* LWAnsiString_CreateString(int len)
 	{
 		/* UNIT TESTED*/
 		return LWAnsiString_CreateStringEx(&DefaultHandler, len);
+	}
+
+	LWAnsiString* LWAnsiString_CreateStringW(int len)
+	{
+		return LWAnsiString_CreateStringEx(LWUnicodeHandler, len);
 	}
 	LWAnsiString* LWAnsiString_CreateStringEx(AllocationHandler* x, int len)
 	{
@@ -398,6 +451,8 @@ extern "C" {
 			}
 		}
 	}
+
+
 
 
 	LWAnsiString* LWAnsiString_CreateFromStringEx(AllocationHandler* x, const char* str)
