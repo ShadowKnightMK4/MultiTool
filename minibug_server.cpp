@@ -167,7 +167,7 @@ extern "C" {
 		LWAnsiString_Append(args, "\" ");
 		LWAnsiString_Append(args, ptr.argument);
 
-		BOOL Res = CreateProcessA(ptr.source, args->Data, nullptr, nullptr, FALSE, DEBUG_PROCESS | CREATE_SUSPENDED, 0, 0, &StartInfo, &PInfo);
+		BOOL Res = CreateProcessA(ptr.source, args->AnsiData, nullptr, nullptr, FALSE, DEBUG_PROCESS | CREATE_SUSPENDED, 0, 0, &StartInfo, &PInfo);
 
 		if (!Res)
 		{

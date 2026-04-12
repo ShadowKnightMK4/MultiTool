@@ -160,7 +160,7 @@ extern "C" {
 					if (size_needed != 0)
 					{
 						LWAnsiString_Reserve(ret, size_needed + 1);
-						(vista_help)(ev->u.LoadDll.hFile, ret->Data, size_needed + 1, VOLUME_NAME_DOS);
+						(vista_help)(ev->u.LoadDll.hFile, ret->AnsiData, size_needed + 1, VOLUME_NAME_DOS);
 						LWAnsiString_ProbeLength(ret);
 						CloseHandle(ev->u.LoadDll.hFile);
 						return ret;
@@ -179,7 +179,7 @@ extern "C" {
 						if (size_needed != 0)
 						{
 							LWAnsiString_Reserve(ret, size_needed + 1);
-							(vista_help)(ev->u.LoadDll.hFile, ret->Data, size_needed + 1, VOLUME_NAME_DOS);
+							(vista_help)(ev->u.LoadDll.hFile, ret->AnsiData, size_needed + 1, VOLUME_NAME_DOS);
 							LWAnsiString_ProbeLength(ret);
 							CloseHandle(ev->u.LoadDll.hFile);
 							return ret;
@@ -233,7 +233,7 @@ extern "C" {
 		{
 			((args*)User)->FinalName = ParanoidReadDllName(event);
 			
-			if ( (((args*)User)->FinalName != 0) && (((args*)User)->FinalName->Data[0] != 0))
+			if ( (((args*)User)->FinalName != 0) && (((args*)User)->FinalName->A[0] != 0))
 			{
 				if (LWAnsiString_EndsWith(((args*)User)->FinalName, ((args*)User)->target_dll, false))
 				{

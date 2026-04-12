@@ -1,4 +1,11 @@
 #pragma once
+
+/*
+* Our game plan is put all the strings we create and grow into single heap, created on first alloc.
+*/
+#include "pch.h"
+#include "framework.h"
+
 extern "C" {
 	/*
 	* What this is is a loose fitting wrapper around a char* string that takes care of reallocs so the user don't have too.
@@ -125,7 +132,7 @@ int main() {
 		const char* string2
 		);
 
-	struct AllocationHandler
+	typedef struct AllocationHandler
 	{
 		MyAlloc CustomFirstAlloc;
 		MyHeapGet CustomGetHeap;
@@ -139,7 +146,7 @@ int main() {
 		LW_STRING_WRITE_INDEX WriteToIndex;
 		LWSTRING_ICMP STRICMP;
 		LWSTRING_CMP STRCMP;
-	};
+	} AllocationHandler;
 
 	/// <summary>
 	/// This is the handler to pass for creating Ansi Strings
@@ -155,11 +162,15 @@ int main() {
 	// LWAnsiString.cpp : Defines the functions for the static library.
 	//
 
-	/*
-	* Our game plan is put all the strings we create and grow into single heap, created on first alloc.
-	*/
-#include "pch.h"
-#include "framework.h"
+	bool LWAnsiString_AppendNumberA(int number, LWAnsiString* output, int* output_size);
+	bool LWAnsiString_AppendNumberW(int number, LWAnsiString* output, int* output_size);
+
+	/// <summary>
+	/// For char strings, this is just functionally fetching the allocate in the struct. For non byte strings (ie wchar_t*) it multiples by single char in allocate struct
+	/// </summary>
+	/// <param name="str"></param>
+	/// <returns></returns>
+	size_t LWAnsiString_GetAllocatedByteSize(LWAnsiString* str);
 
 	/// <summary>
 	/// Trigger a realloc if needed to ensure the string has at least new_size characters available. If the string is null, it will return null. If new_size is less than or equal to the current size, it will return the string unchanged. Also allocated extra memory will zero it out
@@ -205,7 +216,7 @@ int main() {
 	/// <param name="output_size">optional, will be how many digits processed</param>
 	/// <returns></returns>
 	/// <remarks>HEX this isn't.  This is closer to decimal ie +123 -> 123,  -1000  -> -1000</remarks>
-	bool LWAnsiString_AppendNumber(int number, LWAnsiString* output, int* output_size);
+	//bool LWAnsiString_AppendNumber(int number, LWAnsiString* output, int* output_size);
 	/// <summary>
 	/// This varient of LWAnsiString_Reserve will do new_size PLUS current_size
 	/// </summary>
@@ -217,6 +228,7 @@ int main() {
 	/// While the memory adjusting strings clamp, this will let you do that in a single call
 	/// </summary>
 	/// <param name="str">string to clamp</param>
+	/// <remarks>Is it recommanded to call this if you're not sure of what kind of string. It'll look into the Ansi/unicde and set index[length] to 0</remarks>
 	void LWAnsiString_ClampNull(LWAnsiString* str);
 
 	/// <summary>
@@ -286,11 +298,14 @@ int main() {
 	/// <returns>returns current buffer_size-1 (ready to just use as quick strcpy into) after resizing on success and -1 on error</returns>
 	int LWAnsiString_AdjustSize(LWAnsiString* str, int new_size);
 
+	LWAnsiString* LWAnsiString_PadA(LWAnsiString* str, char c, int len);
+	
+	LWAnsiString* LWAnsiString_PadW(LWAnsiString* str, wchar_t c, int len);
 	/// <summary>
 	/// Add an \r\n to this string
 	/// </summary>
 	/// <param name="str"></param>
-	void LWAnsiString_AppendNewLine(LWAnsiString* str);
+	//void LWAnsiString_AppendNewLine(LWAnsiString* str);
 	/// <summary>
 	/// pad string at the right with c, len times
 	/// </summary>
@@ -299,7 +314,7 @@ int main() {
 	/// <param name="len"></param>
 	/// <returns></returns>
 	/// <remarks>UNIT TEST</remarks>
-	LWAnsiString* LWAnsiString_Pad(LWAnsiString* str, const char c, int len);
+	//LWAnsiString* LWAnsiString_Pad(LWAnsiString* str, const char c, int len);
 	
 	/// <summary>
 	/// Varient of LWAnsiString_Pad that will also add a new line after padding
@@ -308,7 +323,7 @@ int main() {
 	/// <param name="c"></param>
 	/// <param name="len"></param>
 	/// <returns></returns>
-	LWAnsiString* LWAnsiString_PadNewLine(LWAnsiString* str, const char c, int len);
+	//LWAnsiString* LWAnsiString_PadNewLine(LWAnsiString* str, const char c, int len);
 
 	/// <summary>
 	/// Varient of append that adds a new line also
@@ -316,14 +331,14 @@ int main() {
 	/// <param name="str"></param>
 	/// <param name="append"></param>
 	/// <returns></returns>
-	LWAnsiString* LWAnsiString_AppendWithNewLine(LWAnsiString* str, const char* append);
+	//LWAnsiString* LWAnsiString_AppendWithNewLine(LWAnsiString* str, const char* append);
 	/// <summary>
 	/// Append a string to the end of the LWAnsiString, realloc as needed and null terminate
 	/// </summary>
 	/// <param name="str">string to append to</param>
 	/// <param name="append">c string to read from</param>
 	/// <returns>if str is null, returns null, if append is null, returns string unchanged, otherwise reallocs as needed does strcpy and then appends</returns>
-	LWAnsiString* LWAnsiString_Append(LWAnsiString* str, const char* append);
+	//LWAnsiString* LWAnsiString_Append(LWAnsiString* str, const char* append);
 
 	/// <summary>
 	/// Duplicate the passed 
@@ -380,7 +395,7 @@ int main() {
 	/// <param name="str"></param>
 	/// <param name="c"></param>
 	/// <returns></returns>
-	int LWAnsiString_FindLast(LWAnsiString* str, char c);
+	//int LWAnsiString_FindLast(LWAnsiString* str, char c);
 
 	/// <summary>
 	/// find the location of the last char c in the passed string with optionally, counting number of its.
@@ -398,7 +413,9 @@ int main() {
 	/// <param name="Case"></param>
 	/// <returns></returns>
 	bool LWAnsiString_EndsWith(LWAnsiString* str, const char* suffix, bool Case);
-	int LWAnsiString_EndsAt(LWAnsiString* str, const char* suffix, bool Case);
+
+
+	//int LWAnsiString_EndsAt(LWAnsiString* str, const char* suffix, bool Case);
 	/// <summary>
 	/// If the string ends with the given suffix, trim it off. If it does not end with the suffix, the string remains unchanged.
 	/// </summary>
@@ -410,4 +427,60 @@ int main() {
 
 }
 
+#pragma Routines that actually just map to same thing underneith
+extern "C" {
+	void LWAnsiString_AppendNewLine(LWAnsiString* str);
+	/// <summary>
+	/// Append one string to another. IF appending cross ANSI/Unicode, we're prompting the source append to target 
+	/// </summary>
+	/// <param name="str">target</param>
+	/// <param name="append">source</param>
+	/// <returns>returns source</returns>
+	/// 
+	LWAnsiString* LWAnsiString_AppendNative(LWAnsiString* str, const LWAnsiString* append);
+	
+}
+#pragma endregion
+
+#pragma Unicode Routines
+extern "C"
+{
+	LWAnsiString* LWAnsiString_PadNewLineW(LWAnsiString* str, const wchar_t c, int len);
+	LWAnsiString* LWAnsiString_AppendWithNewLineW(LWAnsiString* str, const wchar_t* append);
+	LWAnsiString* LWAnsiString_AppendW(LWAnsiString* str, const wchar_t* append);
+	bool LWAnsiString_TrimEndsWithW(LWAnsiString* str, wchar_t* suffix, bool Case);
+	void LWAnsiString_AppendNewLine(LWAnsiString* str);
+	void LWAnsiString_AppendNewLineW(LWAnsiString* str);
+
+	bool LWAnsiString_EndsWithW(LWAnsiString* str, const wchar_t* suffix, bool Case);
+	int LWAnsiString_EndsAtW(LWAnsiString* str, const wchar_t* suffix, bool Case);
+	int LWAnsiString_FindCharExW(LWAnsiString* str, wchar_t c, int start);
+	int LWAnsiString_FindLastExW(LWAnsiString* str, char c, int* count);
+	int LWAnsiString_FindCharW(LWAnsiString* str, wchar_t c);
+	int LWAnsiString_FindLastW(LWAnsiString* str, wchar_t c);
+	int LWAnsiString_CompareW(LWAnsiString* a, const wchar_t* b, bool Case);
+	int LWAnsiString_CompareExW(LWAnsiString* a, const wchar_t* b, bool Case, bool* DidCompare);
+}
+#pragma endregion
+
+#pragma Ansi Routiens
+extern "C" {
+
+	LWAnsiString* LWAnsiString_PadNewLineA(LWAnsiString* str, const char c, int len);
+	LWAnsiString* LWAnsiString_AppendWithNewLineA(LWAnsiString* str, const char* append);
+	LWAnsiString* LWAnsiString_AppendA(LWAnsiString* str, const char* append);
+	void LWAnsiString_AppendNewLineA(LWAnsiString* str);
+
+	bool LWAnsiString_TrimEndsWithA(LWAnsiString* str, const char* suffix, bool Case);
+	bool LWAnsiString_EndsWithA(LWAnsiString* str, const char* suffix, bool Case);
+	int LWAnsiString_EndsAtA(LWAnsiString* str, const char* suffix, bool Case);
+	int LWAnsiString_FindCharExA(LWAnsiString* str, char c, int start);
+	int LWAnsiString_FindLastExA(LWAnsiString* str, char c, int* count);
+	int LWAnsiString_FindCharA(LWAnsiString* str, char c);
+	int LWAnsiString_FindLastA(LWAnsiString* str, char c);
+	
+	int LWAnsiString_CompareA(LWAnsiString* a, const char* b, bool Case);
+	int LWAnsiString_CompareExA(LWAnsiString* a, const char* b, bool Case, bool* DidCompare);
+}
+#pragma endregion
 

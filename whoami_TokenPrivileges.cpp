@@ -354,12 +354,12 @@ bool WhoAmi_Write_Priv_common_string(int* result, const char** message_result, c
 		SizeNeeded = 0;
 		SetLastError(0);
 		LWAnsiString_ZeroString(PrivName);
-		LookUpPriv(nullptr, &Privs->Privileges[i].Luid, PrivName->Data, &SizeNeeded);
+		LookUpPriv(nullptr, &Privs->Privileges[i].Luid, PrivName->AnsiData, &SizeNeeded);
 		{
 			if ((GetLastError() == ERROR_INSUFFICIENT_BUFFER) || (GetLastError() == ERROR_MORE_DATA))
 			{
 				LWAnsiString_Reserve(PrivName, SizeNeeded);
-				LookUpPriv(LWAnsiString_ToCStr(PrivName), &Privs->Privileges[i].Luid, PrivName->Data, &SizeNeeded);
+				LookUpPriv(LWAnsiString_ToCStr(PrivName), &Privs->Privileges[i].Luid, PrivName->AnsiData, &SizeNeeded);
 			}
 			LWAnsiString_Append(Output, "Privilege NAME: ");
 			if (SizeNeeded == 0)
@@ -430,15 +430,15 @@ bool WhoAmi_Write_Priv_common_string(int* result, const char** message_result, c
 				SizeNeeded = 0;
 				SetLastError(0);
 				LWAnsiString_ZeroString(PrivName);
-				LookUpPriv(nullptr, &Privs->Privileges[i].Luid, PrivName->Data, &SizeNeeded);
+				LookUpPriv(nullptr, &Privs->Privileges[i].Luid, PrivName->AnsiData, &SizeNeeded);
 				{
 					if ((GetLastError() == ERROR_INSUFFICIENT_BUFFER) || (GetLastError() == ERROR_MORE_DATA))
 					{
 						LWAnsiString_Reserve(PrivName, SizeNeeded);
-						LookUpPriv(LWAnsiString_ToCStr(PrivName), &Privs->Privileges[i].Luid, PrivName->Data, &SizeNeeded);
+						LookUpPriv(LWAnsiString_ToCStr(PrivName), &Privs->Privileges[i].Luid, PrivName->AnsiData, &SizeNeeded);
 					}
 				}
-				OutputPrivDescription(&Privs->Privileges[i], Output, PrivName->Data);
+				OutputPrivDescription(&Privs->Privileges[i], Output, PrivName->AnsiData);
 			}
 		}
 	}

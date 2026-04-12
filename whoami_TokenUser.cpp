@@ -92,7 +92,7 @@ extern "C" {
 					LWAnsiString_Reserve(UserNameStuff, SIZE);
 					if (SIZE != 0)
 					{
-						if (GetUserNameExPtr(step, UserNameStuff->Data, &SIZE))
+						if (GetUserNameExPtr(step, UserNameStuff->AnsiData, &SIZE))
 						{
 							for (int i = 1; ; i++)
 							{
@@ -152,7 +152,7 @@ extern "C" {
 						else
 						{
 							SetLastError(0);
-							if (GetUserNameAPtr(UserNameStuff->Data, &SIZE))
+							if (GetUserNameAPtr(UserNameStuff->AnsiData, &SIZE))
 							{
 								LWAnsiString_Append(Output, "self: ");
 								LWAnsiString_Append(Output, LWAnsiString_ToCStr(UserNameStuff));

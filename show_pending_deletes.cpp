@@ -97,12 +97,12 @@ bool Legacy_ShowPendingDeletes(int* result, const char** message_result, const c
 
 	LWAnsiString* WinDir = LWAnsiString_CreateString(MAX_PATH);
 	LWAnsiString_MarkLenDirty(WinDir);
-	DWORD size = IAT_GetWindowsDirectoryA(WinDir->Data, MAX_PATH);
+	DWORD size = IAT_GetWindowsDirectoryA(WinDir->AnsiData, MAX_PATH);
 	if (size > MAX_PATH)
 	{
 		LWAnsiString_Reserve(WinDir, size + 1);
 		SetLastError(0);
-		size = IAT_GetWindowsDirectoryA(WinDir->Data, size + 1);
+		size = IAT_GetWindowsDirectoryA(WinDir->AnsiData, size + 1);
 		if (!LWAnsiString_EndsWith(WinDir, "\\", false))
 		{
 			LWAnsiString_Append(WinDir, "\\");
@@ -228,18 +228,18 @@ bool MoveEX_ShowPendingDeletes(int* result, const char** message_result, const c
 					{
 						if (i > 0)
 						{
-							if (KeyName->Data[i] == 0)
+							if (KeyName->AnsiData[i] == 0)
 							{
-								KeyName->Data[i] = '\r';
-								if (KeyName->Data[i + 1] == 0)
+								KeyName->AnsiData[i] = '\r';
+								if (KeyName->AnsiData[i + 1] == 0)
 								{
-									KeyName->Data[i + 1] = '\n';
+									KeyName->AnsiData[i + 1] = '\n';
 								}
 							}
 						}
 					}
 					//KeyName->Data[KeyNameSize - 1] = '\0';
-					LWAnsiString_AppendWithNewLine(Verbal, KeyName->Data);
+					LWAnsiString_AppendWithNewLine(Verbal, KeyName->AnsiData);
 					Quit = true;
 				}
 			}
@@ -254,7 +254,7 @@ bool MoveEX_ShowPendingDeletes(int* result, const char** message_result, const c
 
 
 	
-	WriteStdout(Verbal->Data);
+	WriteStdout(Verbal->AnsiData);
 	LWAnsiString_FreeString(Verbal);
 	return true;
 }

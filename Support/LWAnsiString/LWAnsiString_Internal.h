@@ -11,6 +11,37 @@
 
 extern "C"
 {
+	//int LWAnsiString_EndsAtInternal(LWAnsiString* str, const char* suffix, bool Case, LWSTRING_CMP CompareFunction);
+
+	/// <summary>
+/// Internal version of LWansiString_EndsAt
+/// </summary>
+/// <param name="str">str </param>
+/// <param name="suffix">TOP LEVEL routines use this for Char or wchar_t</param>
+/// <param name="Case">IGNORED -> always uses STRCMP. The TopLevel ones LWAnsiString_EndsAt() pass the correct version if bool is right or not</param>
+/// <param name="STRLEN">how to check length of incomming string</param>
+/// <param name="STRCMP">you should pass STRICMP to do that, otherwase pass STRCMP</param>
+/// <returns></returns>
+	bool LWAnsiString_TrimEndsWithInternal(LWAnsiString* str, const char* suffix, bool Case, int (*SuppliedLWAnsiString_EndsAt)(LWAnsiString*, const char*, bool));
+
+	int LWAnsiString_EndsAtInternal(LWAnsiString* str, const wchar_t* suffix, bool Case, LW_STRING_strlen STRLEN, LWSTRING_CMP STRCMP);
+
+	int LWAnsiString_FindCharExInternal(LWAnsiString* str, wchar_t c, int start);
+
+	int LWAnsiString_CompareInternal(LWAnsiString* a, const void* b, bool Case);
+
+	LWAnsiString* LWAnsiString_PadInternal(LWAnsiString* str, DWORD c, int len);
+
+	int LWAnsiString_FindLastExInternal(LWAnsiString* str, wchar_t c, int* count);
+
+
+	bool LWAnsiString_AppendNumberInternal(int number,
+		LWAnsiString* output,
+		int* output_size,
+		LWAnsiString* (*appendFunc)(LWAnsiString* str, const char* append),
+		const void* IntMaxPlugin);
+
+
 	/// <summary>
 	/// Internal version of Append.
 	/// </summary>
@@ -20,5 +51,11 @@ extern "C"
 	/// <returns>string</returns>
 	/// <remarks>DO NOT try appending a unicode string to an Actual ansi string with this. Use the AppendW instead</remarks>
 	LWAnsiString* LW_INTERNAL LWAnsiString_AppendInternal(LWAnsiString* str, const void* append, LW_STRING_strlen STRLEN);
+
+	/// <summary>
+	/// What this does if check if the len of the string is directy and triggers call to ProbeLength if so.
+	/// </summary>
+	/// <param name="str"></param>
+	/// <returns></returns>
 	LW_INTERNAL void ProbeIfDirtyLen(LWAnsiString* str);
 }

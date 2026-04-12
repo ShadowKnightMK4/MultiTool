@@ -62,8 +62,8 @@ bool IsFolderWritable(const char* target)
 	}
 again:
 	LWAnsiString_Append(folder, target);
-	GetTempFileNameA(folder->Data, "LWT", 0, folder->Data);
-	HANDLE tmp = CreateFileA(folder->Data, GENERIC_WRITE , FILE_SHARE_READ | FILE_SHARE_WRITE, nullptr, OPEN_EXISTING, FILE_ATTRIBUTE_TEMPORARY | FILE_FLAG_DELETE_ON_CLOSE, nullptr);
+	GetTempFileNameA(folder->AnsiData, "LWT", 0, folder->AnsiData);
+	HANDLE tmp = CreateFileA(folder->AnsiData, GENERIC_WRITE , FILE_SHARE_READ | FILE_SHARE_WRITE, nullptr, OPEN_EXISTING, FILE_ATTRIBUTE_TEMPORARY | FILE_FLAG_DELETE_ON_CLOSE, nullptr);
 	if (tmp != INVALID_HANDLE_VALUE)
 	{
 		CloseHandle(tmp);
@@ -225,7 +225,7 @@ bool ProcessProcefileHelper_IsKnownDLL(HANDLE Snapshot, DWORD ID, LWAnsiString* 
 			while (YAY)
 			{
 				DWORD AllotSize = KeyName->AllocatedSize;
-				auto result = IAT_RegEnumValueA (hKey, index, KeyName->Data, &AllotSize, nullptr, nullptr, nullptr, nullptr);
+				auto result = IAT_RegEnumValueA (hKey, index, KeyName->AnsiData, &AllotSize, nullptr, nullptr, nullptr, nullptr);
 				YAY = (result == ERROR_SUCCESS);
 				/*
 				* the probe length updates the stored length if its zero and we aint an empty string
@@ -468,24 +468,24 @@ bool ProfileProcess(DWORD id, LWAnsiString* output)
 				int dot_loc = LWAnsiString_FindLastEx(MainExe, '.', 0);
 				if (dot_loc != -1)
 				{
-					MainExe->Data[dot_loc] = '\0'; // temp trim the ext if any
+					MainExe->AnsiData[dot_loc] = '\0'; // temp trim the ext if any
 				}
 				int slash_loc = LWAnsiString_FindLastEx(MainExe, '\\', 0);
 				if (slash_loc != -1)
 				{
-					MainExe->Data[slash_loc] = '\0'; // temp trim the slash if any
+					MainExe->AnsiData[slash_loc] = '\0'; // temp trim the slash if any
 				}
 				else
 				{
 					slash_loc = LWAnsiString_FindLastEx(MainExe, '/', 0);
 					if (slash_loc != -1)
 					{
-						MainExe->Data[slash_loc] = '\0'; // temp trim the slash if any
+						MainExe->AnsiData[slash_loc] = '\0'; // temp trim the slash if any
 					}
 				}
 
 				
-				if (IsFolderWritable(MainExe->Data))
+				if (IsFolderWritable(MainExe->AnsiData))
 				{
 					LWAnsiString_Append(output, "Warning [!!!!]: Main Executable Path is writable by current user.\r\n");
 				}

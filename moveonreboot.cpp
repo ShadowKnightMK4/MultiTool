@@ -30,12 +30,12 @@ void LegacyMarkForDelete(const char* name, LWAnsiString* vebal)
 	{
 		LWAnsiString* WinDir = LWAnsiString_CreateString(MAX_PATH);
 		LWAnsiString_MarkLenDirty(WinDir);
-		DWORD size = IAT_GetWindowsDirectoryA(WinDir->Data, MAX_PATH);
+		DWORD size = IAT_GetWindowsDirectoryA(WinDir->AnsiData, MAX_PATH);
 		if (size > MAX_PATH)
 		{
 			LWAnsiString_Reserve(WinDir, size + 1);
 			SetLastError(0);
-			size = IAT_GetWindowsDirectoryA(WinDir->Data, size + 1);
+			size = IAT_GetWindowsDirectoryA(WinDir->AnsiData, size + 1);
 			if (!LWAnsiString_EndsWith(WinDir, "\\", false))
 			{
 				LWAnsiString_Append(WinDir, "\\");
@@ -198,7 +198,7 @@ bool DeleteOnReboot(int* result, const char** message_result, const char* argv[]
 				}
 			}
 		}
-		WriteStdout(vebal->Data);
+		WriteStdout(vebal->AnsiData);
 		LWAnsiString_FreeString(vebal);
 	}
 	SetLastError(0);

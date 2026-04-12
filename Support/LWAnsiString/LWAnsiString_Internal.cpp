@@ -1,15 +1,212 @@
 #include "pch.h"
 #include "LWAnsiString.h"
 #include "LWAnsiString_Internal.h"
+#include <climits>
 #define AGGRO_REALLOC
-
+#define INTERNALCALL_STREN(str) ALLOC_PTR(str, STRLEN)(str->Data);
+#define INTERNALCALL_STRCAT(str) ALLOC_PTR(str, STRCAT)(str->Data, x);
 extern "C" {
+	/// <summary>
+/// If the string ends with the given suffix, trim it off.
+/// </summary>
+/// <param name="str"></param>
+/// <param name="suffix"></param>
+/// <param name="Case"></param>
+/// <returns></returns>
+	bool LWAnsiString_TrimEndsWithInternal(LWAnsiString* str, const char* suffix, bool Case, int (*SuppliedLWAnsiString_EndsAt)(LWAnsiString*, const char*, bool))
+	{/* UNIT TESTED THRU LWAnsiString_EndsAt */
+		if (str == nullptr || suffix == nullptr)
+		{
+			return false; // invalid string or suffix
+		}
+		ProbeIfDirtyLen(str);
+		int res = SuppliedLWAnsiString_EndsAt(str, suffix, Case);
+		if (res != -1)
+		{
+			str->Length = res; // trim the string
+			//str->Data[str->Length] = 0; // null terminate
+			LWAnsiString_ClampNull(str);
+			return true; // trimmed successfully
+		}
+		return false; // not trimmed
 
+	}
 
-	LWAnsiString* LWAnsiString_PadInternal(LWAnsiString* str,  DWORD c, int len, const DWORD cutoff_mask)
+	bool LWAnsiString_EndsWithInternal(LWAnsiString* str, const char* suffix, bool Case, int (*SuppliedLWAnsiString_EndsAt)(LWAnsiString*, const char*, bool))
 	{
-		LWAnsiString_ZeroString(str);
-		c = (c & cutoff_mask);
+		/* UNIT TESTED THRU LWAnsiString_EndsAt */
+		if (str == nullptr || suffix == nullptr)
+		{
+			return false; // invalid string or suffix
+		}
+		ProbeIfDirtyLen(str);
+		int res = SuppliedLWAnsiString_EndsAt(str, suffix, Case);
+		return res != -1;
+	}
+
+
+
+
+
+	/// <summary>
+/// If the string ends with the given suffix, trim it off.
+/// </summary>
+/// <param name="str"></param>
+/// <param name="suffix"></param>
+/// <param name="Case"></param>
+/// <returns></returns>
+	bool LWAnsiString_TrimEndsWithOLD(LWAnsiString* str, const char* suffix, bool Case)
+	{/* UNIT TESTED THRU LWAnsiString_EndsAt */
+		if (str == nullptr || suffix == nullptr)
+		{
+			return false; // invalid string or suffix
+		}
+		ProbeIfDirtyLen(str);
+		int res = LWAnsiString_EndsAtA(str, suffix, Case);
+		if (res != -1)
+		{
+			str->Length = res; // trim the string
+			//str->Data[str->Length] = 0; // null terminate
+			LWAnsiString_ClampNull(str);
+			return true; // trimmed successfully
+		}
+		return false; // not trimmed
+
+	}
+
+	int LWAnsiString_EndsAtInternal(LWAnsiString* str, const wchar_t* suffix, bool Case, LW_STRING_strlen STRLEN, LWSTRING_CMP STRCMP)
+	{
+		if (str == nullptr || suffix == nullptr)
+		{
+			return false; // invalid string or suffix
+		}
+		ProbeIfDirtyLen(str);
+		int res = 0;
+		int suffix_len = STRLEN((char*)suffix);
+		int str_len = LWAnsiString_Length(str);
+		if (suffix_len > str->Length)
+		{
+			return false; // suffix is longer than the string
+		}
+		res = STRCMP((const char*)str->Data + str_len - suffix_len, (char*) suffix) == 0 ? str_len - suffix_len : -1; // case sensitive;
+		return res;
+		if (Case)
+		{
+			//res = lstrcmpA(str->Data + str_len - suffix_len, suffix) == 0 ? str_len - suffix_len : -1; // case sensitive
+			//res = ALLOC_PTR(str, STRCMP)((const char*)str->Data + str_len - suffix_len, suffix) == 0 ? str_len - suffix_len : -1; // case sensitive
+			//res = CompareFunction((const char*)str->Data + str_len - suffix_len, suffix) == 0 ? str_len - suffix_len : -1; // case sensitive
+		}
+		else
+		{
+			//res = lstrcmpiA(str->Data + str_len - suffix_len, suffix) == 0 ? str_len - suffix_len : -1; // case insensitive
+			//res = ALLOC_PTR(str, STRICMP)((const char*)str->Data + str_len - suffix_len, suffix) == 0 ? str_len - suffix_len : -1; // case sensitive
+		}
+		return res;
+	}
+
+
+	int LWAnsiString_FindLast(LWAnsiString* str, char c)
+	{
+		ProbeIfDirtyLen(str);
+		return LWAnsiString_FindLastExA(str, c, nullptr);
+	}
+
+
+
+	int LWAnsiString_CompareInternal(LWAnsiString* a, const void* b, bool Case)
+	{
+		if (a == nullptr && b == nullptr)
+		{
+			return 0;
+		}
+		if (a == nullptr && b != nullptr)
+		{
+			return -1;
+		}
+		if (a != nullptr && b == nullptr)
+		{
+			return 1;
+		}
+		if (Case)
+		{
+			//return lstrcmpA(a->Data, b); // case sensitive
+			return ALLOC_PTR(a, STRICMP)((const char*)a->Data, (char*)b);
+		}
+		else
+		{
+			//int tmp = lstrcmpiA(a->Data, b);
+			return ALLOC_PTR(a, STRCMP)((const char*)a->Data, (char*) b);
+			//return tmp; // case insensitive
+		}
+	}
+
+
+	
+	bool LWAnsiString_EndsWith(LWAnsiString* str, const char* suffix, bool Case)
+	{
+		/* UNIT TESTED THRU LWAnsiString_EndsAt */
+		if (str == nullptr || suffix == nullptr)
+		{
+			return false; // invalid string or suffix
+		}
+		ProbeIfDirtyLen(str);
+		int res = LWAnsiString_EndsAtA(str, suffix, Case);
+		return res != -1;
+	}
+
+
+	int LWAnsiString_FindCharExInternal(LWAnsiString* str, wchar_t c, int start)
+	{
+		if (str == nullptr || str->Data == nullptr || start < 0 || start >= str->Length)
+		{
+			return -1; // invalid string or start position
+		}
+		ProbeIfDirtyLen(str);
+		for (int i = start; i < str->Length; i++)
+		{
+			if (ALLOC_PTR(str, INDEX)(str->Data, i) == c)
+				//if (str->Data[i] == c)
+			{
+				return i; // found the character
+			}
+		}
+		return -1; // character not found
+	}
+
+	int LWAnsiString_FindLastExInternal(LWAnsiString* str, wchar_t c, int* count)
+	{
+		if (count != 0) *count = 0;
+		if (str == nullptr || str->Data == nullptr)
+		{
+			return -1; // invalid string
+		}
+		ProbeIfDirtyLen(str);
+		for (int i = str->Length - 1; i >= 0; i--)
+		{
+			//if (str->Data[i] == c)
+			if (ALLOC_PTR(str, INDEX)(str->Data, i) == c)
+			{
+				if (count != 0)
+				{
+					*count += 1; // increment the count of found characters
+				}
+				else
+				{
+					return i; // found the char
+				}
+
+			}
+		}
+		return -1; // character not found
+	}
+
+	
+
+
+	LWAnsiString* LWAnsiString_PadInternal(LWAnsiString* str,  DWORD c, int len)
+	{
+		
+		//LWAnsiString_ZeroString(str);
 		/* NOT UNITED TESTED - but proven in midas by appending '-' symboles*/
 		if (str == nullptr)
 			return nullptr; // null string
@@ -30,22 +227,22 @@ extern "C" {
 		for (int i = str->Length; i < str->Length + len; i++)
 		{
 			//str->Data[i] = c; // pad the string with the character
-			ALLOC_PTR(str, WriteToIndex)(str->Data, i, c);
+			ALLOC_PTR(str, WriteToIndex)(str->Data,i, c);
 		}
 		str->Length += len; // update the length
 		LWAnsiString_ClampNull(str); // ensure the string is null terminated
 		return str; // return the updated string
 	}
 
-	LWAnsiString* LWAnsiString_PadA(LWAnsiString* str, char c, int len)
+	
+	LWAnsiString* LWAnsiString_PadNewLineInternalW(LWAnsiString* str, const wchar_t c, int len, DWORD CullSize)
 	{
-		return LWAnsiString_PadInternal(str, c, len, ALLOC_PTR(str, SingleCharacterLength));
+		LWAnsiString* r = LWAnsiString_PadInternal(str, (const  wchar_t) c, len ); // pad the string with the character
+		ProbeIfDirtyLen(r);
+		LWAnsiString_AppendNewLine(r); // append a new line
+		return r;
 	}
 
-	LWAnsiString* LWAnsiString_PadW(LWAnsiString* str, wchar_t c, int len)
-	{
-		return LWAnsiString_PadInternal(str, c, len, ALLOC_PTR(str, SingleCharacterLength));
-	}
 	LWAnsiString* LW_INTERNAL LWAnsiString_AppendInternal(LWAnsiString* str, const void* append, LW_STRING_strlen STRLEN)
 	{
 		/* INIT TESTED CAUSE WE USE IT THRUOUT MIDAS AND the unit tests for other stuff*/
@@ -169,5 +366,132 @@ extern "C" {
 			}
 		}
 	}
+
+	
+	bool LWAnsiString_AppendNumberInternal(int number, 
+		LWAnsiString* output, 
+		int* output_size,
+		LWAnsiString* (*appendFunc)(LWAnsiString* str, const char* append),
+		const void* IntMaxPlugin)
+	{
+		// yes it's an int. Yes we're treating it like a bool.
+		int IsPositive = number > 0;
+		// arg validation;
+		if (output == nullptr)
+		{
+			return false;
+		}
+
+		ProbeIfDirtyLen(output);
+		if (number == INT_MIN)
+		{
+			// special case for the minimum int value, which cannot be represented as a positive number
+			//LWAnsiString_AppendA(output, "-2147483648");
+			appendFunc(output, (char*)IntMaxPlugin);
+			if (output_size != 0)
+			{
+				*output_size = (12 +
+					ALLOC_PTR(output, SingleCharacterLength) // this odd wayt lets it theory scale for say unicode and ansi
+					);
+			}; // 11 digits + null terminator
+			return true;
+		}
+
+		if (number == 0)
+		{
+			// special case for zero
+			appendFunc(output, "0");
+			if (output_size != 0) { *output_size = 2; }; // 1 digit + null terminator
+			return true;
+		}
+		int tmp = number;
+		// count digits
+		int digit_count = 0;
+
+		if (!IsPositive)
+			tmp *= -1; // we fix in POST
+
+		// count our digits. we need it to figure the buffer
+		while (((char)(tmp & 0xFF)) != 0)
+		{
+
+			digit_count++;
+			if (tmp > 9)
+			{
+				tmp /= 10;
+			}
+			else
+			{
+				break;
+			}
+
+		}
+
+
+		// should we have a digit count of 0, we tick it to 1.
+		if (digit_count == 0)
+			digit_count++;
+
+		if (!IsPositive)
+			digit_count++; // for the minus sign;
+
+		// and allocate + lock a void* to place
+		// note the +1 is for the null terminator
+		// note the IsPositive note is to add a - sign if the number is negative
+		LWAnsiString_AddReserve(output, digit_count + 1); // reserve the string with the new size + 1 for null terminator
+
+
+		{
+			LWAnsiString* tmp_buff = LWAnsiString_CreateString(digit_count);
+			// grab a pointer if possible and bail if not
+			char* ret = (char*)LWAnsiString_ToCStr(tmp_buff);
+
+			if (ret == 0)
+			{
+				return false;
+			}
+			else
+			{
+				if (!IsPositive)
+					tmp = number * -1;
+				else
+					tmp = number;
+
+				if (tmp != 0)
+				{
+					while (digit_count > 0)
+					{
+						char debug = (char)((tmp % 10) + '0');
+						// what this code here is doing is started from the ones place and moves up taking the remainding of diviing tmp by 10 and add '0' (the string 0) to 
+						// get the digit of it. ie
+						// the number 5 would end up being '5' when done.
+						ret[digit_count - 1] = debug;
+						tmp /= 10;
+						digit_count--;
+						if (!IsPositive)
+						{
+							if (digit_count == 1)
+							{
+								ret[digit_count - 1] = '-';
+								digit_count--;
+							}
+						}
+					}
+				}
+				else
+				{
+					/* code above should be counting digits and ect... if code gets here, aka the int was 0, return 0*/
+					ret[0] = '0';
+				}
+				LWAnsiString_AppendNative(output, tmp_buff); // append the string to the output
+				LWAnsiString_FreeString(tmp_buff); // free the temporary buffer
+			}
+
+
+			if (output_size != 0) { *output_size = digit_count + 1; };
+			return true;
+		}
+	}
+
 
 }

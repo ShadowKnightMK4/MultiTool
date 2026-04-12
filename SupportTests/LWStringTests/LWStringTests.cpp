@@ -179,7 +179,7 @@ namespace LWStringTests
 			LWAnsiString** TestMe = &Vanguard1.ptr;
 			LWAnsiString* Alt = AltPtr.ptr;
 
-			LWAnsiString_Append(Alt, "Hello World 12");
+			LWAnsiString_AppendA(Alt, "Hello World 12");
 			*TestMe = LWAnsiString_CreateFromOffset(Alt, 5);
 
 			Assert::IsNotNull(*TestMe);
@@ -198,7 +198,7 @@ namespace LWStringTests
 			LWAnsiString** TestMe = &Vanguard1.ptr;
 			LWAnsiString* Alt = AltPtr.ptr;
 
-			LWAnsiString_Append(Alt, "Hello World 12");
+			LWAnsiString_AppendA(Alt, "Hello World 12");
 			*TestMe = LWAnsiString_CreateFromOffsetEx(LWAnsiHandler, Alt, 5);
 
 			Assert::IsNotNull(*TestMe);
@@ -213,14 +213,14 @@ namespace LWStringTests
 		TEST_METHOD(CreateOffsetString_Ansi_LengthExpected)
 		{
 			LWAnsiStringGuard AltPtr(255);
-			LWAnsiString_Append(AltPtr.ptr, "Hello World");
+			LWAnsiString_AppendA(AltPtr.ptr, "Hello World");
 			Assert::IsTrue(LWAnsiString_Length(AltPtr.ptr) == strlen("Hello World"));
 		}
 
 		TEST_METHOD(LWAnsiString_ZeroString_Works)
 		{
 			LWAnsiStringGuard AltPtr(255);
-			LWAnsiString_Append(AltPtr.ptr, "Hello World");
+			LWAnsiString_AppendA(AltPtr.ptr, "Hello World");
 			Assert::IsTrue(LWAnsiString_Length(AltPtr.ptr) == strlen("Hello World"));
 			LWAnsiString_ZeroString(AltPtr.ptr);
 			Assert::IsTrue(LWAnsiString_Length(AltPtr.ptr) == 0);
@@ -255,7 +255,7 @@ namespace LWStringTests
 		{
 			LWAnsiStringGuard Guard(255);
 			LWAnsiString* test = Guard.ptr;
-			LWAnsiString_Append(test, "Hello World");
+			LWAnsiString_AppendA(test, "Hello World");
 			Assert::IsTrue(test->AllocatedSize == 255 + 1);
 			int res = LWAnsiString_AdjustSize(test, 2);
 			Assert::IsTrue(test->AllocatedSize == 3);
@@ -280,7 +280,7 @@ namespace LWStringTests
 		{
 			LWAnsiStringGuard Guard(255);
 			LWAnsiString* test = Guard.ptr;
-			LWAnsiString_Pad(test, '-', 5);
+			LWAnsiString_PadA(test, '-', 5);
 			Assert::IsTrue(LWAnsiString_Length(test) == 5);
 			Assert::IsTrue(test->AllocatedSize == 256);
 			Assert::IsTrue(stricmp("-----", LWAnsiString_ToCStr(test)) ==0);
@@ -290,7 +290,7 @@ namespace LWStringTests
 		{
 			LWAnsiStringGuard Guard(255);
 			LWAnsiString* test = Guard.ptr;
-			LWAnsiString_PadNewLine(test, '-', 5);
+			LWAnsiString_PadNewLineA(test, '-', 5);
 			Assert::IsTrue(LWAnsiString_Length(test) == 7); // windows new line is 2 chars
 			Assert::IsTrue(test->AllocatedSize == 256);
 			Assert::IsTrue(stricmp("-----\r\n", LWAnsiString_ToCStr(test)) == 0);
@@ -303,7 +303,7 @@ namespace LWStringTests
 		{
 			LWAnsiStringGuard Guard(255);
 			LWAnsiString* test = Guard.ptr;
-			LWAnsiString_Append(test, "Hello");
+			LWAnsiString_AppendA(test, "Hello");
 			Assert::IsTrue(LWAnsiString_EndsWith(test, LWAnsiString_ToCStr(test),true));
 		}
 
@@ -311,7 +311,7 @@ namespace LWStringTests
 		{
 			LWAnsiStringGuard Guard(255);
 			LWAnsiString* test = Guard.ptr;
-			LWAnsiString_AppendWithNewLine(test, "Hello");
+			LWAnsiString_AppendWithNewLineA(test, "Hello");
 			Assert::IsTrue(LWAnsiString_EndsWith(test, LWAnsiString_ToCStr(test), true));
 			Assert::IsTrue(LWAnsiString_EndsWith(test, "\r\n", false));
 		}
@@ -320,7 +320,7 @@ namespace LWStringTests
 		{
 			LWAnsiStringGuard Guard(255);
 			LWAnsiString* test = Guard.ptr;
-			LWAnsiString_Append(test, "Hello");
+			LWAnsiString_AppendA(test, "Hello");
 			LWAnsiString_Reserve(test, 300);
 			Assert::IsTrue(test->AllocatedSize == 301);
 		}
@@ -330,7 +330,7 @@ namespace LWStringTests
 			LWAnsiStringGuard Guard(255);
 			LWAnsiStringGuard Alt(nullptr);
 			LWAnsiString* test = Guard.ptr;
-			LWAnsiString_Append(test, "Hello");
+			LWAnsiString_AppendA(test, "Hello");
 
 			Alt.ptr = LWAnsiString_Duplicate(test);
 			Assert::IsNotNull(Alt.ptr);
@@ -344,9 +344,9 @@ namespace LWStringTests
 			LWAnsiStringGuard Alt(nullptr);
 			LWAnsiString* test = Guard.ptr;
 			
-			LWAnsiString_AppendNumber(12, test, 0);
+			LWAnsiString_AppendNumberA(12, test, 0);
 			Assert::IsTrue(strcmp("12", test->A) == 0);
-			LWAnsiString_AppendNumber(51, test, 0);
+			LWAnsiString_AppendNumberA(51, test, 0);
 			Assert::IsTrue(strcmp("1251", test->A) == 0);
 		}
 
@@ -355,8 +355,8 @@ namespace LWStringTests
 			LWAnsiStringGuard Guard(255);
 			LWAnsiStringGuard Alt(nullptr);
 			LWAnsiString* test = Guard.ptr;
-
-			LWAnsiString_AppendNumber(INT_MIN, test, 0);
+			
+			LWAnsiString_AppendNumberA(INT_MIN, test, 0);
 			Assert::IsTrue(strcmp("-2147483648", test->A) == 0);
 		}
 
@@ -366,9 +366,21 @@ namespace LWStringTests
 			LWAnsiStringGuard Alt(nullptr);
 			LWAnsiString* test = Guard.ptr;
 
-			LWAnsiString_AppendNumber(0, test, 0);
+			LWAnsiString_AppendNumberA(0, test, 0);
 			Assert::IsTrue(strcmp("0", test->A) == 0);
 		}
 
+
+
+		TEST_METHOD(LWUnicode_JustMakeInstance)
+		{
+			LWAnsiStringGuard Guard(255);
+			LWAnsiStringGuard Alt(nullptr);
+			Alt.ptr = LWAnsiString_CreateStringEx(LWUnicodeHandler, 0);
+
+			Assert::IsTrue(Alt.ptr->AllocatedHandle == LWUnicodeHandler);
+			Assert::IsTrue(Alt.ptr->AllocatedSize == 1); // reember we're counting characters.
+			Assert::IsTrue(LWAnsiString_GetAllocatedByteSize(Alt.ptr) == sizeof(wchar_t));
+		}
 	};
 }

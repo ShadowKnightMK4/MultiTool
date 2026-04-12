@@ -10,7 +10,7 @@ extern "C" {
 		DWORD already_happened = 0;
 		again:
 		SetLastError(0);
-		DWORD result = SearchPathA(NULL, filename, NULL, OutputIfOk->AllocatedSize, OutputIfOk->Data, NULL);
+		DWORD result = SearchPathA(NULL, filename, NULL, OutputIfOk->AllocatedSize, OutputIfOk->AnsiData, NULL);
 
 		if ((result != 0) &&  (result < OutputIfOk->AllocatedSize))
 		{

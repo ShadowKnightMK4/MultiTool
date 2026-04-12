@@ -70,6 +70,17 @@
 * Proven in Midas -> thies mean the code is NOT UNIT TESTed but I've used it in my midas app with no issues.
 */
 
+#define LWANSISTRING_HARDIMPORTS 
+
+#ifdef LWANSISTRING_HARDIMPORTS
+/*
+* The win32 api routines that LWAnsiString depend on or reference are gonna be combined here
+* for functionally a light IAT table. 
+* Should you want to rip out the hard links fully (say going on the road to kernel mode (NOT TESTED THERE) or linux (or there)
+* undefining LWANSISTRING_HARDIMPORTS will get you code that will even get you code to complain of *hey * need this*
+*/
+#endif
+
 #include "pch.h"
 #include "framework.h"
 #include <climits>
@@ -162,7 +173,7 @@ extern "C" {
 	size_t WINAPI DefaultWriteIndex(void* Target, size_t index, size_t val)
 	{
 		char* t = (char*)Target;
-		t[index] = val;
+		((unsigned char*)Target)[index] = (unsigned char)val;
 		return 0;
 	}
 	size_t WINAPI DefaultIndexer(void* TARGET, size_t index)
@@ -173,7 +184,7 @@ extern "C" {
 
 	size_t WINAPI UnicodeWriteIndex(wchar_t* Target, size_t index, size_t val)
 	{
-		Target[index] = val;
+		Target[index] = (wchar_t)val;
 		return 0;
 	}
 	wchar_t WINAPI UnicodeIndexer(wchar_t* TARGET, size_t index)
@@ -230,7 +241,7 @@ extern "C" {
 	/// <summary>
 	/// The creater lwansistring calls this if the string heap is not set up. This intializes default
 	/// </summary>
-	void LW_INTERNAL SetupAnsiString()
+	void LW_INTERNAL SetupLWStringLibrary()
 	{
 		{
 			if (StringHeap == 0)
@@ -252,7 +263,7 @@ extern "C" {
 				DefaultHandler.STRICMP = lstrcmpiA;
 				DefaultHandler.WriteToIndex = DefaultWriteIndex;
 
-				/*
+				
 				UnicodeHandler.CustomFirstAlloc = DefaultAlloc;
 				UnicodeHandler.CustomGetHeap = DefaultMyHeapGet;
 				UnicodeHandler.CustomFree = DefaultFree;
@@ -267,7 +278,7 @@ extern "C" {
 				UnicodeHandler.INDEX = (LW_STRING_INDEXOR) UnicodeIndexer;
 				UnicodeHandler.STRICMP = (LWSTRING_CMP)lstrcmpiW;
 				UnicodeHandler.STRCMP = (LWSTRING_ICMP)lstrcmpW;
-				UnicodeHandler.WriteToIndex = (LW_STRING_WRITE_INDEX)UnicodeWriteIndex;*/
+				UnicodeHandler.WriteToIndex = (LW_STRING_WRITE_INDEX)UnicodeWriteIndex;
 			}
 		}
 
@@ -329,7 +340,14 @@ extern "C" {
 			return nullptr; // invalid length
 		}
 
-		SetupAnsiString();
+		SetupLWStringLibrary();
+#ifndef DEBUG2
+		{
+			size_t size = sizeof(LWAnsiString);
+			size += 1;
+			size -= 1;
+		}
+#endif
 		auto Ans = (LWAnsiString*)DefaultHandler.CustomFirstAlloc(StringHeap, HEAP_GENERATE_EXCEPTIONS | HEAP_ZERO_MEMORY, sizeof(LWAnsiString));
 		if (Ans == nullptr)
 		{
@@ -337,10 +355,16 @@ extern "C" {
 		}
 		else
 		{
-			Ans->Data = (char*)DefaultHandler.CustomFirstAlloc(StringHeap, HEAP_GENERATE_EXCEPTIONS | HEAP_ZERO_MEMORY, (len +1 )*x->SingleCharacterLength); // +1 for null terminator
+			{
+				size_t debug_size_chars = (len + 1);
+				size_t times_chars = debug_size_chars * (x->SingleCharacterLength);
+				times_chars++;
+				times_chars--;
+			}
+			Ans->Data = (char*)DefaultHandler.CustomFirstAlloc(StringHeap, HEAP_GENERATE_EXCEPTIONS | HEAP_ZERO_MEMORY, (len +1 )*(x->SingleCharacterLength)); // +1 for null terminator
 
 			Ans->AllocatedSize = len + 1; // +1 for null terminator
-			if (x != &DefaultHandler)
+			if ( (x != &DefaultHandler) && (x != LWUnicodeHandler))
 			{
 				// if the default handler is NOT passed, we create a copy of it and stash it as  a pointer in the void* thing.
 				Ans->AllocatedHandle = x->CustomFirstAlloc(StringHeap, HEAP_GENERATE_EXCEPTIONS | HEAP_ZERO_MEMORY, sizeof(AllocationHandler));
@@ -439,7 +463,10 @@ extern "C" {
 
 
 
-				if ((AllocationHandler*)(str->AllocatedHandle) != &DefaultHandler)
+				if (  (
+						(AllocationHandler*)(str->AllocatedHandle) != &DefaultHandler) &&
+						(AllocationHandler*)(str->AllocatedHandle) != LWUnicodeHandler) 
+
 				{
 					//AllotFree = ((AllocationHandler*)(str->AllocatedHandle))->CustomFree(((AllocationHandler*)(str->AllocatedHandle))->CustomGetHeap(0, 0, 0), 0, str->AllocatedHandle); // free the structure itself
 					handler->CustomFree(handler->CustomGetHeap(0, 0, 0), 0, str->AllocatedHandle);
@@ -623,51 +650,58 @@ extern "C" {
 	{
 		ProbeIfDirtyLen(str);
 		/* INDRECT UNIT TEST cause LWAnsiString_Append works */
-		LWAnsiString_Append(str, "\r\n"); // append a new line
+		if (str->AllocatedHandle == LWAnsiHandler)
+		{
+			return LWAnsiString_AppendNewLineA(str);
+		}
+		else
+		{
+			if (str->AllocatedHandle == LWUnicodeHandler)
+			{
+				return LWAnsiString_AppendNewLineW(str);
+			}
+		}
 	}
 
-
-	LWAnsiString* LWAnsiString_PadInternal(LWAnsiString* str, const char c, int len)
+	void LWAnsiString_AppendNewLineA(LWAnsiString* str)
 	{
-		/* NOT UNITED TESTED - but proven in midas by appending '-' symboles*/
-		if (str == nullptr)
-			return nullptr; // null string
-
 		ProbeIfDirtyLen(str);
-
-
-		if (len <= 0)
-			return str; // no change if size is less than or equal to 0
-		if (len + str->Length > str->AllocatedSize)
-		{
-			LWAnsiString_Reserve(str, len + str->Length); // ensure we have enough space
-		}
-		if (str->Length + len > str->AllocatedSize)
-		{
-			return nullptr; // not enough space to pad
-		}
-		for (int i = str->Length; i < str->Length + len; i++)
-		{
-			//str->Data[i] = c; // pad the string with the character
-			ALLOC_PTR(str, WriteToIndex)(str->Data, i, c);
-		}
-		str->Length += len; // update the length
-		LWAnsiString_ClampNull(str); // ensure the string is null terminated
-		return str; // return the updated string
+		/* INDRECT UNIT TEST cause LWAnsiString_Append works */
+		LWAnsiString_AppendA(str, "\r\n"); // append a new line
 	}
-
-	LWAnsiString* LWAnsiString_PadNewLineInternal(LWAnsiString* str, const wchar_t c, int len)
+	
+	void LWAnsiString_AppendNewLineW(LWAnsiString* str)
 	{
-		LWAnsiString* r = LWAnsiString_Pad(str, c, len); // pad the string with the character
-		ProbeIfDirtyLen(r);
-		LWAnsiString_AppendNewLine(r); // append a new line
-		return r;
+		ProbeIfDirtyLen(str);
+		/* INDRECT UNIT TEST cause LWAnsiString_Append works */
+		LWAnsiString_AppendW(str, L"\r\n"); // append a new line
 	}
+
 
 	
 
 	LWAnsiString* LWAnsiString_AppendNative(LWAnsiString* str, const LWAnsiString* append)
 	{
+		if (str == nullptr)
+			return str;
+		if (append == nullptr)
+			return str; // nothing to append
+		if (str->AllocatedHandle == 0)
+			return nullptr; // WE CAN'T CAUSE there's no table of allocator routines
+
+		if (str->AllocatedHandle == LWAnsiHandler)
+		{
+			return LWAnsiString_AppendA(str, LWAnsiString_ToCStr((LWAnsiString*)append));
+		}
+		else
+		{
+			if (str->AllocatedHandle == LWUnicodeHandler)
+			{
+				return LWAnsiString_AppendW(str, (const wchar_t*) LWAnsiString_ToCStr((LWAnsiString*)append));
+			}
+		}
+		return nullptr;
+		
 		/* INIT TESTED CAUSE WE USE IT THRUOUT MIDAS AND the unit tests for other stuff*/
 		if (str == nullptr)
 			return str;
@@ -894,16 +928,9 @@ extern "C" {
 		}
 	}
 
-	LWAnsiString* LWAnsiString_AppendWithNewLine(LWAnsiString* str, const char* append)
-	{
-		ProbeIfDirtyLen(str);
-		LWAnsiString* r = LWAnsiString_Append(str, append); // append the string
-		if (r == nullptr)
-			return nullptr; // failed to append
-		LWAnsiString_AppendNewLine(r); // append a new line
-		return r; // return the updated string
-	}
+	
 
+	
 
 	LWAnsiString* LWAnsiString_Reserve(LWAnsiString* str, int new_size)
 	{
@@ -1017,8 +1044,19 @@ extern "C" {
 		return ret;
 	}
 
+	bool LWAnsiString_AppendNumberA(int number, LWAnsiString* output, int* output_size)
+	{
+		return  LWAnsiString_AppendNumberInternal(number, output, output_size, (LWAnsiString * (*)(LWAnsiString*, const char*)) LWAnsiString_AppendA, "-2147483648");
+	}
 
-	bool LWAnsiString_AppendNumber(int number, LWAnsiString* output, int* output_size)
+	bool LWAnsiString_AppendNumberW(int number, LWAnsiString* output, int* output_size)
+	{
+		return  LWAnsiString_AppendNumberInternal(number, output, output_size, (LWAnsiString * (*)(LWAnsiString*, const char*)) LWAnsiString_AppendW, L"-2147483648");
+	}
+
+
+	/*
+	bool LWAnsiString_AppendNumberAOLD(int number, LWAnsiString* output, int* output_size)
 	{
 		// yes it's an int. Yes we're treating it like a bool.
 		int IsPositive = number > 0;
@@ -1032,7 +1070,7 @@ extern "C" {
 		if (number == INT_MIN)
 		{
 			// special case for the minimum int value, which cannot be represented as a positive number
-			LWAnsiString_Append(output, "-2147483648");
+			LWAnsiString_AppendA(output, "-2147483648");
 			if (output_size != 0)
 			{
 				*output_size = ( 12 + 
@@ -1125,7 +1163,7 @@ extern "C" {
 				}
 				else
 				{
-					/* code above should be counting digits and ect... if code gets here, aka the int was 0, return 0*/
+					/* code above should be counting digits and ect... if code gets here, aka the int was 0, return 0
 					ret[0] = '0';
 				}
 				LWAnsiString_AppendNative(output, tmp_buff); // append the string to the output
@@ -1136,157 +1174,147 @@ extern "C" {
 			if (output_size != 0) { *output_size = digit_count + 1; };
 			return true;
 		}
-	}
+	}*/
 
-
-	int LWAnsiString_Compare(LWAnsiString* a, const char* b, bool Case)
+	int LW_INTERNAL LWAnsiString_CompareInternalShim(LWAnsiString* a, const wchar_t* b, bool Case, AllocationHandler* TestHandler, bool* DidCompare = 0)
 	{
-		if (a == nullptr && b == nullptr)
+		if (a->AllocatedHandle == TestHandler)
 		{
-			return 0;
-		}
-		if (a == nullptr && b != nullptr)
-		{
-			return -1;
-		}
-		if (a != nullptr && b == nullptr)
-		{
-			return 1;
-		}
-		if (Case)
-		{
-			//return lstrcmpA(a->Data, b); // case sensitive
-			return ALLOC_PTR(a, STRICMP)((const char*) a->Data, b);
-		}
-		else
-		{
-			//int tmp = lstrcmpiA(a->Data, b);
-			return ALLOC_PTR(a, STRCMP)((const char*)a->Data, b);
-			//return tmp; // case insensitive
-		}
-	}
-
-
-	int LWAnsiString_FindChar(LWAnsiString* str, char c)
-	{
-		ProbeIfDirtyLen(str);
-		return LWAnsiString_FindCharEx(str, c, 0); // start from the beginning
-	}
-	int LWAnsiString_FindLast(LWAnsiString* str, char c)
-	{
-		ProbeIfDirtyLen(str);
-		return LWAnsiString_FindLastEx(str, c, nullptr); 
-	}
-	int LWAnsiString_FindLastEx(LWAnsiString* str, char c, int * count)
-	{
-		if (count != 0) *count = 0;
-		if (str == nullptr || str->Data == nullptr)
-		{
-			return -1; // invalid string
-		}
-		ProbeIfDirtyLen(str);
-		for (int i = str->Length - 1; i >= 0; i--)
-		{
-			//if (str->Data[i] == c)
-			if (ALLOC_PTR(str, INDEX)(str->Data, i) == c)
+			if (DidCompare != 0)
 			{
-				if (count != 0)
-				{
-					*count += 1; // increment the count of found characters
-				}
-				else
-				{
-					return i; // found the char
-				}
-				
+				*DidCompare = true;
 			}
+			return LWAnsiString_CompareInternal(a, (const void*)b, Case);
 		}
-		return -1; // character not found
+		if (DidCompare != 0)
+		{
+			*DidCompare * false;
+		}
+		return -2;
 	}
 
-	int LWAnsiString_FindCharEx(LWAnsiString* str, char c, int start)
-	{
-		if (str == nullptr || str->Data == nullptr || start < 0 || start >= str->Length)
-		{
-			return -1; // invalid string or start position
-		}
-		ProbeIfDirtyLen(str);
-		for (int i = start; i < str->Length; i++)
-		{
-			if (ALLOC_PTR(str, INDEX)(str->Data, i) == c)
-			//if (str->Data[i] == c)
-			{
-				return i; // found the character
-			}
-		}
-		return -1; // character not found
-	}
-
-	int LWAnsiString_EndsAt(LWAnsiString* str, const char* suffix, bool Case)
-	{
-		if (str == nullptr || suffix == nullptr)
-		{
-			return false; // invalid string or suffix
-		}
-		ProbeIfDirtyLen(str);
-		int res = 0;
-		int suffix_len = lstrlenA(suffix);
-		int str_len = LWAnsiString_Length(str);
-		if (suffix_len > str->Length)
-		{
-			return false; // suffix is longer than the string
-		}
-		if (Case)
-		{
-			//res = lstrcmpA(str->Data + str_len - suffix_len, suffix) == 0 ? str_len - suffix_len : -1; // case sensitive
-			res = ALLOC_PTR(str, STRCMP)((const char*) str->Data + str_len - suffix_len, suffix) == 0 ? str_len - suffix_len : -1; // case sensitive
-		}
-		else
-		{
-			//res = lstrcmpiA(str->Data + str_len - suffix_len, suffix) == 0 ? str_len - suffix_len : -1; // case insensitive
-			res = ALLOC_PTR(str, STRICMP)((const char*)str->Data + str_len - suffix_len, suffix) == 0 ? str_len - suffix_len : -1; // case sensitive
-		}
-		return res;
-	}
-	bool LWAnsiString_EndsWith(LWAnsiString* str, const char* suffix, bool Case)
-	{
-		/* UNIT TESTED THRU LWAnsiString_EndsAt */
-		if (str == nullptr || suffix == nullptr)
-		{
-			return false; // invalid string or suffix
-		}
-		ProbeIfDirtyLen(str);
-		int res = LWAnsiString_EndsAt(str, suffix, Case);
-		return res != -1;
-	}
 
 	/// <summary>
-	/// If the string ends with the given suffix, trim it off.
+	/// 
 	/// </summary>
-	/// <param name="str"></param>
-	/// <param name="suffix"></param>
+	/// <param name="a"></param>
+	/// <param name="b"></param>
 	/// <param name="Case"></param>
+	/// <param name="DidCompare">if ask this to compare matching strings, this is true, if say you compare against non matching string, this is set to false</param>
 	/// <returns></returns>
-	bool LWAnsiString_TrimEndsWith(LWAnsiString* str, const char* suffix, bool Case)
-	{/* UNIT TESTED THRU LWAnsiString_EndsAt */
-		if (str == nullptr || suffix == nullptr)
-		{
-			return false; // invalid string or suffix
-		}
-		ProbeIfDirtyLen(str);
-		int res = LWAnsiString_EndsAt(str, suffix, Case);
-		if (res != -1)
-		{
-			str->Length = res; // trim the string
-			//str->Data[str->Length] = 0; // null terminate
-			LWAnsiString_ClampNull(str);
-			return true; // trimmed successfully
-		}
-		return false; // not trimmed
-
+	int LWAnsiString_CompareExA(LWAnsiString* a, const char* b, bool Case, bool* DidCompare)
+	{
+		return LWAnsiString_CompareInternalShim(a, (const wchar_t*)b, Case, LWAnsiHandler, DidCompare);
 	}
 
+
+	int LWAnsiString_CompareExW(LWAnsiString* a, const wchar_t* b, bool Case, bool* DidCompare)
+	{
+		return LWAnsiString_CompareInternalShim(a, (const wchar_t*)b, Case, LWUnicodeHandler, DidCompare);
+	}
+
+	int LWAnsiString_CompareA(LWAnsiString* a, const char* b, bool Case)
+	{
+		return LWAnsiString_CompareInternalShim(a, (const wchar_t*)b, Case, LWAnsiHandler, 0);
+	}
+
+
+	int LWAnsiString_CompareW(LWAnsiString* a, const wchar_t* b, bool Case)
+	{
+		return LWAnsiString_CompareInternalShim(a, (const wchar_t*)b, Case, LWUnicodeHandler, 0);
+	}
+
+
+
+
+
+
 #pragma region
+
+
+	bool LWAnsiString_TrimEndsWithA(LWAnsiString* str, const char* suffix, bool Case)
+	{
+		return LWAnsiString_TrimEndsWithInternal(str, suffix, Case, LWAnsiString_EndsAtA);
+	}
+	bool LWAnsiString_EndsWithA(LWAnsiString* str, const char* suffix, bool Case)
+	{
+		return LWAnsiString_TrimEndsWithInternal(str, suffix, Case, ((int (*)(LWAnsiString*, const char*, bool)) LWAnsiString_EndsAtW));
+	}
+	int LWAnsiString_EndsAtA(LWAnsiString* str, const char* suffix, bool Case)
+	{
+		if (Case)
+		{
+			return LWAnsiString_EndsAtInternal(str, (const wchar_t*)suffix, false, ALLOC_PTR(str, STRLEN), ALLOC_PTR(str, STRCMP));
+		}
+		else
+		{
+			return LWAnsiString_EndsAtInternal(str, (const wchar_t*)suffix, false, ALLOC_PTR(str, STRLEN), ALLOC_PTR(str, STRICMP));
+		}
+	}
+
+	int LWAnsiString_FindCharExA(LWAnsiString* str, char c, int start)
+	{
+		return LWAnsiString_FindCharExInternal(str, c, start);
+
+	}
+	int LWAnsiString_FindLastExA(LWAnsiString* str, char c, int* count)
+	{
+		return LWAnsiString_FindLastExInternal(str, c, count);
+	}
+
+	int LWAnsiString_FindLastA(LWAnsiString* str, char c)
+	{
+		return LWAnsiString_FindLastExInternal(str, c, nullptr);
+	}
+
+
+
+	
+
+
+	bool LWAnsiString_TrimEndsWithW(LWAnsiString* str, wchar_t* suffix, bool Case)
+	{
+		return LWAnsiString_TrimEndsWithInternal(str, (const char*)suffix, Case, ((int (*)(LWAnsiString*, const char*, bool)) LWAnsiString_EndsAtW));
+	}
+
+	int LWAnsiString_EndsAtW(LWAnsiString* str, const wchar_t* suffix, bool Case)
+	{
+		if (Case)
+		{
+			return LWAnsiString_EndsAtInternal(str, suffix, Case, ALLOC_PTR(str, STRLEN), ALLOC_PTR(str, STRCMP));
+		}
+		else
+		{
+			return LWAnsiString_EndsAtInternal(str, suffix, Case, ALLOC_PTR(str, STRLEN), ALLOC_PTR(str, STRICMP));
+		}
+	}
+	int LWAnsiString_FindCharExW(LWAnsiString* str, wchar_t c, int start)
+	{
+		return LWAnsiString_FindCharExInternal(str, c, start);
+	}
+	int LWAnsiString_FindLastExW(LWAnsiString* str, char c, int* count)
+	{
+		ProbeIfDirtyLen(str);
+		return LWAnsiString_FindLastExInternal(str, c, count);
+	}
+
+	int LWAnsiString_FindLastW(LWAnsiString* str, wchar_t c)
+	{
+		ProbeIfDirtyLen(str);
+		return LWAnsiString_FindLastExInternal(str, c, 0);
+	}
+
+	int LWAnsiString_FindCharA(LWAnsiString* str, char c)
+	{
+		ProbeIfDirtyLen(str);
+		return LWAnsiString_FindCharExInternal(str, c, 0); // start from the beginning
+	}
+
+	int LWAnsiString_FindCharW(LWAnsiString* str, wchar_t c)
+	{
+		ProbeIfDirtyLen(str);
+		return LWAnsiString_FindCharExInternal(str, c, 0); // start from the beginning
+	}
 
 	LWAnsiString* LWAnsiString_AppendW(LWAnsiString* str, const wchar_t* append)
 	{
@@ -1363,16 +1391,42 @@ extern "C" {
 
 	LWAnsiString* LWAnsiString_PadNewLineA(LWAnsiString* str, const char c, int len)
 	{
-		return LWAnsiString_PadNewLineInternal(str, c, len);
+		char x[3];
+		x[0] = '\r';
+		x[1] = '\n';
+		x[2] = 0;
+		auto ret= LWAnsiString_PadInternal(str, c, len);
+		LWAnsiString_AppendA(str, x);
+		return ret;
 	}
 
 	LWAnsiString* LWAnsiString_PadNewLineW(LWAnsiString* str, const wchar_t c, int len)
 	{
-		return LWAnsiString_PadNewLineInternal(str, (const wchar_t)c, len);
+		wchar_t x[3];
+		x[0] = L'\r';
+		x[1] = L'\n';
+		x[2] = 0;
+		auto ret = LWAnsiString_PadInternal(str, c, len);
+		LWAnsiString_AppendW(str, x);
+		return ret;
 
+	}
+	LWAnsiString* LWAnsiString_PadA(LWAnsiString* str, char c, int len)
+	{
+		return LWAnsiString_PadInternal(str, c, len);
+	}
+
+	LWAnsiString* LWAnsiString_PadW(LWAnsiString* str, wchar_t c, int len)
+	{
+		return LWAnsiString_PadInternal(str, c, len);
 	}
 #pragma endregion
 	
+
+	size_t LWAnsiString_GetAllocatedByteSize(LWAnsiString* str)
+	{
+		return ALLOC_PTR(str, SingleCharacterLength) * str->AllocatedSize;
+	}
 }
 
 
