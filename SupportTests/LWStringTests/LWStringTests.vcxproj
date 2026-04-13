@@ -159,6 +159,8 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\..\Support\LWAnsiString\LWAnsiString.cpp" />
+    <ClCompile Include="..\..\Support\LWAnsiString\LWAnsiString_Internal.cpp" />
+    <ClCompile Include="LWAnsiStringGuard.cpp" />
     <ClCompile Include="LWStringTests.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
@@ -166,15 +168,12 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="UnicodeStringTests.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Support\LWAnsiString\LWAnsiString.h" />
+    <ClInclude Include="LWAnsiStringGuard.h" />
     <ClInclude Include="pch.h" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\..\Support\LWAnsiString\LWAnsiString.vcxproj">
-      <Project>{2422c8de-e681-4704-b090-6e811ee041aa}</Project>
-    </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

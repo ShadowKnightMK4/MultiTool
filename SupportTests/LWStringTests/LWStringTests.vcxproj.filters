@@ -21,7 +21,16 @@
     <ClCompile Include="pch.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="UnicodeStringTests.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\Support\LWAnsiString\LWAnsiString.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Support\LWAnsiString\LWAnsiString_Internal.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="LWAnsiStringGuard.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -30,6 +39,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Support\LWAnsiString\LWAnsiString.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="LWAnsiStringGuard.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

@@ -358,9 +358,6 @@ extern "C" {
 		if (offset == 0)
 			return LWAnsiString_CreateFromStringEx(x, LWAnsiString_ToCStr(str)); // if offset is 0, just duplicate original
 
-		{
-			DWORD part = (offset * ALLOC_PTR(str, SingleCharacterLength));
-		}
 		return LWAnsiString_CreateFromStringEx(x, LWAnsiString_ToCStr(str) + (offset* ALLOC_PTR(str, SingleCharacterLength))); // create a new string from the offset
 
 	}
@@ -411,12 +408,17 @@ extern "C" {
 		}
 		else
 		{
-			{
 				size_t debug_size_chars = (len + 1);
-				size_t times_chars = debug_size_chars * (x->SingleCharacterLength);
-				times_chars++;
-				times_chars--;
-			}
+				debug_size_chars *= (x->SingleCharacterLength);
+				//size_t times_chars = debug_size_chars * (x->SingleCharacterLength);
+				//times_chars++;
+				//times_chars--;
+				{
+					;;;
+					;;;
+
+				}
+			
 			Ans->Data = (char*)DefaultHandler.CustomFirstAlloc(StringHeap, HEAP_GENERATE_EXCEPTIONS | HEAP_ZERO_MEMORY, (len +1 )*(x->SingleCharacterLength)); // +1 for null terminator
 
 			Ans->AllocatedSize = len + 1; // +1 for null terminator
@@ -457,7 +459,6 @@ extern "C" {
 
 
 
-#error this is broken LWAnsiString_CreateFromStringEx with unicode atm
 
 	LWAnsiString* LWAnsiString_CreateFromStringEx(AllocationHandler* x, const char* str)
 	{
@@ -673,8 +674,9 @@ extern "C" {
 
 		if (new_size != str->AllocatedSize)
 		{
+			DWORD SizeCalc = ((new_size + 1) * ALLOC_PTR(str, SingleCharacterLength));
 			//char* newPtr = (char*)((AllocationHandler*)(str->AllocatedHandle))->CustomReAlloc(((AllocationHandler*)(str->AllocatedHandle))->CustomGetHeap(0, 0, 0), HEAP_GENERATE_EXCEPTIONS | HEAP_ZERO_MEMORY, str->Data, new_size + 1); // +1 for null terminator
-			char* newPtr = (char*)Handler->CustomReAlloc(Handler->CustomGetHeap(0, 0, 0), HEAP_GENERATE_EXCEPTIONS | HEAP_ZERO_MEMORY, str->Data, ( (new_size + 1) * ALLOC_PTR(str, SingleCharacterLength))); // +1 for null terminator
+			char* newPtr = (char*)Handler->CustomReAlloc(Handler->CustomGetHeap(0, 0, 0), HEAP_GENERATE_EXCEPTIONS | HEAP_ZERO_MEMORY, str->Data, SizeCalc); // +1 for null terminator
 
 			if (newPtr == nullptr)
 			{
@@ -1418,17 +1420,24 @@ extern "C" {
 			int res = MultiByteToWideChar(CP_ACP, 0, append, -1, 0, 0);
 			if (res > 0)
 			{
-				wchar_t* tmp = (wchar_t*)ALLOC_PTR(str, CustomFirstAlloc)(ALLOC_PTR(str, CustomGetHeap), 0, res);
+				auto Heap = ALLOC_PTR(str, CustomGetHeap)(0, 0, 0);
+				wchar_t* tmp = (wchar_t*)ALLOC_PTR(str, CustomFirstAlloc)(Heap, 0, res * ALLOC_PTR(str, SingleCharacterLength));
 				LWAnsiString* self = str;
-				int do_res = MultiByteToWideChar(CP_ACP, 0, append, -1, tmp, -1);
-
-				if (do_res != 0)
+				if (tmp != 0)
 				{
-					 	self = LWAnsiString_AppendInternal(str, (const void*)append, ALLOC_PTR(str, STRLEN));
-				}
+					local_memzero((unsigned char*)tmp, res * ALLOC_PTR(str, SingleCharacterLength));
 
+				
+					int do_res = MultiByteToWideChar(CP_ACP, 0, append, -1, tmp, res);
+
+					if (do_res != 0)
+					{
+						self = LWAnsiString_AppendInternal(str, (const void*)tmp, ALLOC_PTR(str, STRLEN));
+					}
+
+				}
 				if (tmp != 0) {
-					ALLOC_PTR(str, CustomFree)(ALLOC_PTR(str, CustomGetHeap), 0, tmp);
+					ALLOC_PTR(str, CustomFree)(ALLOC_PTR(str, CustomGetHeap)(0, 0, 0), 0, tmp);
 				}
 				return self;
 			}
