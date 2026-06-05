@@ -1,5 +1,6 @@
-// LWAnsiString.cpp : Defines the functions for the static library.]
 #include "pch.h"
+// LWAnsiString.cpp : Defines the functions for the static library.]
+#define LWANSISTRING_HARDIMPORTS_VISIBLE
 #include "LWAnsiString_Internal.h"
 /*
  * This file is part of the Midas project and is designed to be self-contained.
@@ -80,7 +81,8 @@
 
 
 
-#ifdef LWANSISTRING_HARDIMPORTS
+#ifndef LWANSISTRING_HARDIMPORTS
+#else
 /*
 * The win32 api routines that LWAnsiString depend on or reference are gonna be combined here
 * for functionally a light IAT table. 
@@ -88,54 +90,46 @@
 * undefining LWANSISTRING_HARDIMPORTS will get you code that will even get you code to complain of *hey * need this*
 */
 
+void Init_LWAnsiString_Imports()
+{
+
+
+	IAT_WideCharToMultiByte = WideCharToMultiByte;
+	IAT_MultiByteToWideChar = MultiByteToWideChar;
+
+
+	IAT_GetProcessHeap = GetProcessHeap;
+	IAT_HeapAlloc = HeapAlloc;
+	IAT_HeapReAlloc = HeapReAlloc;
+	IAT_HeapFree = HeapFree;
+
+
+	IAT_lstrcatA = lstrcatA;
+	IAT_lstrcmpA = lstrcmpA;
+	IAT_lstrcmpiA = lstrcmpiA;
+	IAT_lstrlenA = lstrlenA;
+
+
+
+	IAT_lstrlenW = lstrlenW;
+	IAT_lstrcmpiW = lstrcmpiW;
+	IAT_lstrcatW = lstrcatW;
+	IAT_lstrcmpW = lstrcmpW;
+
+
+#endif
+
+
+
+
+}
 extern "C" {
-#ifndef LWANSISTRING_ANSIONLY
-#ifndef LWANSISTRING_UNICODE
-#error  In the project setting or code itself define LWANSISTRING_ANSI_TABLE for Ansi support and LWANSISTRING_UNICODE_TABLE for unicode support. Alternatively, If You're dropping the Win32 fully, undefine  LWANSISTRING_HARDIMPORTS,  #include "LWAnsiString_Internal.h", and Assign IAT_routine such as IAT_strlen, ect...
-#endif
-#endif
-
-	IAT_WideCharToMultiBytePtr IAT_WideCharToMultiByte = WideCharToMultiByte;
-	IAT_MultiByteToWideCharPtr IAT_MultiByteToWideChar = MultiByteToWideChar;
-
-
-	IAT_GetProcessHeapPtr IAT_GetProcessHeap = GetProcessHeap;
-	IAT_HeapAllocPtr IAT_HeapAlloc = HeapAlloc;
-	IAT_HeapReAllocPtr IAT_HeapReAlloc = HeapReAlloc;
-	IAT_HeapFreePtr IAT_HeapFree = HeapFree;
-
-#ifdef LWANSISTRING_ANSIONLY
-	IAT_lstrcatAPtr IAT_lstrcatA = lstrcatA;
-	IAT_lstrcmpAPTR IAT_lstrcmpA = lstrcmpA;
-	IAT_lstrcmpiAPTR IAT_lstrcmpiA = lstrcmpiA;
-	IAT_lstrlenAPtr IAT_lstrlenA = lstrlenA;
-#endif
-
-#ifdef LWANSISTRING_UNICODE
-	IAT_lstrlenWPtr IAT_lstrlenW = lstrlenW;
-	IAT_lstrcmpiWPTR IAT_lstrcmpiW = lstrcmpiW;
-	IAT_lstrcatWPtr IAT_lstrcatW = lstrcatW;
-	IAT_lstrcmpWPTR IAT_lstrcmpW = lstrcmpW;
-#endif
-
-
-#else
-
-IAT_WideCharToMultiBytePtr IAT_WideCharToMultiByte = nullptr;
-IAT_MultiByteToWideCharPtr IAT_MultiByteToWideChar = nullptr;
-IAT_GetProcessHeapPtr IAT_GetProcessHeap = nullptr;
-IAT_HeapAllocPtr IAT_HeapAlloc = nullptr;
-IAT_HeapReAllocPtr IAT_HeapReAlloc = nullptr;
-IAT_HeapFreePtr IAT_HeapFree = nullptr;
-
-
-#endif
-
 
 }
 
 #include "framework.h"
 #include <climits>
+#include <cstdint>
 
 
 #pragma optimize("", off)
@@ -148,7 +142,7 @@ IAT_HeapFreePtr IAT_HeapFree = nullptr;
 // if defined the Append flavors will double the length of the string memory size and take that or the reuqested memory size, whichever is bigger
 #define AGGRO_REALLOC
 
-extern "C" {
+
 	HANDLE StringHeap = 0;
 
 
@@ -328,7 +322,7 @@ extern "C" {
 				UnicodeHandler.WriteToIndex = (LW_STRING_WRITE_INDEX)UnicodeWriteIndex;
 			}
 		}
-
+		Init_LWAnsiString_Imports();
 		
 	}
 
@@ -373,10 +367,17 @@ extern "C" {
 
 	LWAnsiString* LWAnsiString_CreateString(int len)
 	{
-		/* UNIT TESTED*/
-		return LWAnsiString_CreateStringEx(&DefaultHandler, len);
+#if defined(_UNICODE) || defined(UNICODE)
+		return LWAnsiString_CreateStringEx(LWUnicodeHandler, len);
+#else
+		return LWAnsiString_CreateStringEx(LWAnsiHandler, len);
+#endif
 	}
 
+	LWAnsiString* LWAnsiString_CreateStringA(int len)
+	{
+		return LWAnsiString_CreateStringEx(LWAnsiHandler, 1);
+	}
 	LWAnsiString* LWAnsiString_CreateStringW(int len)
 	{
 		return LWAnsiString_CreateStringEx(LWUnicodeHandler, len);
@@ -604,8 +605,9 @@ extern "C" {
 
 	void  LWAnsiString_ClampNull(LWAnsiString* str)
 	{
-		if (str && str->Data)
+		if (str && str->Data && ALLOC_PTR(str, WriteToIndex))
 		{
+			ProbeIfDirtyLen(str);
 			ALLOC_PTR(str, WriteToIndex)(str->Data, str->Length, 0);
 		//	str->Data[str->Length] = 0;
 		}
@@ -993,17 +995,35 @@ extern "C" {
 
 	
 
-	LWAnsiString* LWAnsiString_Reserve(LWAnsiString* str, int new_size)
+	LWAnsiString* LWAnsiString_Reserve(LWAnsiString* str, size_t  new_size)
 	{
+		size_t Sizecalc = 0;
 		/* UNIT TESTED THRU LWAnsiString_Reserve */
 		if (str == nullptr)
 			return nullptr; // null string
-		if (new_size <= 0)
+		/*if (new_size <= 0)
 			return str; // no change if size is less than or equal to 0
+			uncomment this out if you go back to signed size
+			*/
 		ProbeIfDirtyLen(str);
+		if ((new_size+1) > (MAXSIZE_T/ ALLOC_PTR(str, SingleCharacterLength)))
+		{
+			return nullptr; //  overflow can happen on this allocate.
+		}
+		else
+		{
+			Sizecalc = ((new_size + 1) * ALLOC_PTR(str, SingleCharacterLength)); // +1 for null terminator
+		}
+
+
 		if (new_size > str->AllocatedSize)
 		{
-			char* newPtr = (char*)((AllocationHandler*)(str->AllocatedHandle))->CustomReAlloc(((AllocationHandler*)(str->AllocatedHandle))->CustomGetHeap(0, 0, 0), HEAP_GENERATE_EXCEPTIONS | HEAP_ZERO_MEMORY, str->Data, new_size + ALLOC_PTR(str, SingleCharacterLength)); // +1 for null terminator
+
+			
+		//	Sizecalc = ((new_size + 1) * ALLOC_PTR(str, SingleCharacterLength)); // +1 for null terminator
+			
+			
+			char* newPtr = (char*)((AllocationHandler*)(str->AllocatedHandle))->CustomReAlloc(((AllocationHandler*)(str->AllocatedHandle))->CustomGetHeap(0, 0, 0), HEAP_GENERATE_EXCEPTIONS | HEAP_ZERO_MEMORY, str->Data, Sizecalc); // +1 for null terminator
 			if (newPtr == nullptr)
 			{
 				return nullptr; // failed to reallocate
@@ -1013,8 +1033,15 @@ extern "C" {
 				
 				str->Data = newPtr; // set the new data pointer
 				str->AllocatedSize = new_size + 1; // update the allocated size
-				LWAnsiString_ClampNull(str);
-				local_memzero((unsigned char*) str->A + (str->Length*ALLOC_PTR(str, SingleCharacterLength)), str->AllocatedSize + (- 1 - str->Length)* ALLOC_PTR(str, SingleCharacterLength)); // zero out the rest of the buffer
+
+					/*
+					* FALLBACK: If a custom allocator is injected that ignores HEAP_ZERO_MEMORY,
+					* uncomment this to manually zero the expanded memory buffer.
+					*
+					* size_t start_byte = str->Length * ALLOC_PTR(str, SingleCharacterLength);
+					* size_t end_byte = str->AllocatedSize * ALLOC_PTR(str, SingleCharacterLength);
+					* local_memzero((unsigned char*)str->A + start_byte, end_byte - start_byte);
+					*/
 				LWAnsiString_ClampNull(str);
 				return str; // return the current string
 
@@ -1030,24 +1057,51 @@ extern "C" {
 		return str; // no change if size is less than or equal to allocated size
 	}
 
-	LWAnsiString* LWAnsiString_AddReserveCap(LWAnsiString* str, int new_size, int max)
+	LWAnsiString* LWAnsiString_AddReserveCap(LWAnsiString* str, size_t new_size, size_t max)
 	{
 		if (str == nullptr)
 			return nullptr; // null string
 		/* UNIT TESTED THRU LWAnsiString_Reserve */
+		ProbeIfDirtyLen(str);
+		size_t calc_size;
+
 		if (new_size + str->Length > max)
 		{
-			new_size = max;
+			calc_size = max;
 		}
+		else
+		{
+			calc_size = new_size + str->Length;
+
+			if (calc_size < str->Length) // overflow
+			{
+				calc_size = max;
+			}
+		}
+		
+
+		return LWAnsiString_Reserve(str, calc_size); // reserve the string with the new size plus current length
+	}
+	LWAnsiString* LWAnsiString_AddReserve(LWAnsiString* str, size_t new_size)
+	{
+		if (str == nullptr)
+			return nullptr; // null string
 		ProbeIfDirtyLen(str);
 
-		return LWAnsiString_Reserve(str, new_size); // reserve the string with the new size plus current length
-	}
-	LWAnsiString* LWAnsiString_AddReserve(LWAnsiString* str, int new_size)
-	{
-		ProbeIfDirtyLen(str);
+
+
+		if ((MAXSIZE_T - str->Length) < new_size)
+		{
+			return nullptr; 
+		}
+
+		size_t calc_size = str->Length + new_size;
+
+	
+
+
 		/* UNIT TESTED THRU LWAnsiString_Reserve */
-		return LWAnsiString_Reserve(str, str->Length + new_size); // reserve the string with the new size plus current length
+		return LWAnsiString_Reserve(str, calc_size); // reserve the string with the new size plus current length
 	}
 
 
@@ -1066,6 +1120,7 @@ extern "C" {
 
 	LWAnsiString* LWAnsiString_DuplicateEx(AllocationHandler* x, LWAnsiString* str)
 	{
+		if (x == nullptr) return nullptr;
 		if (str == nullptr) return nullptr; // null string
 		ProbeIfDirtyLen(str);
 		/* UNIT TESTED THRU LWAnsiString_CreateFromStringEx and the */
@@ -1107,12 +1162,12 @@ extern "C" {
 
 	bool LWAnsiString_AppendNumberA(int number, LWAnsiString* output, int* output_size)
 	{
-		return  LWAnsiString_AppendNumberInternal(number, output, output_size, (LWAnsiString * (*)(LWAnsiString*, const char*)) LWAnsiString_AppendA, "-2147483648");
+		return  LWAnsiString_AppendNumberInternal(number, output, output_size, (LWAnsiString * (*)(LWAnsiString*, const char*)) LWAnsiString_AppendA, "-2147483648", "0");
 	}
 
 	bool LWAnsiString_AppendNumberW(int number, LWAnsiString* output, int* output_size)
 	{
-		return  LWAnsiString_AppendNumberInternal(number, output, output_size, (LWAnsiString * (*)(LWAnsiString*, const char*)) LWAnsiString_AppendW, L"-2147483648");
+		return  LWAnsiString_AppendNumberInternal(number, output, output_size, (LWAnsiString * (*)(LWAnsiString*, const char*)) LWAnsiString_AppendW, L"-2147483648", L"0");
 	}
 
 
@@ -1496,6 +1551,6 @@ extern "C" {
 	{
 		return ALLOC_PTR(str, SingleCharacterLength) * str->AllocatedSize;
 	}
-}
 
 
+ 

@@ -46,7 +46,7 @@ Short note: tools tagged as **(Experimental)**  require to be built with the Exp
 ### Process & Dependency Analysis
 | Command | Description |
 | :--- | :--- |
-| `-whichdll [dll_name]` | **(Experimental)** Uses a custom Mini-Debugger to force the Windows OS Loader to resolve a DLL's true path based on complex search orders. Operates safely within a zero-trust sandbox. |
+| `-whichdll [dll_name]` | **(Experimental)** Uses a custom Mini-Debugger to have the Windows OS Loader resolve the passed dll's location. Outputs where it was loaded from. This command uses the Windows Debug API and there's risk of Thread Local Storage if the dll has it|
 | `-processprofile` | Walks the modules and heaps of the target process to find the main executable spawn point and flags security vulnerabilities (e.g., writable main executable folders, DLL hijacking risks). |
 | `-killprocess -PID <id>` | **(Requires both flags)** Aggressively terminates target processes. Plays nice first via standard termination, then falls back to a "Sniper" method (attaching as a debugger and exiting to force a kernel-level kill). |
 | `-which [name]` | Wrapper around `SearchPathA`. Asks Windows directly where a specific file or folder is located across the system's path environment. |
@@ -59,7 +59,7 @@ Short note: tools tagged as **(Experimental)**  require to be built with the Exp
 | `-elevated` | Queries the Token Elevation Type to determine if the application is running with full Administrator privileges, limited privileges, or default scoping. |
 | `-whoami_user_group` | Outputs the specific User Group information and attributes mapped to the current token. |
 | `-checkSafeLoadPath` | Verifies if `SafeDllSearchMode` is active in the Windows Registry. Flags systems that are vulnerable to decoy DLL-hijacking. |
-| `-whoami_priv_system`| **(Experimental)** Hard-hooks into `winlogon.exe` to extract and analyze a raw `SYSTEM` level token. |
+| `-whoami_priv_system`` | **(Experimental)** Attempts to open the ``winlogon.exe`` process and retrieve its process token (requires SeDebugPrivilege and full admin (ie UAC prompt yes); may be blocked by PPL). If successful, Midas reuses its ``whoami`` token parser on the winlogon token|
 
 ### System & OS Information
 | Command | Description |

@@ -5,6 +5,31 @@
 #define AGGRO_REALLOC
 #define INTERNALCALL_STREN(str) ALLOC_PTR(str, STRLEN)(str->Data);
 #define INTERNALCALL_STRCAT(str) ALLOC_PTR(str, STRCAT)(str->Data, x);
+
+extern "C" {
+
+	IAT_WideCharToMultiBytePtr IAT_WideCharToMultiByte = 0;
+	IAT_MultiByteToWideCharPtr IAT_MultiByteToWideChar = 0;
+	IAT_GetProcessHeapPtr IAT_GetProcessHeap = 0;
+	IAT_HeapAllocPtr IAT_HeapAlloc = 0;
+	IAT_HeapReAllocPtr IAT_HeapReAlloc = 0;
+	IAT_HeapFreePtr IAT_HeapFree = 0;
+
+
+
+	IAT_lstrcatAPtr IAT_lstrcatA = 0;
+	IAT_lstrcmpAPTR IAT_lstrcmpA = 0;
+	IAT_lstrcmpiAPTR IAT_lstrcmpiA = 0;
+	IAT_lstrlenAPtr IAT_lstrlenA = 0;
+	IAT_lstrcpyAPTR IAT_lstrcpyA = 0;
+
+	IAT_lstrlenWPtr IAT_lstrlenW = 0;
+	IAT_lstrcmpiWPTR IAT_lstrcmpiW = 0;
+	IAT_lstrcatWPtr IAT_lstrcatW = 0;
+	IAT_lstrcmpWPTR IAT_lstrcmpW = 0;
+
+}
+
 extern "C" {
 	/// <summary>
 /// If the string ends with the given suffix, trim it off.
@@ -15,7 +40,7 @@ extern "C" {
 /// <returns></returns>
 	bool LWAnsiString_TrimEndsWithInternal(LWAnsiString* str, const char* suffix, bool Case, int (*SuppliedLWAnsiString_EndsAt)(LWAnsiString*, const char*, bool))
 	{/* UNIT TESTED THRU LWAnsiString_EndsAt */
-		if (str == nullptr || suffix == nullptr)
+		if (str == nullptr || suffix == nullptr || SuppliedLWAnsiString_EndsAt == nullptr )
 		{
 			return false; // invalid string or suffix
 		}
@@ -35,7 +60,7 @@ extern "C" {
 	bool LWAnsiString_EndsWithInternal(LWAnsiString* str, const char* suffix, bool Case, int (*SuppliedLWAnsiString_EndsAt)(LWAnsiString*, const char*, bool))
 	{
 		/* UNIT TESTED THRU LWAnsiString_EndsAt */
-		if (str == nullptr || suffix == nullptr)
+		if (str == nullptr || suffix == nullptr || SuppliedLWAnsiString_EndsAt == nullptr)
 		{
 			return false; // invalid string or suffix
 		}
@@ -74,9 +99,18 @@ extern "C" {
 
 	}
 
+	/// <summary>
+	/// Internal common code for LWAnsiString_EndsAt
+	/// </summary>
+	/// <param name="str">check this</param>
+	/// <param name="suffix">the type is a lie, we're ether char* or wchar_t*, and depend on passed STRLEN and STRCMP</param>
+	/// <param name="Case">ignored</param>
+	/// <param name="STRLEN">STRLEN to use like wcslen , strlen</param>
+	/// <param name="STRCMP">one of between stricmp, strcmp, wcsmp , wcsicmp flavors</param>
+	/// <returns></returns>
 	int LWAnsiString_EndsAtInternal(LWAnsiString* str, const wchar_t* suffix, bool Case, LW_STRING_strlen STRLEN, LWSTRING_CMP STRCMP)
 	{
-		if (str == nullptr || suffix == nullptr)
+		if (str == nullptr || suffix == nullptr || STRLEN == nullptr || STRCMP == nullptr )
 		{
 			return false; // invalid string or suffix
 		}
@@ -90,18 +124,8 @@ extern "C" {
 		}
 		res = STRCMP((const char*)str->Data + str_len - suffix_len, (char*) suffix) == 0 ? str_len - suffix_len : -1; // case sensitive;
 		return res;
-		if (Case)
-		{
-			//res = lstrcmpA(str->Data + str_len - suffix_len, suffix) == 0 ? str_len - suffix_len : -1; // case sensitive
-			//res = ALLOC_PTR(str, STRCMP)((const char*)str->Data + str_len - suffix_len, suffix) == 0 ? str_len - suffix_len : -1; // case sensitive
-			//res = CompareFunction((const char*)str->Data + str_len - suffix_len, suffix) == 0 ? str_len - suffix_len : -1; // case sensitive
-		}
-		else
-		{
-			//res = lstrcmpiA(str->Data + str_len - suffix_len, suffix) == 0 ? str_len - suffix_len : -1; // case insensitive
-			//res = ALLOC_PTR(str, STRICMP)((const char*)str->Data + str_len - suffix_len, suffix) == 0 ? str_len - suffix_len : -1; // case sensitive
-		}
-		return res;
+
+
 	}
 
 
@@ -127,7 +151,7 @@ extern "C" {
 		{
 			return 1;
 		}
-		if (Case)
+		if (!Case)
 		{
 			//return lstrcmpA(a->Data, b); // case sensitive
 			return ALLOC_PTR(a, STRICMP)((const char*)a->Data, (char*)b);
@@ -372,7 +396,8 @@ extern "C" {
 		LWAnsiString* output, 
 		int* output_size,
 		LWAnsiString* (*appendFunc)(LWAnsiString* str, const char* append),
-		const void* IntMaxPlugin)
+		const void* IntMaxPlugin,
+		const void* zeroPlugin)
 	{
 		// yes it's an int. Yes we're treating it like a bool.
 		int IsPositive = number > 0;
@@ -400,7 +425,7 @@ extern "C" {
 		if (number == 0)
 		{
 			// special case for zero
-			appendFunc(output, "0");
+			appendFunc(output, (const char*) zeroPlugin);
 			if (output_size != 0) { *output_size = 2; }; // 1 digit + null terminator
 			return true;
 		}

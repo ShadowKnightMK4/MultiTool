@@ -1,5 +1,5 @@
 
-#include <LWAnsiString.h>
+#include "Support\\LWAnsiString\\LWAnsiString.h"
 #include <Windows.h>
 #include "whoami.h"
 
@@ -107,15 +107,15 @@ extern "C" {
 								{
 									if (NameTypes[i].Type == step)
 									{
-										LWAnsiString_Append(Output, NameTypes[i].DisplayType);
+										LWAnsiString_AppendA(Output, NameTypes[i].DisplayType);
 										break;
 									}
 
 								}
 							}
-							LWAnsiString_Append(Output, ": ");
-							LWAnsiString_Append(Output, LWAnsiString_ToCStr(UserNameStuff));
-							LWAnsiString_Append(Output, "\r\n");
+							LWAnsiString_AppendA(Output, ": ");
+							LWAnsiString_AppendA(Output, LWAnsiString_ToCStr(UserNameStuff));
+							LWAnsiString_AppendA(Output, "\r\n");
 							LWAnsiString_ZeroString(UserNameStuff);
 						}
 					}
@@ -154,9 +154,9 @@ extern "C" {
 							SetLastError(0);
 							if (GetUserNameAPtr(UserNameStuff->AnsiData, &SIZE))
 							{
-								LWAnsiString_Append(Output, "self: ");
-								LWAnsiString_Append(Output, LWAnsiString_ToCStr(UserNameStuff));
-								LWAnsiString_Append(Output, "\r\n");
+								LWAnsiString_AppendA(Output, "self: ");
+								LWAnsiString_AppendA(Output, LWAnsiString_ToCStr(UserNameStuff));
+								LWAnsiString_AppendA(Output, "\r\n");
 							}
 							else
 							{

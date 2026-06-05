@@ -1,5 +1,5 @@
 #include "whoami.h"
-#include <LWAnsiString.h>
+#include "Support\\LWAnsiString\\LWAnsiString.h">
 
 #define GFTO_ENABLE "'ENABLED SID'"
 #define GFTO_OFFLINE "'INACTIVE SID'"
@@ -19,70 +19,70 @@ extern "C" {
 		{
 			if ((Flag && SE_GROUP_ENABLED) != 0)
 			{
-				LWAnsiString_Append(Out, GFTO_ENABLE);
+				LWAnsiString_AppendA(Out, GFTO_ENABLE);
 				Flag &= ~SE_GROUP_ENABLED;
-				if (Flag != 0) LWAnsiString_Append(Out, ", ");
+				if (Flag != 0) LWAnsiString_AppendA(Out, ", ");
 			}
 			else
 			{
-				LWAnsiString_Append(Out, GFTO_OFFLINE);
-				if (Flag != 0) LWAnsiString_Append(Out, ", ");
+				LWAnsiString_AppendA(Out, GFTO_OFFLINE);
+				if (Flag != 0) LWAnsiString_AppendA(Out, ", ");
 			}
 
 
 			if ((Flag && SE_GROUP_ENABLED_BY_DEFAULT) != 0)
 			{
-				LWAnsiString_Append(Out, GTFO_DEFAULT_ACTIVE);
+				LWAnsiString_AppendA(Out, GTFO_DEFAULT_ACTIVE);
 				Flag &= ~SE_GROUP_ENABLED_BY_DEFAULT;
-				if (Flag != 0) LWAnsiString_Append(Out, ", ");
+				if (Flag != 0) LWAnsiString_AppendA(Out, ", ");
 			}
 
 
 			if ((Flag && SE_GROUP_INTEGRITY) != 0)
 			{
-				LWAnsiString_Append(Out, GTFO_INTEGRITY_SID);
+				LWAnsiString_AppendA(Out, GTFO_INTEGRITY_SID);
 				Flag &= ~SE_GROUP_INTEGRITY;
-				if (Flag != 0) LWAnsiString_Append(Out, ", ");
+				if (Flag != 0) LWAnsiString_AppendA(Out, ", ");
 			}
 
 			if ((Flag && SE_GROUP_INTEGRITY_ENABLED) != 0)
 			{
-				LWAnsiString_Append(Out, GTOF_INTEGRITY_SID_ACTIVE);
+				LWAnsiString_AppendA(Out, GTOF_INTEGRITY_SID_ACTIVE);
 				Flag &= ~SE_GROUP_INTEGRITY_ENABLED;
-				if (Flag != 0) LWAnsiString_Append(Out, ", ");
+				if (Flag != 0) LWAnsiString_AppendA(Out, ", ");
 			}
 			else
 			{
-				LWAnsiString_Append(Out, GTFO_INTEGRITY_SID_OFFLINE);
-				if (Flag != 0) LWAnsiString_Append(Out, ", ");
+				LWAnsiString_AppendA(Out, GTFO_INTEGRITY_SID_OFFLINE);
+				if (Flag != 0) LWAnsiString_AppendA(Out, ", ");
 			}
 
 
 			if ((Flag && SE_GROUP_LOGON_ID) != 0)
 			{
-				LWAnsiString_Append(Out, GTFO_LOGON_SID);
+				LWAnsiString_AppendA(Out, GTFO_LOGON_SID);
 				Flag &= ~SE_GROUP_LOGON_ID;
-				if (Flag != 0) LWAnsiString_Append(Out, ", ");
+				if (Flag != 0) LWAnsiString_AppendA(Out, ", ");
 			}
 
 
 			if ((Flag && SE_GROUP_MANDATORY) != 0)
 			{
-				LWAnsiString_Append(Out, GTFO_NOADJUST_SID);
+				LWAnsiString_AppendA(Out, GTFO_NOADJUST_SID);
 				Flag &= ~SE_GROUP_MANDATORY;
-				if (Flag != 0) LWAnsiString_Append(Out, ", ");
+				if (Flag != 0) LWAnsiString_AppendA(Out, ", ");
 			}
 
 			if ((Flag && SE_GROUP_OWNER) != 0)
 			{
-				LWAnsiString_Append(Out, GTFO_GROUP_OWNER);
+				LWAnsiString_AppendA(Out, GTFO_GROUP_OWNER);
 				Flag &= ~SE_GROUP_OWNER;
-				if (Flag != 0) LWAnsiString_Append(Out, ", ");
+				if (Flag != 0) LWAnsiString_AppendA(Out, ", ");
 			}
 
 			if ((Flag && SE_GROUP_RESOURCE) != 0)
 			{
-				LWAnsiString_Append(Out, "GroupResource");
+				LWAnsiString_AppendA(Out, "GroupResource");
 				Flag &= ~SE_GROUP_RESOURCE;
 				//if (Flag != 0) LWAnsiString_Append(Out, ", ");
 			}
@@ -93,27 +93,27 @@ extern "C" {
 	void helper_who_ami_usertoken_token_groups_string(int* result, const char** message_result, const char* argv[], int argc, TOKEN_GROUPS* target, LookupAccountSidA_PTR LookupSid, LWAnsiString* Output)
 	{
 		LWAnsiString* NameOfGroup = LWAnsiString_CreateString(0);
-		LWAnsiString_Append(Output, "Groups in this Token:: ");
+		LWAnsiString_AppendA(Output, "Groups in this Token:: ");
 		for (int i = 0; i < target->GroupCount; i++)
 		{
 			LWAnsiString_ZeroString(NameOfGroup);
 
 
 			LWAnsiString_AppendNewLine(Output);
-			LWAnsiString_Pad(Output, '-', 20);
+			LWAnsiString_PadA(Output, '-', 20);
 			LWAnsiString_AppendNewLine(Output);
-			LWAnsiString_Append(Output, "Group: ");
+			LWAnsiString_AppendA(Output, "Group: ");
 			helper_lookup_sid(LookupSid, target->Groups[i].Sid, 0, 0, 0, "Domain *", "*********", true, NameOfGroup);
-			LWAnsiString_Pad(Output, '*', 2);
-			LWAnsiString_Append(Output, LWAnsiString_ToCStr(NameOfGroup));
-			LWAnsiString_Pad(Output, '*', 2);
+			LWAnsiString_PadA(Output, '*', 2);
+			LWAnsiString_AppendA(Output, LWAnsiString_ToCStr(NameOfGroup));
+			LWAnsiString_PadA(Output, '*', 2);
 			LWAnsiString_AppendNewLine(Output);
-			LWAnsiString_Pad(Output, '-', 20);
+			LWAnsiString_PadA(Output, '-', 20);
 			LWAnsiString_AppendNewLine(Output);
 
-			LWAnsiString_Append(Output, "Attrib: [");
+			LWAnsiString_AppendA(Output, "Attrib: [");
 			GroupFlagToOutput(target->Groups[i].Attributes, Output);
-			LWAnsiString_Append(Output, " ]");
+			LWAnsiString_AppendA(Output, " ]");
 			LWAnsiString_AppendNewLine(Output);
 
 		}
@@ -144,7 +144,7 @@ extern "C" {
 
 		if (source_from != nullptr)
 		{
-			LWAnsiString_Append(Output, source_from);
+			LWAnsiString_AppendA(Output, source_from);
 		}
 		HANDLE selfToken;
 		if ((TargetToken == 0) || (TargetToken == INVALID_HANDLE_VALUE))

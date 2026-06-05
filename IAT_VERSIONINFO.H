@@ -10,14 +10,14 @@ typedef int (WINAPI* GetVersionInfOExA_Ptr)(
 
 typedef NTSTATUS(WINAPI* RtlGetVersion_Ptr)(LPOSVERSIONINFOEXW);
 
-extern "C"
-{
-	extern GetVersionInfOExA_Ptr IAT_GetVersionInfoExA;
-	extern RtlGetVersion_Ptr IAT_RtlGetVersion;
 
-	extern DWORD IAT_DynamicLinkVersionInfo_Cleanup();
-	extern DWORD IAT_DynamicLinkVersionInfo(DWORD IAT_settings);
-}
+
+	extern "C"	GetVersionInfOExA_Ptr IAT_GetVersionInfoExA;
+	extern "C"	RtlGetVersion_Ptr IAT_RtlGetVersion;
+
+	extern "C"	DWORD IAT_DynamicLinkVersionInfo_Cleanup();
+	extern "C"	DWORD IAT_DynamicLinkVersionInfo(DWORD IAT_settings);
+
 #ifndef IAT_VERSIONINFO_API
 #define IAT_VERSIONINFO_API
 #define IAT_VERSIONINFO_GETVERSIONEXA (1)

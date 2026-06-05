@@ -13,7 +13,7 @@
 #include <winnt.h>    // Core token structures
 #include <securitybaseapi.h> // TOKEN_GROUPS_AND_PRIVILEGES, etc.
 
-#include <LWAnsiString.h>
+#include "Support\\LWAnsiString\\LWAnsiString.h">
 
 
 typedef BOOL(WINAPI* GetUserNameAPTR)(LPSTR, LPDWORD);

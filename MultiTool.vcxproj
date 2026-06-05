@@ -76,21 +76,17 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <TargetName>midas</TargetName>
-    <IncludePath>C:\Users\Thoma\source\repos\LWAnsiString;$(IncludePath)</IncludePath>
-    <ExternalIncludePath>C:\Users\Thoma\source\repos\LWAnsiString;$(VC_IncludePath);$(WindowsSDK_IncludePath);</ExternalIncludePath>
+    <LibraryPath>$(SolutionDir)$(Configuration)\;$(VC_LibraryPath_x86);$(WindowsSDK_LibraryPath_x86)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <IncludePath>C:\Users\Thoma\source\repos\LWAnsiString;$(IncludePath)</IncludePath>
-    <ExternalIncludePath>C:\Users\Thoma\source\repos\LWAnsiString;$(VC_IncludePath);$(WindowsSDK_IncludePath);</ExternalIncludePath>
+    <LibraryPath>$(SolutionDir)$(Configuration)\;$(SolutionDir)$(Configuration)\;$(VC_LibraryPath_x86);$(WindowsSDK_LibraryPath_x86)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <IncludePath>C:\Users\Thoma\source\repos\LWAnsiString;$(IncludePath)</IncludePath>
-    <ExternalIncludePath>C:\Users\Thoma\source\repos\LWAnsiString;$(VC_IncludePath);$(WindowsSDK_IncludePath);</ExternalIncludePath>
+    <LibraryPath>$(SolutionDir)$(Configuration)\;$(VC_LibraryPath_x64);$(WindowsSDK_LibraryPath_x64)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <IncludePath>C:\Users\Thoma\source\repos\LWAnsiString;$(IncludePath)</IncludePath>
-    <ExternalIncludePath>C:\Users\Thoma\source\repos\LWAnsiString;$(VC_IncludePath);$(WindowsSDK_IncludePath);</ExternalIncludePath>
     <TargetName>midas64</TargetName>
+    <LibraryPath>$(SolutionDir)$(Configuration)\;$(VC_LibraryPath_x64);$(WindowsSDK_LibraryPath_x64)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -111,6 +107,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <IgnoreAllDefaultLibraries>true</IgnoreAllDefaultLibraries>
       <EntryPointSymbol>SystemStart</EntryPointSymbol>
+      <AdditionalDependencies>LWAnsiString.lib;$(CoreLibraryDependencies);%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -137,6 +134,7 @@
       <IgnoreAllDefaultLibraries>true</IgnoreAllDefaultLibraries>
       <EntryPointSymbol>SystemStart</EntryPointSymbol>
       <SetChecksum>true</SetChecksum>
+      <AdditionalDependencies>LWAnsiString.lib;$(CoreLibraryDependencies);%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -159,6 +157,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <IgnoreAllDefaultLibraries>true</IgnoreAllDefaultLibraries>
       <EntryPointSymbol>SystemStart</EntryPointSymbol>
+      <AdditionalDependencies>LWAnsiString.lib;$(CoreLibraryDependencies);%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -184,6 +183,7 @@
       <IgnoreAllDefaultLibraries>true</IgnoreAllDefaultLibraries>
       <EntryPointSymbol>SystemStart</EntryPointSymbol>
       <SetChecksum>true</SetChecksum>
+      <AdditionalDependencies>LWAnsiString.lib;$(CoreLibraryDependencies);%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -204,6 +204,7 @@
     <ClCompile Include="moveonreboot.cpp" />
     <ClCompile Include="IAT_registry.cpp" />
     <ClCompile Include="show_pending_deletes.cpp" />
+    <ClCompile Include="string_to_numer_for_kill_process.cpp" />
     <ClCompile Include="whichdll.cpp" />
     <ClCompile Include="mylib_string.cpp" />
     <ClCompile Include="Numbers.cpp" />

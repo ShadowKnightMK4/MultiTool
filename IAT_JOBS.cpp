@@ -1,6 +1,6 @@
 #include "common.h"
 #include "osver.h"
-#include <LWAnsiString.h>
+#include "Support\\LWAnsiString\\LWAnsiString.h">
 
 
 #include "IAT_DLLS.H"

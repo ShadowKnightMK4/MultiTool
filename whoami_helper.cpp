@@ -27,7 +27,7 @@ bool helper_lookup_sid_domain_name(LookupAccountSidA_PTR lookup, PSID Target, LW
 		int res = lookup(0, Target, 0, &TokenNameSize, DomainNameContainer, &DomainNameSize, &SidUse);
 		if (res != 0)
 		{
-			LWAnsiString_Append(Output, DomainNameContainer);
+			LWAnsiString_AppendA(Output, DomainNameContainer);
 			LocalFree(DomainLocal);
 			return true;
 		}

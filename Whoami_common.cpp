@@ -46,7 +46,7 @@ extern "C" {
 			int res = lookup(0, Target, 0, &TokenNameSize, DomainNameContainer, &DomainNameSize, &SidUse);
 			if (res != 0)
 			{
-				LWAnsiString_Append(Output, DomainNameContainer);
+				LWAnsiString_AppendA(Output, DomainNameContainer);
 				LocalFree(DomainLocal);
 				return true;
 			}
@@ -86,7 +86,7 @@ extern "C" {
 			int res = lookup(0, Target, TokenNameContainer, &TokenNameSize, 0, &DomainNameSize, &SidUse);
 			if (res != 0)
 			{
-				LWAnsiString_Append(Output, TokenNameContainer);
+				LWAnsiString_AppendA(Output, TokenNameContainer);
 				LocalFree(TokenLocal);
 				return true;
 			}
@@ -113,27 +113,27 @@ extern "C" {
 			{
 				if (PrefixDomain != nullptr)
 				{
-					LWAnsiString_Append(Output, PrefixName);
+					LWAnsiString_AppendA(Output, PrefixName);
 				}
 
-				LWAnsiString_Append(Output, LWAnsiString_ToCStr(DomainName));
+				LWAnsiString_AppendA(Output, LWAnsiString_ToCStr(DomainName));
 				if (SuffixDomain != nullptr)
 				{
-					LWAnsiString_Append(Output, SuffixName);
+					LWAnsiString_AppendA(Output, SuffixName);
 				}
-				LWAnsiString_Append(Output, "\\\\");
+				LWAnsiString_AppendA(Output, "\\\\");
 			}
 
 		}
 		helper_lookup_sid_display_name(lookup, Target, (SIDNAME));
 		if (PrefixName != nullptr)
 		{
-			LWAnsiString_Append(Output, PrefixName);
+			LWAnsiString_AppendA(Output, PrefixName);
 		}
-		LWAnsiString_Append(Output, LWAnsiString_ToCStr(SIDNAME));
+		LWAnsiString_AppendA(Output, LWAnsiString_ToCStr(SIDNAME));
 		if (SuffixName != nullptr)
 		{
-			LWAnsiString_Append(Output, SuffixName);
+			LWAnsiString_AppendA(Output, SuffixName);
 		}
 
 		LWAnsiString_FreeString(SIDNAME);
@@ -142,12 +142,12 @@ extern "C" {
 		helper_lookup_sid_display_name(lookup, Target, (SIDNAME));
 		if (PrefixName != nullptr)
 		{
-			LWAnsiString_Append(Output, PrefixName);
+			LWAnsiString_AppendA(Output, PrefixName);
 		}
-		LWAnsiString_Append(Output, LWAnsiString_ToCStr(SIDNAME));
+		LWAnsiString_AppendA(Output, LWAnsiString_ToCStr(SIDNAME));
 		if (SuffixName != nullptr)
 		{
-			LWAnsiString_Append(Output, SuffixName);
+			LWAnsiString_AppendA(Output, SuffixName);
 		}
 
 		if (IncludeDomain)
@@ -155,12 +155,12 @@ extern "C" {
 			helper_lookup_sid_domain_name(lookup, Target, DomainName);
 			if (PrefixDomain != nullptr)
 			{
-				LWAnsiString_Append(Output, PrefixName);
+				LWAnsiString_AppendA(Output, PrefixName);
 			}
-			LWAnsiString_Append(Output, LWAnsiString_ToCStr(DomainName));
+			LWAnsiString_AppendA(Output, LWAnsiString_ToCStr(DomainName));
 			if (SuffixDomain != nullptr)
 			{
-				LWAnsiString_Append(Output, SuffixName);
+				LWAnsiString_AppendA(Output, SuffixName);
 			}
 		}
 

@@ -1,6 +1,7 @@
 #pragma once
+#define LWANSISTRING_FORMAT_NO_SUBS
 #include "LWAnsiString.h"
-
+#undef  LWANSISTRING_FORMAT_NO_SUBS
 
 ///<summary>
 /// This blank macro is for me to mark certain functions as internal only. 
@@ -39,7 +40,8 @@ extern "C"
 		LWAnsiString* output,
 		int* output_size,
 		LWAnsiString* (*appendFunc)(LWAnsiString* str, const char* append),
-		const void* IntMaxPlugin);
+		const void* IntMaxPlugin,
+		const void* zeroPlugin);
 
 
 	/// <summary>
@@ -147,30 +149,28 @@ typedef void(_stdcall* IAT_SleepPtr)(DWORD dwSecs);
 
 
 
-#ifndef LWANSISTRING_HARDIMPORTS
+#ifdef LWANSISTRING_HARDIMPORTS_VISIBLE
 /* IF the build undefines LWANSISTRING_HARDIMPORTS and includes this include, we expose the IAT pointers that will normally point to Win32 code. */
+extern "C" {
+	extern IAT_WideCharToMultiBytePtr IAT_WideCharToMultiByte;
+	extern IAT_MultiByteToWideCharPtr IAT_MultiByteToWideChar;
+	extern IAT_GetProcessHeapPtr IAT_GetProcessHeap;
+	extern IAT_HeapAllocPtr IAT_HeapAlloc;
+	extern IAT_HeapReAllocPtr IAT_HeapReAlloc;
+	extern IAT_HeapFreePtr IAT_HeapFree;
 
-extern IAT_WideCharToMultiBytePtr IAT_WideCharToMultiByte;
-extern IAT_MultiByteToWideCharPtr IAT_MultiByteToWideChar;
-extern IAT_GetProcessHeapPtr IAT_GetProcessHeap;
-extern IAT_HeapAllocPtr IAT_HeapAlloc;
-extern IAT_HeapReAllocPtr IAT_HeapReAlloc;
-extern IAT_HeapFreePtr IAT_HeapFree;
 
 
+	extern	IAT_lstrcatAPtr IAT_lstrcatA;
+	extern IAT_lstrcmpAPTR IAT_lstrcmpA;
+	extern IAT_lstrcmpiAPTR IAT_lstrcmpiA;
+	extern IAT_lstrlenAPtr IAT_lstrlenA;
+	extern IAT_lstrcpyAPTR IAT_lstrcpyA;
 
-	#ifdef LWANSISTRING_ANSI_TABLE
-extern	IAT_lstrcatAPtr IAT_lstrcatA;
-extern IAT_lstrcmpAPTR IAT_lstrcmpA;
-extern IAT_lstrcmpiAPTR IAT_lstrcmpiA;
-extern IAT_lstrlenAPtr IAT_lstrlenA = lstrlenA;
-	#endif
+	extern IAT_lstrlenWPtr IAT_lstrlenW;
+	extern IAT_lstrcmpiWPTR IAT_lstrcmpiW;
+	extern IAT_lstrcatWPtr IAT_lstrcatW;
+	extern IAT_lstrcmpWPTR IAT_lstrcmpW;
+}
 
-#ifdef LWANSISTRING_UNICODE_TABLE
-extern IAT_lstrlenW IAT_lstrlenA;
-extern IAT_lstrcmpiWPTR IAT_lstrcmpiW;
-extern IAT_lstrcatWPtr IAT_lstrcatW;
-extern IAT_lstrcmpWPtr IAT_lstrcmpW;
-#endif
-
-#endif
+#endif 

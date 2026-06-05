@@ -94,14 +94,14 @@ bool ShowHelp_(int* result, const char** message_result, const char* argv[], int
 			
 			if ((Entries[i].description != 0) && ((Entries[i].FunctionPointer != 0) && (Entries[i].FunctionPointer != Disabled) && (Entries[i].FunctionPointer != NoSupport)))
 			{
-				LWAnsiString_PadNewLine(output, '=', 20); // pad the flag name to 20 chars
-				LWAnsiString_AppendWithNewLine(output, Entries[i].flag_name);
-				LWAnsiString_PadNewLine(output, '=', 20); // pad the flag name to 20 chars
-				LWAnsiString_AppendWithNewLine(output, Entries[i].description);
-				LWAnsiString_PadNewLine(output, '=', 20); // pad the flag name to 20 chars
-				LWAnsiString_AppendNewLine(output);
+				LWAnsiString_PadNewLineA(output, '=', 20); // pad the flag name to 20 chars
+				LWAnsiString_AppendWithNewLineA(output, Entries[i].flag_name);
+				LWAnsiString_PadNewLineA(output, '=', 20); // pad the flag name to 20 chars
+				LWAnsiString_AppendWithNewLineA(output, Entries[i].description);
+				LWAnsiString_PadNewLineA(output, '=', 20); // pad the flag name to 20 chars
+				LWAnsiString_AppendNewLineA(output);
 			}
-			LWAnsiString_Append(output, "\r\n");
+			LWAnsiString_AppendA(output, "\r\n");
 		}
 		else
 		{

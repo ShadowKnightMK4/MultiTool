@@ -1,7 +1,7 @@
 
 
 #include "common.h"
-#include <LWAnsiString.h>
+#include "Support\\LWAnsiString\\LWAnsiString.h"
 #include "osver.h"
 #include "IAT_ENV.H"
 #include "IAT_FILE.H"
@@ -38,28 +38,28 @@ void LegacyMarkForDelete(const char* name, LWAnsiString* vebal)
 			size = IAT_GetWindowsDirectoryA(WinDir->AnsiData, size + 1);
 			if (!LWAnsiString_EndsWith(WinDir, "\\", false))
 			{
-				LWAnsiString_Append(WinDir, "\\");
+				LWAnsiString_AppendA(WinDir, "\\");
 			}
 		}
 		else
 		{
 			if (!LWAnsiString_EndsWith(WinDir, "\\", false))
 			{
-				LWAnsiString_Append(WinDir, "\\");
+				LWAnsiString_AppendA(WinDir, "\\");
 			}
 		}
 
 	
 
 		// now the windir
-		LWAnsiString_Append(WinDir, "wininit.ini");
+		LWAnsiString_AppendA(WinDir, "wininit.ini");
 
 		{
 			DWORD ShortPath = IAT_GetShortPathA(name, NULL, 0);
 			if (ShortPath != 0)
 			{
 				LWAnsiString* EntryLine = LWAnsiString_CreateString(1);
-				LWAnsiString_Append(EntryLine, "NUL=");
+				LWAnsiString_AppendA(EntryLine, "NUL=");
 				LWAnsiString_AddReserve(EntryLine, ShortPath + 1);
 				char* offset = (char*)LWAnsiString_EndingOffset(EntryLine);
 				
@@ -83,43 +83,43 @@ void LegacyMarkForDelete(const char* name, LWAnsiString* vebal)
 						{
 							if (!WriteFile(file, LWAnsiString_ToCStr(EntryLine), EntryLine->Length * sizeof(char), &wrote, 0))
 							{
-								LWAnsiString_AppendWithNewLine(vebal, "Failed to write the new entry to delete on reboot");
+								LWAnsiString_AppendWithNewLineA(vebal, "Failed to write the new entry to delete on reboot");
 							}
 							else
 							{
-								LWAnsiString_Append(vebal, "");
-								LWAnsiString_Append(vebal, LWAnsiString_ToCStr(EntryLine));
-								LWAnsiString_Append(vebal, "----> registered for deletion in ");
-								LWAnsiString_Append(vebal, LWAnsiString_ToCStr(WinDir));
-								LWAnsiString_AppendWithNewLine(vebal, " OK ");
+								LWAnsiString_AppendA(vebal, "");
+								LWAnsiString_AppendA(vebal, LWAnsiString_ToCStr(EntryLine));
+								LWAnsiString_AppendA(vebal, "----> registered for deletion in ");
+								LWAnsiString_AppendA(vebal, LWAnsiString_ToCStr(WinDir));
+								LWAnsiString_AppendWithNewLineA(vebal, " OK ");
 							}
 						}
 						else
 						{
-							LWAnsiString_AppendWithNewLine(vebal, "Failed to seek to end of wininit.ini to write the pending delete on reboot");
+							LWAnsiString_AppendWithNewLineA(vebal, "Failed to seek to end of wininit.ini to write the pending delete on reboot");
 						}
 						CloseHandle(file);
 					}
 					else
 					{
-						LWAnsiString_Append(vebal, "Failed to Create / Open wininit.ini in the expected location of  ");
-						LWAnsiString_Append(vebal, LWAnsiString_ToCStr(WinDir));
-						LWAnsiString_AppendNewLine(vebal);
-						LWAnsiString_Append(vebal, "Error code in attempt is ");
-						LWAnsiString_AppendNumber(GetLastError(), vebal, 0);
-						LWAnsiString_AppendNewLine(vebal);
+						LWAnsiString_AppendA(vebal, "Failed to Create / Open wininit.ini in the expected location of  ");
+						LWAnsiString_AppendA(vebal, LWAnsiString_ToCStr(WinDir));
+						LWAnsiString_AppendNewLineA(vebal);
+						LWAnsiString_AppendA(vebal, "Error code in attempt is ");
+						LWAnsiString_AppendNumberA(GetLastError(), vebal, 0);
+						LWAnsiString_AppendNewLineA(vebal);
 					}
 
 				}
 				else
 				{
-					LWAnsiString_AppendWithNewLine(vebal, "Failed to get the short (8.3 DOS naming) size for the pending delete.");
+					LWAnsiString_AppendWithNewLineA(vebal, "Failed to get the short (8.3 DOS naming) size for the pending delete.");
 				}
 				LWAnsiString_FreeString(EntryLine);
 			}
 			else
 			{
-				LWAnsiString_AppendWithNewLine(vebal, "Failed to get the short (8.3 DOS naming) size for the pending delete.");
+				LWAnsiString_AppendWithNewLineA(vebal, "Failed to get the short (8.3 DOS naming) size for the pending delete.");
 			}
 		}
 		
@@ -160,7 +160,7 @@ bool DeleteOnReboot(int* result, const char** message_result, const char* argv[]
 
 			if ((osvi.A.dwMajorVersion < 5) || (osvi.A.dwPlatformId != VER_PLATFORM_WIN32_WINDOWS))
 			{
-				LWAnsiString_AppendWithNewLine(vebal, "Warning: Windows verison reports OS possibly older than Windows 2000. Modern register for delete might not work ");
+				LWAnsiString_AppendWithNewLineA(vebal, "Warning: Windows verison reports OS possibly older than Windows 2000. Modern register for delete might not work ");
 				LegacyOS = TRUE;
 			}
 
@@ -168,7 +168,7 @@ bool DeleteOnReboot(int* result, const char** message_result, const char* argv[]
 			{
 				if (LegacyOS)
 				{
-					LWAnsiString_AppendWithNewLine(vebal, "Failed to get MoveFileExA routine. Falling back to legacy register. Note. This will NOT work on NT based OS.");
+					LWAnsiString_AppendWithNewLineA(vebal, "Failed to get MoveFileExA routine. Falling back to legacy register. Note. This will NOT work on NT based OS.");
 					for (int i = 2; i < argc; i++)
 					{
 						LegacyMarkForDelete(argv[i], vebal);
@@ -176,7 +176,7 @@ bool DeleteOnReboot(int* result, const char** message_result, const char* argv[]
 				}
 				else
 				{
-					LWAnsiString_AppendWithNewLine(vebal, "Failed to get MoveFileExA routine. No files registered for deletion. ");
+					LWAnsiString_AppendWithNewLineA(vebal, "Failed to get MoveFileExA routine. No files registered for deletion. ");
 				}
 			}
 			else
@@ -187,13 +187,13 @@ bool DeleteOnReboot(int* result, const char** message_result, const char* argv[]
 					SetLastError(0);
 					if (IAT_MoveFileExA(argv[i], NULL, MOVEFILE_DELAY_UNTIL_REBOOT))
 					{
-						LWAnsiString_Append(vebal, argv[i]);
-						LWAnsiString_AppendWithNewLine(vebal, " Registered for deletion. ");
+						LWAnsiString_AppendA(vebal, argv[i]);
+						LWAnsiString_AppendWithNewLineA(vebal, " Registered for deletion. ");
 					}
 					else
 					{
-						LWAnsiString_Append(vebal, argv[i]);
-						LWAnsiString_AppendWithNewLine(vebal, " Failed to Register for Deletion.");
+						LWAnsiString_AppendA(vebal, argv[i]);
+						LWAnsiString_AppendWithNewLineA(vebal, " Failed to Register for Deletion.");
 					}
 				}
 			}

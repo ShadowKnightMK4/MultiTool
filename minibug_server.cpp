@@ -1,7 +1,7 @@
 #include "common.h"
 #include "osver.h"
 #include "IAT_JOBS.H"
-#include <LWAnsiString.h>
+#include "Support/LWAnsiString/LWAnsiString.h"
 extern "C" {
 
 	struct Args
@@ -162,10 +162,10 @@ extern "C" {
 		{
 			ExitThread(254);
 		}
-		LWAnsiString_Append(args, "\"");
-		LWAnsiString_Append(args, ptr.source);
-		LWAnsiString_Append(args, "\" ");
-		LWAnsiString_Append(args, ptr.argument);
+		LWAnsiString_AppendA(args, "\"");
+		LWAnsiString_AppendA(args, ptr.source);
+		LWAnsiString_AppendA(args, "\" ");
+		LWAnsiString_AppendA(args, ptr.argument);
 
 		BOOL Res = CreateProcessA(ptr.source, args->AnsiData, nullptr, nullptr, FALSE, DEBUG_PROCESS | CREATE_SUSPENDED, 0, 0, &StartInfo, &PInfo);
 

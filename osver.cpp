@@ -1,6 +1,6 @@
 #include "common.h"
 #include "osver.h"
-#include <LWAnsiString.h>
+#include "Support\\LWAnsiString\\LWAnsiString.h">
 #include "IAT_VERSIONINFO.H"
 #define WINDOWS_8_MAJOR 6
 #define WINDOWS_8_MINOR 2
@@ -216,34 +216,32 @@ extern "C" {
 
 
 			{
-				LWAnsiString_Append(OutputString, "Version: ");
-				LWAnsiString_AppendNumber(osvi.A.dwMajorVersion, OutputString, 0);
-				LWAnsiString_Append(OutputString, ".");
+				LWAnsiString_AppendA(OutputString, "Version: ");
+				LWAnsiString_AppendNumberA(osvi.A.dwMajorVersion, OutputString, 0);
+				LWAnsiString_AppendA(OutputString, ".");
 
 
-				LWAnsiString_AppendNumber(osvi.A.dwMinorVersion, OutputString, 0);
+				LWAnsiString_AppendNumberA(osvi.A.dwMinorVersion, OutputString, 0);
 
-				LWAnsiString_Append(OutputString, "\r\nBuild Version: ");
-
-
+				LWAnsiString_AppendA(OutputString, "\r\nBuild Version: ");
 
 
-				LWAnsiString_AppendNumber(osvi.A.dwBuildNumber, OutputString, 0);
+				LWAnsiString_AppendNumberA(osvi.A.dwBuildNumber, OutputString, 0);
 
-				LWAnsiString_Append(OutputString, "\r\n");
+				LWAnsiString_AppendA(OutputString, "\r\n");
 				if (osvi.A.dwPlatformId == VER_PLATFORM_WIN32_NT)
 				{
-					LWAnsiString_Append(OutputString, "Platform: NT\r\n");
+					LWAnsiString_AppendA(OutputString, "Platform: NT\r\n");
 				}
 				else if (osvi.A.dwPlatformId == VER_PLATFORM_WIN32_WINDOWS)
 				{
-					LWAnsiString_Append(OutputString, "Platform: Windows 95/98/ME\r\n");
+					LWAnsiString_AppendA(OutputString, "Platform: Windows 95/98/ME\r\n");
 				}
 				else
 				{
-					LWAnsiString_Append(OutputString, "Platform: Unknown\r\n");
+					LWAnsiString_AppendA(OutputString, "Platform: Unknown\r\n");
 				}
-				LWAnsiString_Append(OutputString, "Service Pack: ");
+				LWAnsiString_AppendA(OutputString, "Service Pack: ");
 
 				if ((osvi.A.szCSDVersion[0] != 0) || (osvi.W.szCSDVersion[0] != 0))
 				{

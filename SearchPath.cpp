@@ -1,5 +1,5 @@
 #include "common.h"
-#include <LWAnsiString.h>
+#include "Support\\LWAnsiString\\LWAnsiString.h">
 
 extern "C" {
 
@@ -36,18 +36,18 @@ extern "C" {
 
 			if (GetLastError() == ERROR_FILE_NOT_FOUND)
 			{
-				LWAnsiString_Append(OutputIfNotFound, "[NOT FOUND] ");
-				LWAnsiString_Append(OutputIfNotFound, filename);
+				LWAnsiString_AppendA(OutputIfNotFound, "[NOT FOUND] ");
+				LWAnsiString_AppendA(OutputIfNotFound, filename);
 			}
 			else
 			{
 				
 
-				LWAnsiString_Append(OutputIfNotFound, "[NOT FOUND] ");
-				LWAnsiString_Append(OutputIfNotFound, filename);
-				LWAnsiString_Append(OutputIfNotFound, "->last error for search is->");
+				LWAnsiString_AppendA(OutputIfNotFound, "[NOT FOUND] ");
+				LWAnsiString_AppendA(OutputIfNotFound, filename);
+				LWAnsiString_AppendA(OutputIfNotFound, "->last error for search is->");
 				int OutputSize = 0;
-				LWAnsiString_AppendNumber(GetLastError(), OutputIfNotFound, &OutputSize);
+				LWAnsiString_AppendNumberA(GetLastError(), OutputIfNotFound, &OutputSize);
 				LWAnsiString_AppendNewLine(OutputIfNotFound);
 			}
 			return false;
@@ -71,7 +71,7 @@ extern "C" {
 			}
 			else
 			{
-				LWAnsiString_Append(MessageResult, "Begining Pathfinding (SearthPathA/W)\r\n");
+				LWAnsiString_AppendA(MessageResult, "Begining Pathfinding (SearthPathA/W)\r\n");
 			}
 			int count = 0;
 
@@ -80,16 +80,16 @@ extern "C" {
 				if (SearchPathsForTarget(argv[i], target, notfound))
 				{
 					count++;
-					LWAnsiString_Append(MessageResult, "[Found] ");
-					LWAnsiString_Append(MessageResult, argv[i]);
-					LWAnsiString_Append(MessageResult, " At ---> ");
-					LWAnsiString_Append(MessageResult, LWAnsiString_ToCStr(target));
+					LWAnsiString_AppendA(MessageResult, "[Found] ");
+					LWAnsiString_AppendA(MessageResult, argv[i]);
+					LWAnsiString_AppendA(MessageResult, " At ---> ");
+					LWAnsiString_AppendA(MessageResult, LWAnsiString_ToCStr(target));
 					LWAnsiString_AppendNewLine(MessageResult);
 
 				}
 				else
 				{
-					LWAnsiString_AppendWithNewLine(MessageResult, LWAnsiString_ToCStr(notfound));
+					LWAnsiString_AppendWithNewLineA(MessageResult, LWAnsiString_ToCStr(notfound));
 				}
 				LWAnsiString_ZeroString(target);
 				LWAnsiString_ZeroString(notfound);

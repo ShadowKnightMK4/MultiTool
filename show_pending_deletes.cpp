@@ -1,5 +1,5 @@
 #include "common.h"
-#include <LWAnsiString.h>
+#include "Support\\LWAnsiString\\LWAnsiString.h">
 #include "osver.h"
 
 #include "IAT_ENV.H"
@@ -14,16 +14,16 @@ void AddMapKey(LWAnsiString* verbal, BOOL NTMap)
 {
 	if (NTMap)
 	{
-		LWAnsiString_AppendWithNewLine(verbal, "[KEY]");
-		LWAnsiString_AppendWithNewLine(verbal, "*1 entries represent pending delete operations scheduled at next reboot\r\n");
-		LWAnsiString_AppendWithNewLine(verbal, "[DATA]");
+		LWAnsiString_AppendWithNewLineA(verbal, "[KEY]");
+		LWAnsiString_AppendWithNewLineA(verbal, "*1 entries represent pending delete operations scheduled at next reboot\r\n");
+		LWAnsiString_AppendWithNewLineA(verbal, "[DATA]");
 	}
 	else
 	{
-		LWAnsiString_AppendWithNewLine(verbal, "This is a raw dump of the contents of wininit.ini in the system windows drive.");
-		LWAnsiString_AppendWithNewLine(verbal, "Entries are destination=source");
-		LWAnsiString_AppendWithNewLine(verbal, "Entries marked NUL=source are slated for deleting");
-		LWAnsiString_AppendWithNewLine(verbal, "These pending delete operations scheduled at next reboot\r\n");
+		LWAnsiString_AppendWithNewLineA(verbal, "This is a raw dump of the contents of wininit.ini in the system windows drive.");
+		LWAnsiString_AppendWithNewLineA(verbal, "Entries are destination=source");
+		LWAnsiString_AppendWithNewLineA(verbal, "Entries marked NUL=source are slated for deleting");
+		LWAnsiString_AppendWithNewLineA(verbal, "These pending delete operations scheduled at next reboot\r\n");
 	}
 }
 
@@ -105,29 +105,29 @@ bool Legacy_ShowPendingDeletes(int* result, const char** message_result, const c
 		size = IAT_GetWindowsDirectoryA(WinDir->AnsiData, size + 1);
 		if (!LWAnsiString_EndsWith(WinDir, "\\", false))
 		{
-			LWAnsiString_Append(WinDir, "\\");
+			LWAnsiString_AppendA(WinDir, "\\");
 		}
 	}
 	else
 	{
 		if (!LWAnsiString_EndsWith(WinDir, "\\", false))
 		{
-			LWAnsiString_Append(WinDir, "\\");
+			LWAnsiString_AppendA(WinDir, "\\");
 		}
 	}
 
 
 
 	// now the windir
-	LWAnsiString_Append(WinDir, "wininit.ini");
+	LWAnsiString_AppendA(WinDir, "wininit.ini");
 
 
 	HANDLE hFile = IAT_CreateFileA(LWAnsiString_ToCStr(WinDir), GENERIC_READ, FILE_SHARE_READ, 0, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, 0);
 
 	if (hFile == INVALID_HANDLE_VALUE)
 	{
-		LWAnsiString_AppendWithNewLine(Verbal, "The pending file ops at next reboot is aparently non existant or midas was denied read access.");
-		LWAnsiString_AppendWithNewLine(Verbal, "If actually not existant, no pending file operations next reboot");
+		LWAnsiString_AppendWithNewLineA(Verbal, "The pending file ops at next reboot is aparently non existant or midas was denied read access.");
+		LWAnsiString_AppendWithNewLineA(Verbal, "If actually not existant, no pending file operations next reboot");
 	}
 	else
 	{
@@ -148,7 +148,7 @@ bool Legacy_ShowPendingDeletes(int* result, const char** message_result, const c
 
 				if ( (FileSizeHigh.QuadPart >= UINT_MAX) && (GetLastError() == 0))
 				{
-					LWAnsiString_AppendWithNewLine(Verbal, "Warning pending file ops appears to be HUGE (>= 4GB -1 size). That's not really normal. Limiting to 4GB view.");
+					LWAnsiString_AppendWithNewLineA(Verbal, "Warning pending file ops appears to be HUGE (>= 4GB -1 size). That's not really normal. Limiting to 4GB view.");
 					FileSizeHigh.QuadPart = UINT_MAX - 1;
 				}
 				fail = GetLastError() != 0;
@@ -160,12 +160,12 @@ bool Legacy_ShowPendingDeletes(int* result, const char** message_result, const c
 
 					if (ReadFile(hFile, Contents->Data, FileSizeHigh.LowPart, &BytesRead, 0))
 					{
-						LWAnsiString_AppendWithNewLine(Verbal, "Contents of pending file ops");
-						LWAnsiString_AppendWithNewLine(Verbal, LWAnsiString_ToCStr(Contents));
+						LWAnsiString_AppendWithNewLineA(Verbal, "Contents of pending file ops");
+						LWAnsiString_AppendWithNewLineA(Verbal, LWAnsiString_ToCStr(Contents));
 					}
 					else
 					{
-						LWAnsiString_AppendWithNewLine(Verbal, "Failed to read pending file ops contents.");
+						LWAnsiString_AppendWithNewLineA(Verbal, "Failed to read pending file ops contents.");
 					}
 				}
 				LWAnsiString_FreeString(Contents);
@@ -239,7 +239,7 @@ bool MoveEX_ShowPendingDeletes(int* result, const char** message_result, const c
 						}
 					}
 					//KeyName->Data[KeyNameSize - 1] = '\0';
-					LWAnsiString_AppendWithNewLine(Verbal, KeyName->AnsiData);
+					LWAnsiString_AppendWithNewLineA(Verbal, KeyName->AnsiData);
 					Quit = true;
 				}
 			}

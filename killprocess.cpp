@@ -1,5 +1,6 @@
 #include "common.h"
-#include "numbers.h"
+bool _cdecl StringToNumber_ForKillProcess(const char* input, int* output);
+
 bool DebugSnipe(int PIDLIST, int* result, const char** message_result)
 {
 	// al we care about is attaching as debugger and if we works. Windows will kill said process when we exit
@@ -76,7 +77,7 @@ bool KillProcess(int* result, const char** message_result, const char* argv[], i
 		for (int i = 0; i < collection_size; i++)
 		{
 			int PID = 0;
-			if (StringToNumber(collection[i], &PID))
+			if (StringToNumber_ForKillProcess(collection[i], &PID))
 			{
 				if (PID != 0)
 				{

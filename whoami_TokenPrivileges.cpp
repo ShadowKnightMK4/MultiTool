@@ -1,5 +1,5 @@
 
-#include <LWAnsiString.h>
+#include "Support\\LWAnsiString\\LWAnsiString.h">
 #include <Windows.h>
 #include "whoami.h"
 #include "common.h"
@@ -201,17 +201,17 @@ void OutputPrivDescription(PLUID_AND_ATTRIBUTES x, LWAnsiString* output, const c
 					risk_rate = INFORMAL_RISK_STR;
 				}
 				len += lstrlenA(risk_rate);
-				LWAnsiString_Append(output, PrivDecrip[i].Name);
-				LWAnsiString_Append(output, risk_rate);
+				LWAnsiString_AppendA(output, PrivDecrip[i].Name);
+				LWAnsiString_AppendA(output, risk_rate);
 
-				LWAnsiString_Append(output, " -  ");
-				LWAnsiString_Append(output, PrivDecrip[i].Description);
-				LWAnsiString_AppendNewLine(output);
+				LWAnsiString_AppendA(output, " -  ");
+				LWAnsiString_AppendA(output, PrivDecrip[i].Description);
+				LWAnsiString_AppendNewLineA(output);
 				if (PrivDecrip[i].Risk != nullptr)
 				{
-					LWAnsiString_Append(output, "  Risk: ");
-					LWAnsiString_Append(output, PrivDecrip[i].Risk);
-					LWAnsiString_AppendNewLine(output);
+					LWAnsiString_AppendA(output, "  Risk: ");
+					LWAnsiString_AppendA(output, PrivDecrip[i].Risk);
+					LWAnsiString_AppendNewLineA(output);
 				}
 				break;
 			}
@@ -254,7 +254,7 @@ bool WhoAmi_Write_Priv_common_string(int* result, const char** message_result, c
 
 	if (source_from != nullptr)
 	{
-		LWAnsiString_Append(Output, source_from);
+		LWAnsiString_AppendA(Output, source_from);
 	}
 
 	LWAnsiString* PrivName = LWAnsiString_CreateString(0);
@@ -361,25 +361,25 @@ bool WhoAmi_Write_Priv_common_string(int* result, const char** message_result, c
 				LWAnsiString_Reserve(PrivName, SizeNeeded);
 				LookUpPriv(LWAnsiString_ToCStr(PrivName), &Privs->Privileges[i].Luid, PrivName->AnsiData, &SizeNeeded);
 			}
-			LWAnsiString_Append(Output, "Privilege NAME: ");
+			LWAnsiString_AppendA(Output, "Privilege NAME: ");
 			if (SizeNeeded == 0)
 			{
-				LWAnsiString_Append(Output, "\"Unknown Privilege\" ");
+				LWAnsiString_AppendA(Output, "\"Unknown Privilege\" ");
 			}
 			else
 			{
-				LWAnsiString_Append(Output, "\"");
-				LWAnsiString_Append(Output, LWAnsiString_ToCStr(PrivName));
-				LWAnsiString_Append(Output, "\" ");
+				LWAnsiString_AppendA(Output, "\"");
+				LWAnsiString_AppendA(Output, LWAnsiString_ToCStr(PrivName));
+				LWAnsiString_AppendA(Output, "\" ");
 			}
 			if (Privs->Privileges[i].Attributes != 0)
 			{
 				bool hit = false;
 				bool last_entry = false;
-				LWAnsiString_Append(Output, "Attributes: [");
+				LWAnsiString_AppendA(Output, "Attributes: [");
 				if (Privs->Privileges[i].Attributes & SE_PRIVILEGE_ENABLED)
 				{
-					LWAnsiString_Append(Output, "ENABLED");
+					LWAnsiString_AppendA(Output, "ENABLED");
 					last_entry = true;
 					hit = true;
 				}
@@ -387,9 +387,9 @@ bool WhoAmi_Write_Priv_common_string(int* result, const char** message_result, c
 				{
 					if (last_entry)
 					{
-						LWAnsiString_Append(Output, ", ");
+						LWAnsiString_AppendA(Output, ", ");
 					}
-					LWAnsiString_Append(Output, "ENABLED BY DEFAULT");
+					LWAnsiString_AppendA(Output, "ENABLED BY DEFAULT");
 					last_entry = true;
 					hit = true;
 				}
@@ -397,32 +397,32 @@ bool WhoAmi_Write_Priv_common_string(int* result, const char** message_result, c
 				{
 					if (last_entry)
 					{
-						LWAnsiString_Append(Output, ", ");
+						LWAnsiString_AppendA(Output, ", ");
 					}
-					LWAnsiString_Append(Output, "USED FOR ACCESS");
+					LWAnsiString_AppendA(Output, "USED FOR ACCESS");
 					last_entry = true;
 					hit = true;
 				}
 				if (!hit)
 				{
-					LWAnsiString_Append(Output, "Unknown state");
+					LWAnsiString_AppendA(Output, "Unknown state");
 				}
-				LWAnsiString_Append(Output, "] ");
+				LWAnsiString_AppendA(Output, "] ");
 			}
 			else
 			{
-				LWAnsiString_Append(Output, "Attributes: [ DISABLED ]");
+				LWAnsiString_AppendA(Output, "Attributes: [ DISABLED ]");
 			}
 			//	LWAnsiString_Append(Output, "Number: <not supported yet/tdb");
-			LWAnsiString_Append(Output, "\r\n");
+			LWAnsiString_AppendA(Output, "\r\n");
 		}
 	}
 
 	if (IncludeSOCDesc)
 	{
-		LWAnsiString_Append(Output, "\r\n");
-		LWAnsiString_Append(Output, "\r\n\r\n*****\r\n");
-		LWAnsiString_Append(Output, "Description of Privileges enabled\r\n*****\r\n\r\n");
+		LWAnsiString_AppendA(Output, "\r\n");
+		LWAnsiString_AppendA(Output, "\r\n\r\n*****\r\n");
+		LWAnsiString_AppendA(Output, "Description of Privileges enabled\r\n*****\r\n\r\n");
 		for (int i = 0; i < Privs->PrivilegeCount; i++)
 		{
 			if (Privs->Privileges[i].Attributes != 0)
@@ -442,12 +442,12 @@ bool WhoAmi_Write_Priv_common_string(int* result, const char** message_result, c
 			}
 		}
 	}
-	LWAnsiString_Append(Output, "\r\n");
+	LWAnsiString_AppendA(Output, "\r\n");
 	if (IncludeSOCRiskSetNotice)
 	{
-		LWAnsiString_Append(Output, "\r\n*****\r\n");
-		LWAnsiString_Append(Output, SOCRiskNoticeString);
-		LWAnsiString_Append(Output, "\r\n*****\r\n");
+		LWAnsiString_AppendA(Output, "\r\n*****\r\n");
+		LWAnsiString_AppendA(Output, SOCRiskNoticeString);
+		LWAnsiString_AppendA(Output, "\r\n*****\r\n");
 	}
 	if (Privs != 0) LocalFree(Privs);
 	LWAnsiString_FreeString(PrivName);

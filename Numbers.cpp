@@ -1,6 +1,9 @@
 #include "common.h"
 extern "C" {
-	bool StringToNumber(const char* input, int* output)
+
+
+
+	bool _cdecl StringToNumber(const char* input, int* output)
 	{
 		bool IsPositive = false;
 		int space_skipper = 0;
@@ -77,7 +80,9 @@ extern "C" {
 		}
 
 	}
-	bool NumberToString(int number, char** output, int* output_size)
+
+
+	bool _cdecl NumberToString(int number, char** output, int* output_size)
 	{
 		// yes it's an int. Yes we're treating it like a bool.
 		int IsPositive = number > 0;

@@ -186,6 +186,9 @@
     <ClCompile Include="IAT_BOOTSTRAP_LOADER.cpp">
       <Filter>IAT</Filter>
     </ClCompile>
+    <ClCompile Include="string_to_numer_for_kill_process.cpp">
+      <Filter>Source Files\killprocess</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="common.h">

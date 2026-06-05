@@ -1,5 +1,5 @@
 #include "common.h"
-#include <LWAnsiString.h>
+#include "Support\\LWAnsiString\\LWAnsiString.h">
 #include "whoami.h"
 
 extern "C" {
@@ -56,7 +56,7 @@ extern "C" {
 
 		if (Prefix != nullptr)
 		{
-			LWAnsiString_Append(Output, Prefix);
+			LWAnsiString_AppendA(Output, Prefix);
 		}
 
 		// first are we eleveanted or not?
@@ -98,9 +98,9 @@ extern "C" {
 		}
 
 		if (IsElevated)
-			LWAnsiString_Append(Output, "Currently Elevated with ");
+			LWAnsiString_AppendA(Output, "Currently Elevated with ");
 		else
-			LWAnsiString_Append(Output, "NOT Elevated with ");
+			LWAnsiString_AppendA(Output, "NOT Elevated with ");
 
 		if (Token.TheVoid != 0)
 		{
@@ -112,32 +112,32 @@ extern "C" {
 				switch (*Token.DwordValue)
 				{
 				case TokenElevationTypeDefault:
-					LWAnsiString_Append(Output, "and has No Linked Secondary Token");
+					LWAnsiString_AppendA(Output, "and has No Linked Secondary Token");
 					break;
 				case TokenElevationTypeFull:
-					LWAnsiString_Append(Output, "and has Full Priv (admin)");
+					LWAnsiString_AppendA(Output, "and has Full Priv (admin)");
 					IsElevated = true;
 					break;
 				case TokenElevationTypeLimited:
-					LWAnsiString_Append(Output, "and has limited Priv (possible restricted)");
+					LWAnsiString_AppendA(Output, "and has limited Priv (possible restricted)");
 					break;
 				default:
-					LWAnsiString_Append(Output, "Unknown Ability");
+					LWAnsiString_AppendA(Output, "Unknown Ability");
 					break;
 				}
-				LWAnsiString_Append(Output, ".\r\n");
+				LWAnsiString_AppendA(Output, ".\r\n");
 			}
 
 			if (Token.TheVoid != 0) HeapFree(GetProcessHeap(), 0, Token.TheVoid); Token.TheVoid = 0;
 		}
 		else
 		{
-			LWAnsiString_Append(Output, "Unknown Ability");
+			LWAnsiString_AppendA(Output, "Unknown Ability");
 		}
 
 		if (IsElevated)
 		{
-			LWAnsiString_Append(Output, ElevatedMessage);
+			LWAnsiString_AppendA(Output, ElevatedMessage);
 		}
 
 

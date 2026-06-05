@@ -1,6 +1,6 @@
 #include "common.h"
 #include "osver.h"
-#include "LWAnsiString.h"
+#include "Support\LWAnsiString\LWAnsiString.h"
 
 #include "TlHelp32.h"
 #include "IAT_REGISTRY.H"
@@ -61,7 +61,7 @@ bool IsFolderWritable(const char* target)
 		return false; // failed to allocate memory for folder
 	}
 again:
-	LWAnsiString_Append(folder, target);
+	LWAnsiString_AppendA(folder, target);
 	GetTempFileNameA(folder->AnsiData, "LWT", 0, folder->AnsiData);
 	HANDLE tmp = CreateFileA(folder->AnsiData, GENERIC_WRITE , FILE_SHARE_READ | FILE_SHARE_WRITE, nullptr, OPEN_EXISTING, FILE_ATTRIBUTE_TEMPORARY | FILE_FLAG_DELETE_ON_CLOSE, nullptr);
 	if (tmp != INVALID_HANDLE_VALUE)
@@ -197,7 +197,7 @@ bool ProcessProcefileHelper_IsKnownDLL(HANDLE Snapshot, DWORD ID, LWAnsiString* 
 	{
 		if (Output != nullptr)
 		{
-			LWAnsiString_Append(Output, "Failed to load advapi32.dll or get required functions.");
+			LWAnsiString_AppendA(Output, "Failed to load advapi32.dll or get required functions.");
 		}
 		return false; // failed to load advapi32.dll or get required functions
 	}
@@ -210,7 +210,7 @@ bool ProcessProcefileHelper_IsKnownDLL(HANDLE Snapshot, DWORD ID, LWAnsiString* 
 	{
 		if (Output != nullptr)
 		{
-			LWAnsiString_Append(Output, "Failed to allocate memory for KeyName");
+			LWAnsiString_AppendA(Output, "Failed to allocate memory for KeyName");
 		}
 		return false; // failed to allocate memory for KeyName
 	}
@@ -231,7 +231,7 @@ bool ProcessProcefileHelper_IsKnownDLL(HANDLE Snapshot, DWORD ID, LWAnsiString* 
 				* the probe length updates the stored length if its zero and we aint an empty string
 				*/
 				auto _ForceRecalc = LWAnsiString_ProbeLength(KeyName);
-				int test_slice = LWAnsiString_EndsAt(KeyName, ".DLL", false);
+				int test_slice = LWAnsiString_EndsAtA(KeyName, ".DLL", false);
 				size_t size = lstrlenA(CheckMe->szModule);
 				size_t i = size;
 				bool HitDot = false;
@@ -259,7 +259,7 @@ bool ProcessProcefileHelper_IsKnownDLL(HANDLE Snapshot, DWORD ID, LWAnsiString* 
 				}
 				
 			
-				if (LWAnsiString_Compare(KeyName, CheckMe->szModule, false) == 0)
+				if (LWAnsiString_CompareA(KeyName, CheckMe->szModule, false) == 0)
 				{
 					if (Output != nullptr)
 					{
@@ -300,7 +300,7 @@ void ProcessProfileHelper_VerifySearchPath(HANDLE Snapshot, DWORD ID, LWAnsiStri
 	{
 		if (Output != nullptr)
 		{
-			LWAnsiString_Append(Output, "Failed to get main executable path to verify search path of exe.");
+			LWAnsiString_AppendA(Output, "Failed to get main executable path to verify search path of exe.");
 		}
 		return; // failed to get main executable path
 	}
@@ -326,35 +326,35 @@ void ProfileProcessHelper_EnumModel(HANDLE SnapShot, DWORD id, LWAnsiString* out
 			{
 				if (output != nullptr)
 				{
-					LWAnsiString_Append(output, "Module: ");
-					LWAnsiString_AppendNumber(count, output, nullptr);
-					LWAnsiString_Append(output, " (");
-					LWAnsiString_Append(output, ModuleEntry.szModule);
-					LWAnsiString_Append(output, ")");
+					LWAnsiString_AppendA(output, "Module: ");
+					LWAnsiString_AppendNumberA(count, output, nullptr);
+					LWAnsiString_AppendA(output, " (");
+					LWAnsiString_AppendA(output, ModuleEntry.szModule);
+					LWAnsiString_AppendA(output, ")");
 
-					LWAnsiString_Append(output, " from: \"");
-					LWAnsiString_Append(output, ModuleEntry.szExePath);
-					LWAnsiString_Append(output, "\"");
-					LWAnsiString_Append(output, "\r\n");
+					LWAnsiString_AppendA(output, " from: \"");
+					LWAnsiString_AppendA(output, ModuleEntry.szExePath);
+					LWAnsiString_AppendA(output, "\"");
+					LWAnsiString_AppendA(output, "\r\n");
 
 			
 					if (count != 0)
 					{
-						LWAnsiString_Append(output, "Verification Checks: ");
+						LWAnsiString_AppendA(output, "Verification Checks: ");
 						if (GlobalVersionInfo.A.dwPlatformId == VER_PLATFORM_WIN32_NT)
 						{
 							if (!ProcessProcefileHelper_IsKnownDLL(SnapShot, id, output, &ModuleEntry, FromProcess))
 							{
-								LWAnsiString_Append(output, "Module is not a known DLL\r\n");
+								LWAnsiString_AppendA(output, "Module is not a known DLL\r\n");
 							}
 							else
 							{
-								LWAnsiString_Append(output, "Module is a known DLL\r\n");
+								LWAnsiString_AppendA(output, "Module is a known DLL\r\n");
 							}
 						}
 					}
 
-					LWAnsiString_Append(output, "\r\n");
+					LWAnsiString_AppendA(output, "\r\n");
 				}
 			}
 		} while (Module32Next(SnapShot, &ModuleEntry));
@@ -371,8 +371,8 @@ void ProfileProcessHelper_EnumHeap(HANDLE SnapShot, DWORD id, LWAnsiString* outp
 		{
 			if (output != nullptr)
 			{
-				LWAnsiString_Append(output, "Heap: ");
-				LWAnsiString_AppendNumber(HeapList.th32HeapID, output, nullptr);
+				LWAnsiString_AppendA(output, "Heap: ");
+				LWAnsiString_AppendNumberA(HeapList.th32HeapID, output, nullptr);
 				LWAnsiString_AppendNewLine(output);
 			}
 			HEAPENTRY32 HeapEntry = { 0 };
@@ -383,8 +383,8 @@ void ProfileProcessHelper_EnumHeap(HANDLE SnapShot, DWORD id, LWAnsiString* outp
 				{
 					if (output != nullptr)
 					{
-						LWAnsiString_Append(output, "  Block: ");
-						LWAnsiString_AppendNumber(HeapEntry.dwAddress, output, nullptr);
+						LWAnsiString_AppendA(output, "  Block: ");
+						LWAnsiString_AppendNumberA(HeapEntry.dwAddress, output, nullptr);
 						LWAnsiString_AppendNewLine(output);
 					}
 				} while (Heap32Next(&HeapEntry));
@@ -422,7 +422,7 @@ bool ProfileProcess(DWORD id, LWAnsiString* output)
 		{
 			if (output != nullptr)
 			{
-				LWAnsiString_Append(output, "Failed to create snapshot of process modules.");
+				LWAnsiString_AppendA(output, "Failed to create snapshot of process modules.");
 			}
 			return false;
 		}
@@ -432,52 +432,52 @@ bool ProfileProcess(DWORD id, LWAnsiString* output)
 	
 		if (!ProcessProfileHelper_VerifySafeDllSearchFlag(&PostXp, &SafeSearchDll))
 		{
-			LWAnsiString_Append(output, "Failed to verify SafeDllSearchMode flag. ");
-			if (PostXp == false) LWAnsiString_Append(output, "Primary reason is system OS reports being older than WinXP SP2\r\n");
-			if (PostXp == true) LWAnsiString_Append(output, "For Unknown Reason\r\n");
+			LWAnsiString_AppendA(output, "Failed to verify SafeDllSearchMode flag. ");
+			if (PostXp == false) LWAnsiString_AppendA(output, "Primary reason is system OS reports being older than WinXP SP2\r\n");
+			if (PostXp == true) LWAnsiString_AppendA(output, "For Unknown Reason\r\n");
 		}
 		else
 		{
 			if (PostXp)
 			{
-				LWAnsiString_Append(output, "System indicates being post XP SP2 Version (SafeDllSearch flag is option ere)\r\n");
+				LWAnsiString_AppendA(output, "System indicates being post XP SP2 Version (SafeDllSearch flag is option ere)\r\n");
 			}
 			else
 			{
-				LWAnsiString_Append(output, "System indicates being PRE XP SP2 Version (SafeDllSearch doesn't exist here)\r\n");
+				LWAnsiString_AppendA(output, "System indicates being PRE XP SP2 Version (SafeDllSearch doesn't exist here)\r\n");
 			}
 			if (SafeSearchDll)
 			{
-				LWAnsiString_Append(output, "SafeDllSearchMode is active\r\n");
+				LWAnsiString_AppendA(output, "SafeDllSearchMode is active\r\n");
 			}
 			else
 			{
-				LWAnsiString_Append(output, "SafeDllSearchMode [!!!!] is not active\r\n");
+				LWAnsiString_AppendA(output, "SafeDllSearchMode [!!!!] is not active\r\n");
 			}
 		}
 		if (!SafeSearchDll)
 		{
 			LWAnsiString* MainExe;
 			
-			LWAnsiString_Append(output, "With SafeDLLSearchMode not active/non existent, this can allow an malicious actor to drop a a decoy DLL in this app's folder to gain access.\r\n");
+			LWAnsiString_AppendA(output, "With SafeDLLSearchMode not active/non existent, this can allow an malicious actor to drop a a decoy DLL in this app's folder to gain access.\r\n");
 			if (ProcessProfileHelper_MainExe(id, &MainExe))
 			{
-				LWAnsiString_TrimEndsWith(MainExe, "\\", false);
+				LWAnsiString_TrimEndsWithA(MainExe, "\\", false);
 
 
-				int dot_loc = LWAnsiString_FindLastEx(MainExe, '.', 0);
+				int dot_loc = LWAnsiString_FindLastExA(MainExe, '.', 0);
 				if (dot_loc != -1)
 				{
 					MainExe->AnsiData[dot_loc] = '\0'; // temp trim the ext if any
 				}
-				int slash_loc = LWAnsiString_FindLastEx(MainExe, '\\', 0);
+				int slash_loc = LWAnsiString_FindLastExA(MainExe, '\\', 0);
 				if (slash_loc != -1)
 				{
 					MainExe->AnsiData[slash_loc] = '\0'; // temp trim the slash if any
 				}
 				else
 				{
-					slash_loc = LWAnsiString_FindLastEx(MainExe, '/', 0);
+					slash_loc = LWAnsiString_FindLastExA(MainExe, '/', 0);
 					if (slash_loc != -1)
 					{
 						MainExe->AnsiData[slash_loc] = '\0'; // temp trim the slash if any
@@ -487,7 +487,7 @@ bool ProfileProcess(DWORD id, LWAnsiString* output)
 				
 				if (IsFolderWritable(MainExe->AnsiData))
 				{
-					LWAnsiString_Append(output, "Warning [!!!!]: Main Executable Path is writable by current user.\r\n");
+					LWAnsiString_AppendA(output, "Warning [!!!!]: Main Executable Path is writable by current user.\r\n");
 				}
 			}
 			
@@ -547,31 +547,31 @@ bool CheckSafeLoadPath_PipeStdout(int* result, const char** message_result, cons
 	}
 	else
 	{
-		LWAnsiString_Append(output, "SafeDllSearchMode Flag Check:\r\n");
+		LWAnsiString_AppendA(output, "SafeDllSearchMode Flag Check:\r\n");
 		if (!IsPostXpSpo2)
 		{
-			LWAnsiString_Append(output, "System indicates being pre XP SP2 Version (SafeDllSearch doesn't exist here)\r\n");
+			LWAnsiString_AppendA(output, "System indicates being pre XP SP2 Version (SafeDllSearch doesn't exist here)\r\n");
 		}
 		else
 		{
-			LWAnsiString_Append(output, "System indicates being  XP SP2 or higher Version (SafeDllSearch flag is possible here)\r\n");
+			LWAnsiString_AppendA(output, "System indicates being  XP SP2 or higher Version (SafeDllSearch flag is possible here)\r\n");
 		}
 		if (IsSafeDllSearchActive)
 		{
-			LWAnsiString_Append(output, "SafeDllSearchMode is active. System is gonna check protected system folders first.\r\n");
+			LWAnsiString_AppendA(output, "SafeDllSearchMode is active. System is gonna check protected system folders first.\r\n");
 		}
 		else
 		{
-			LWAnsiString_Append(output, "SafeDllSearchMode [!!!!] is **not** active");
+			LWAnsiString_AppendA(output, "SafeDllSearchMode [!!!!] is **not** active");
 			if (!IsPostXpSpo2)
 			{
-				LWAnsiString_Append(output, " likely because System may be older than Win XP SP2\n");
+				LWAnsiString_AppendA(output, " likely because System may be older than Win XP SP2\n");
 			}
 			else
 			{
-				LWAnsiString_Append(output, " for an unknown reason on this Post XP SP2 OS. Check if that's valid\r\n");
+				LWAnsiString_AppendA(output, " for an unknown reason on this Post XP SP2 OS. Check if that's valid\r\n");
 			}
-			LWAnsiString_Append(output, "This can allow an malicious actor to drop a a decoy DLL in this any app folder to gain accessm, providing writing to it is allowed.\r\n");
+			LWAnsiString_AppendA(output, "This can allow an malicious actor to drop a a decoy DLL in this any app folder to gain accessm, providing writing to it is allowed.\r\n");
 		}
 
 		WriteStdout(LWAnsiString_ToCStr(output));

@@ -1,4 +1,4 @@
-
+#pragma once
 /// <summary>
 /// Convert positive number to a string.
 /// </summary>
@@ -14,6 +14,7 @@ extern "C" {
 	/// <param name="output">pointer to place string pointer</param>
 	/// <param name="output_size">pointer to place string size</param>
 	/// <returns>true if it worked and false if not</returns>
-	extern bool NumberToString(int number, char** output, int* output_size);
-	extern bool StringToNumber(const char* input, int* output);
+	bool _cdecl NumberToString(int number, char** output, int* output_size);
+	bool _cdecl StringToNumber(const char* input, int* output);
+
 }

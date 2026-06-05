@@ -1,6 +1,6 @@
 #include "common.h"
 #include "osver.h"
-#include "LWAnsiString.h"
+#include "Support/LWAnsiString/LWAnsiString.h"
 #include <TlHelp32.h>
 
 extern "C" {
@@ -35,7 +35,7 @@ extern "C" {
 				{
 					// BINGO!
 					Found = TRUE;
-					LWAnsiString_Append(ret, Walking.szModule);
+					LWAnsiString_AppendA(ret, Walking.szModule);
 					break;
 				}
 			}
@@ -53,7 +53,7 @@ extern "C" {
 				while (Module32Next(SnapShot, &Walking))
 				{
 					Found = TRUE;
-					LWAnsiString_Append(ret, Walking.szModule);
+					LWAnsiString_AppendA(ret, Walking.szModule);
 					break;
 				}
 			}
@@ -187,7 +187,7 @@ extern "C" {
 					}
 				}
 				auto tmp = ParanoidReadDllNameFallback(ev);
-				LWAnsiString_Append(ret, LWAnsiString_ToCStr(tmp));
+				LWAnsiString_AppendA(ret, LWAnsiString_ToCStr(tmp));
 				// if we make it here, it didn't work.
 
 				// also close it. Set to zero.

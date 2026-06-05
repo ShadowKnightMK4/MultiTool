@@ -1,7 +1,7 @@
 
 #include "common.h"
 #include "osver.h"
-#include <LWAnsiString.h>
+#include "Support\\LWAnsiString\\LWAnsiString.h">
 
 
 #include "whoami.h"
@@ -81,9 +81,9 @@ bool helper_WhoAmi_UserTokenEnumAllParts_Dump(int* result, const char** message_
 						{
 						case TokenUser:
 						{
-							LWAnsiString_Pad(Output, '-', 20);
-							LWAnsiString_Append(Output, "User Account IDs:");
-							LWAnsiString_Pad(Output, '-', 20);
+							LWAnsiString_PadA(Output, '-', 20);
+							LWAnsiString_AppendA(Output, "User Account IDs:");
+							LWAnsiString_PadA(Output, '-', 20);
 							LWAnsiString_AppendNewLine(Output);
 							helper_WhoAmi_UserAccountName(result, message_result, argv, argc, Output);
 							LWAnsiString_AppendNewLine(Output);
@@ -91,9 +91,9 @@ bool helper_WhoAmi_UserTokenEnumAllParts_Dump(int* result, const char** message_
 						}
 						case TokenGroups:
 						{
-							LWAnsiString_Pad(Output, '-', 20);
-							LWAnsiString_Append(Output, "User Groups: ");
-							LWAnsiString_Pad(Output, '-', 20);
+							LWAnsiString_PadA(Output, '-', 20);
+							LWAnsiString_AppendA(Output, "User Groups: ");
+							LWAnsiString_PadA(Output, '-', 20);
 							LWAnsiString_AppendNewLine(Output);
 							helper_who_ami_usertoken_token_groups_string(result, message_result, argv, argc, tokenInfo.TokenGroups, LookupSIDAPI, Output);
 							LWAnsiString_AppendNewLine(Output);
@@ -101,9 +101,9 @@ bool helper_WhoAmi_UserTokenEnumAllParts_Dump(int* result, const char** message_
 						}
 						case TokenPrivileges:
 						{
-							LWAnsiString_Pad(Output, '-', 20);
-							LWAnsiString_Append(Output, "User Privileges: ");
-							LWAnsiString_Pad(Output, '-', 20);
+							LWAnsiString_PadA(Output, '-', 20);
+							LWAnsiString_AppendA(Output, "User Privileges: ");
+							LWAnsiString_PadA(Output, '-', 20);
 							LWAnsiString_AppendNewLine(Output);
 							helper_WhoAmi_PrivString(result, message_result, argv, argc, 0, selfToken, Output);
 							LWAnsiString_AppendNewLine(Output);
@@ -116,9 +116,9 @@ bool helper_WhoAmi_UserTokenEnumAllParts_Dump(int* result, const char** message_
 							// yep intentially. First pass is handle *both* and the second pass just skips if
 							if (!WasHandled_TokenElevate)
 							{
-								LWAnsiString_Pad(Output, '-', 20);
-								LWAnsiString_Append(Output, "Token Elevation Type: ");
-								LWAnsiString_Pad(Output, '-', 20);
+								LWAnsiString_PadA(Output, '-', 20);
+								LWAnsiString_AppendA(Output, "Token Elevation Type: ");
+								LWAnsiString_PadA(Output, '-', 20);
 								LWAnsiString_AppendNewLine(Output);
 								WasHandled_TokenElevate = true;
 								WhoAmi_Write_TokenElevatedQuestion_string(result, message_result, argv, argc,Output, 0, 0); // note pasing 0 for target token means open the process toke 
