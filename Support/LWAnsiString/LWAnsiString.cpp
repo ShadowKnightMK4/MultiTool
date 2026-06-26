@@ -453,6 +453,29 @@ extern "C" {
 				LWAnsiString_ClampNull(Ans);
 
 
+				
+
+				// finally mark the string for probing
+				if (x == &DefaultHandler)
+				{
+					Ans->Flags |= LWANSI_FLAG_ISANSI;
+				}
+				else
+				{
+					if (x == &UnicodeHandler)
+					{
+						Ans->Flags |= LWANSI_FLAG_ISUNICODE;
+					}
+					else
+					{
+						Ans->Flags &= ~LWANSI_FLAG_ISANSI;
+						Ans->Flags &= ~LWANSI_FLAG_ISUNICODE;
+					}
+
+				}
+
+
+
 				return Ans;
 			}
 		}
@@ -1544,6 +1567,21 @@ extern "C" {
 	{
 		return LWAnsiString_PadInternal(str, c, len);
 	}
+	bool LWAnsiString_IsUnicode(LWAnsiString* str)
+	{
+		return str->Flags & LWANSI_FLAG_ISUNICODE;
+	}
+
+	bool LWAnsiString_IsAnsi(LWAnsiString* str)
+	{
+		return str->Flags & LWANSI_FLAG_ISANSI;
+	}
+
+	bool LWAnsiString_IsCustomHandler(LWAnsiString* str)
+	{
+		return (LWAnsiString_IsAnsi(str) == false) && (LWAnsiString_IsUnicode(str) == false);
+	}
+
 #pragma endregion
 	
 

@@ -2,6 +2,7 @@
 #include "osver.h"
 #include "Support/LWAnsiString/LWAnsiString.h"
 #include <TlHelp32.h>
+#include <intrin.h>
 
 extern "C" {
 	HMODULE kernel32 = 0;
@@ -151,17 +152,24 @@ extern "C" {
 			return 0;
 		else
 		{
+			// did the kernel pass a handle to the dll?
 			
 			if ( (ev->u.LoadDll.hFile != 0) && (ev->u.LoadDll.hFile != INVALID_HANDLE_VALUE))
 			{
+				// is vista+ locked in?
 				if (vista_help != 0)
 				{
+					// just call the GetFinaleBYHandleThing
 					DWORD size_needed = (vista_help)(ev->u.LoadDll.hFile, 0, 0, VOLUME_NAME_DOS);
 					if (size_needed != 0)
 					{
 						LWAnsiString_Reserve(ret, size_needed + 1);
 						(vista_help)(ev->u.LoadDll.hFile, ret->AnsiData, size_needed + 1, VOLUME_NAME_DOS);
 						LWAnsiString_ProbeLength(ret);
+						
+						{
+							// watch for ?//// stuff
+						}
 						CloseHandle(ev->u.LoadDll.hFile);
 						return ret;
 					}
@@ -255,6 +263,10 @@ extern "C" {
 
 		return  KeepDebugThingAlive;
 	}
+
+	
+	
+
 	bool whichdll_entrypoint(int* result, const char** message_result, const char* argv[], int argc)
 	{
 		const char* test_dll;

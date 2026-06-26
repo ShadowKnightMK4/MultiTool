@@ -58,6 +58,12 @@
     <Filter Include="Header Files\IAT">
       <UniqueIdentifier>{5e347743-5bea-4335-ad6b-4de419b433fd}</UniqueIdentifier>
     </Filter>
+    <Filter Include="SharedCode">
+      <UniqueIdentifier>{1857861d-ff00-4394-9ec3-a8031ae9bcfb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\PEParsing">
+      <UniqueIdentifier>{6d711484-c06b-4d23-b243-aa8de5c1ea83}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -189,6 +195,12 @@
     <ClCompile Include="string_to_numer_for_kill_process.cpp">
       <Filter>Source Files\killprocess</Filter>
     </ClCompile>
+    <ClCompile Include="Support\MiniBugClinet\minibug.cpp">
+      <Filter>SharedCode</Filter>
+    </ClCompile>
+    <ClCompile Include="GetMachineType.cpp">
+      <Filter>Source Files\PEParsing</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="common.h">
@@ -244,6 +256,15 @@
     </ClInclude>
     <ClInclude Include="IAT_BOOSTRAP_LOADER.H">
       <Filter>Header Files\IAT</Filter>
+    </ClInclude>
+    <ClInclude Include="SharedCodeAccess.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="SharedCodeUsing.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="PEHeaderHandling.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

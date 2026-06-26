@@ -2,6 +2,10 @@
 
 /* Why there are 2.
 Because for some awful reason 
+Visual studio 2022 ses the original one - the killprocess uses that.
+And yet doesn't compile it.
+
+StringToNumber_ForKillProcess
 */
 bool _cdecl StringToNumber_ForKillProcess(const char* input, int* output)
 {

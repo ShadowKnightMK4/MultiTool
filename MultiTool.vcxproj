@@ -76,17 +76,29 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <TargetName>midas</TargetName>
-    <LibraryPath>$(SolutionDir)$(Configuration)\;$(VC_LibraryPath_x86);$(WindowsSDK_LibraryPath_x86)</LibraryPath>
+    <LibraryPath>$(SolutionDir)CompiledApps\$(Configuration)\;$(SolutionDir)$(Configuration)\;$(VC_LibraryPath_x86);$(WindowsSDK_LibraryPath_x86)</LibraryPath>
+    <IntDir>$(SolutionDir)Intermediate\$(Configuration)\$(ProjectName)\</IntDir>
+    <OutDir>$(SolutionDir)CompiledApps\$(Configuration)\</OutDir>
+    <IncludePath>$(SolutionDir)\LWAnsiString;$(VC_IncludePath);$(WindowsSDK_IncludePath);</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <LibraryPath>$(SolutionDir)$(Configuration)\;$(SolutionDir)$(Configuration)\;$(VC_LibraryPath_x86);$(WindowsSDK_LibraryPath_x86)</LibraryPath>
+    <OutDir>$(SolutionDir)CompiledApps\$(Configuration)\</OutDir>
+    <IntDir>$(SolutionDir)Intermediate\$(Configuration)\$(ProjectName)\</IntDir>
+    <IncludePath>$(SolutionDir)\LWAnsiString;$(VC_IncludePath);$(WindowsSDK_IncludePath);</IncludePath>
+    <LibraryPath>$(SolutionDir)CompiledApps\$(Configuration)\;$(VC_LibraryPath_x86);$(WindowsSDK_LibraryPath_x86)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <LibraryPath>$(SolutionDir)$(Configuration)\;$(VC_LibraryPath_x64);$(WindowsSDK_LibraryPath_x64)</LibraryPath>
+    <OutDir>$(SolutionDir)CompiledApps\$(Configuration)\</OutDir>
+    <IntDir>$(SolutionDir)Intermediate\$(Configuration)\$(ProjectName)\</IntDir>
+    <IncludePath>$(SolutionDir)\LWAnsiString;$(VC_IncludePath);$(WindowsSDK_IncludePath);</IncludePath>
+    <LibraryPath>$(SolutionDir)CompiledApps\$(Configuration)\;$(VC_LibraryPath_x64);$(WindowsSDK_LibraryPath_x64)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <TargetName>midas64</TargetName>
-    <LibraryPath>$(SolutionDir)$(Configuration)\;$(VC_LibraryPath_x64);$(WindowsSDK_LibraryPath_x64)</LibraryPath>
+    <LibraryPath>$(SolutionDir)CompiledApps\$(Configuration)\;$(SolutionDir)$(Configuration)\;$(VC_LibraryPath_x64);$(WindowsSDK_LibraryPath_x64)</LibraryPath>
+    <IntDir>$(SolutionDir)Intermediate\$(Configuration)\$(ProjectName)\</IntDir>
+    <OutDir>$(SolutionDir)CompiledApps\$(Configuration)\</OutDir>
+    <IncludePath>$(SolutionDir)\LWAnsiString;$(VC_IncludePath);$(WindowsSDK_IncludePath);</IncludePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -108,6 +120,7 @@
       <IgnoreAllDefaultLibraries>true</IgnoreAllDefaultLibraries>
       <EntryPointSymbol>SystemStart</EntryPointSymbol>
       <AdditionalDependencies>LWAnsiString.lib;$(CoreLibraryDependencies);%(AdditionalDependencies)</AdditionalDependencies>
+      <MinimumRequiredVersion>4.0</MinimumRequiredVersion>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -135,13 +148,14 @@
       <EntryPointSymbol>SystemStart</EntryPointSymbol>
       <SetChecksum>true</SetChecksum>
       <AdditionalDependencies>LWAnsiString.lib;$(CoreLibraryDependencies);%(AdditionalDependencies)</AdditionalDependencies>
+      <MinimumRequiredVersion>4.0</MinimumRequiredVersion>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions);EXPERIMENT;SECURITY_WIN32;SECURITY_WIN32</PreprocessorDefinitions>
+      <PreprocessorDefinitions>PTR_X64;_DEBUG;_CONSOLE;%(PreprocessorDefinitions);EXPERIMENT;SECURITY_WIN32;SECURITY_WIN32</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <BufferSecurityCheck>false</BufferSecurityCheck>
       <BasicRuntimeChecks>Default</BasicRuntimeChecks>
@@ -158,6 +172,7 @@
       <IgnoreAllDefaultLibraries>true</IgnoreAllDefaultLibraries>
       <EntryPointSymbol>SystemStart</EntryPointSymbol>
       <AdditionalDependencies>LWAnsiString.lib;$(CoreLibraryDependencies);%(AdditionalDependencies)</AdditionalDependencies>
+      <MinimumRequiredVersion>4.0</MinimumRequiredVersion>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -166,7 +181,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions);SECURITY_WIN32</PreprocessorDefinitions>
+      <PreprocessorDefinitions>PTR_X64;NDEBUG;_CONSOLE;%(PreprocessorDefinitions);SECURITY_WIN32</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <BufferSecurityCheck>false</BufferSecurityCheck>
       <AdditionalIncludeDirectories>C:\Users\Thoma\source\repos\LWAnsiString;</AdditionalIncludeDirectories>
@@ -184,10 +199,12 @@
       <EntryPointSymbol>SystemStart</EntryPointSymbol>
       <SetChecksum>true</SetChecksum>
       <AdditionalDependencies>LWAnsiString.lib;$(CoreLibraryDependencies);%(AdditionalDependencies)</AdditionalDependencies>
+      <MinimumRequiredVersion>4.0</MinimumRequiredVersion>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="common.cpp" />
+    <ClCompile Include="GetMachineType.cpp" />
     <ClCompile Include="IAT_BOOTSTRAP_LOADER.cpp" />
     <ClCompile Include="IAT_DLLS.cpp" />
     <ClCompile Include="IAT_ENV.cpp" />
@@ -205,6 +222,7 @@
     <ClCompile Include="IAT_registry.cpp" />
     <ClCompile Include="show_pending_deletes.cpp" />
     <ClCompile Include="string_to_numer_for_kill_process.cpp" />
+    <ClCompile Include="Support\MiniBugClinet\minibug.cpp" />
     <ClCompile Include="whichdll.cpp" />
     <ClCompile Include="mylib_string.cpp" />
     <ClCompile Include="Numbers.cpp" />
@@ -244,6 +262,9 @@
     <ClInclude Include="iosys.h" />
     <ClInclude Include="minibug.h" />
     <ClInclude Include="osver.h" />
+    <ClInclude Include="PEHeaderHandling.h" />
+    <ClInclude Include="SharedCodeAccess.h" />
+    <ClInclude Include="SharedCodeUsing.h" />
     <ClInclude Include="stdpipe.h" />
     <ClInclude Include="string_data.h" />
     <ClInclude Include="string_tools.h" />

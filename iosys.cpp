@@ -1,5 +1,5 @@
 #include "common.h"
-
+#include "Support/LWAnsiString/LWAnsiString.h"
 /// <summary>
 /// write ansi or unicode to target
 /// </summary>
@@ -17,11 +17,11 @@ static bool WriteStreamAsString(HANDLE Target, const void* message, bool IsUnico
 		{
 			if (IsUnicode)
 			{
-				yep =WriteFile(Target, message, lstrlenW((const wchar_t*)message), &written, NULL);
+				yep =WriteFile(Target, message, lstrlenW((const wchar_t*)message) *sizeof(wchar_t), &written, NULL);
 			}
 			else
 			{
-				yep =WriteFile(Target, message, lstrlenA((const char*)message), &written, NULL);
+				yep =WriteFile(Target, message, lstrlenA((const char*)message) * sizeof(char), &written, NULL);
 			}
 		}
 	}
@@ -62,6 +62,34 @@ void WriteStdout(const wchar_t* message)
 	
 }
 
+
+/// <summary>
+/// this flavor of WriteStdout sees if unicode or ansi in there then branches to approporate function/ IMPORTANT THIS DOES NOT HANDLE Non Unicode or Ansi char sets. Needs to be the ones built into the lwansi library
+/// </summary>
+/// <param name="str"></param>
+void WriteStdout(LWAnsiString* str)
+{
+	if (STDOUT == 0)
+	{
+		SETUP_PIPES();
+	}
+	if (LWAnsiString_IsAnsi(str))
+	{
+		WriteToStream(STDOUT, LWAnsiString_ToCStr(str));
+	}
+	else
+	{
+		if (LWAnsiString_IsUnicode(str))
+		{
+			WriteToStream(STDOUT, (const wchar_t*) LWAnsiString_ToCStr(str));
+		}
+		else
+		{
+			
+		}
+	}
+
+}
 
 
 void WriteStderr(const char* message)

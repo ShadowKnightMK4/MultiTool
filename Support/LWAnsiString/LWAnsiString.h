@@ -88,6 +88,8 @@ int main() {
 		);
 
 #define LWANSI_FLAG_DIRTY (1)
+#define LWANSI_FLAG_ISANSI (2)
+#define LWANSI_FLAG_ISUNICODE (4)
 	typedef int LWAnsiStringFlags;
 
 	typedef struct LWAnsiString
@@ -493,7 +495,10 @@ int main() {
 		int LWAnsiString_CompareExA(LWAnsiString* a, const char* b, bool Case, bool* DidCompare);
 
 
-	
+
+		bool LWAnsiString_IsUnicode(LWAnsiString* str);
+		bool LWAnsiString_IsAnsi(LWAnsiString* str);
+		bool LWAnsiString_IsCustomHandler(LWAnsiString* str);
 
 }
 #define LWANSISTRING_FORMAT_ANSI

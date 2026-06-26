@@ -23,6 +23,9 @@ extern "C" {
 #endif
 }
 
+/// <summary>
+/// WaterMark acting as signutre for import
+/// </summary>
 extern "C" __declspec(dllexport) const char WaterMark[] = WaterMarkString;
 #undef WaterMarkString
 

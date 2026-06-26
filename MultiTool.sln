@@ -4,12 +4,15 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 VisualStudioVersion = 17.14.36310.24
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "MultiTool", "MultiTool.vcxproj", "{E3C2EFED-97C5-499F-84D2-63AD1509BEEB}"
+	ProjectSection(ProjectDependencies) = postProject
+		{2422C8DE-E681-4704-B090-6E811EE041AA} = {2422C8DE-E681-4704-B090-6E811EE041AA}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Tests", "Tests\Tests.vcxproj", "{325ECB3A-23DB-C347-4BB0-D4DBF98485C4}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Freeze", "Support\Freeze\Freeze.vcxproj", "{B9DA6287-A074-4D31-B64C-E042EB395F95}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "MiniBugClient", "Support\MiniBugClinet\MiniBugClinet.vcxproj", "{53B4BA5F-EA9D-4DCC-9629-4A2374C75EDD}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "MiniBugClientx86", "Support\MiniBugClinet\MiniBugClinet.vcxproj", "{53B4BA5F-EA9D-4DCC-9629-4A2374C75EDD}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{BD845130-5D9E-4BC4-A958-D026C4C7DD57}"
 	ProjectSection(SolutionItems) = preProject
@@ -23,6 +26,8 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "LWStringTests", "SupportTests\LWStringTests\LWStringTests.vcxproj", "{B52ED7AC-FD5E-EB2C-6FB8-2DEBFDEECEAA}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "LWAnsiString", "Support\LWAnsiString\LWAnsiString.vcxproj", "{2422C8DE-E681-4704-B090-6E811EE041AA}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "MiniBugClientx64", "Support\MiniBugx64\MiniBugx64.vcxproj", "{2A641A8C-412F-4B16-A9CC-880E5BEC04B3}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -80,6 +85,14 @@ Global
 		{2422C8DE-E681-4704-B090-6E811EE041AA}.Release|x64.Build.0 = Release|x64
 		{2422C8DE-E681-4704-B090-6E811EE041AA}.Release|x86.ActiveCfg = Release|Win32
 		{2422C8DE-E681-4704-B090-6E811EE041AA}.Release|x86.Build.0 = Release|Win32
+		{2A641A8C-412F-4B16-A9CC-880E5BEC04B3}.Debug|x64.ActiveCfg = Debug|x64
+		{2A641A8C-412F-4B16-A9CC-880E5BEC04B3}.Debug|x64.Build.0 = Debug|x64
+		{2A641A8C-412F-4B16-A9CC-880E5BEC04B3}.Debug|x86.ActiveCfg = Debug|x64
+		{2A641A8C-412F-4B16-A9CC-880E5BEC04B3}.Debug|x86.Build.0 = Debug|x64
+		{2A641A8C-412F-4B16-A9CC-880E5BEC04B3}.Release|x64.ActiveCfg = Release|x64
+		{2A641A8C-412F-4B16-A9CC-880E5BEC04B3}.Release|x64.Build.0 = Release|x64
+		{2A641A8C-412F-4B16-A9CC-880E5BEC04B3}.Release|x86.ActiveCfg = Release|Win32
+		{2A641A8C-412F-4B16-A9CC-880E5BEC04B3}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -89,6 +102,7 @@ Global
 		{53B4BA5F-EA9D-4DCC-9629-4A2374C75EDD} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
 		{B52ED7AC-FD5E-EB2C-6FB8-2DEBFDEECEAA} = {5F98FC5E-EC57-48EC-A1ED-2CE917D78AE5}
 		{2422C8DE-E681-4704-B090-6E811EE041AA} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
+		{2A641A8C-412F-4B16-A9CC-880E5BEC04B3} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {E35BE0EF-F9CE-434C-89B9-8CF1C42B782C}

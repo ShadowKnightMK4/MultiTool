@@ -37,9 +37,11 @@ bool NoSupport(int* result, const char** message_result, const char* argv[], int
 
 bool ShowHelp_(int* result, const char** message_result, const char* argv[], int argc);
 
-ToolEntry Entries[22] =
+
+
+ToolEntry Entries[24] =
 {
-	{ "-EmptyRecyling", EmptyBin, "Empty the Recylling bin"},
+	{ "-EmptyRecyling", EmptyBin, "Empty the Recyling bin"},
 	{ "-OsVer", ReportVersionStdout, "Report what version of Windows is running to stdout."},
 	{ "-osMajor", ReportVersionMajorViaExit , "Report the major version of Windows as exit code. "},
 	{ "-osMinor", ReportVersionMinorViaExit , "Report the minor version of Windows as exit code. "},
@@ -58,6 +60,7 @@ ToolEntry Entries[22] =
 	{ "-which", SearchPath_EntryPoint, "When given a file/folder, asks windows where it's at."},
 	{ "-whichdll", whichdll_entrypoint, "Using a helper, get the path of the dll you set that is loaded"},
 	{ "-ShowPendingDeletes", ShowPendingDeletes, "(CURRENTLY NT ONLY) Show Pending file operations for the session (including deletes) that will trigger next reboot"},
+
 #else
 	{ "-whoami_priv_system", Disabled , feature_disabled },
 	{ "-whoami_user_group", WhoAmi_WriteStdout_UserGroups ,  "Output Group info of the user."},
@@ -65,9 +68,13 @@ ToolEntry Entries[22] =
 	{ "-whichdll", whichdll_entrypoint, "Using a helper, get the path of the dll you set that is loaded"},
 	{ "-ShowPendingDeletes", 0, feature_disabled},
 #endif
+
 	{ "-processprofile", ProcessProfileEntryPoint, "Run Process Profile on self"},
 	{ "-checkSafeLoadPath", CheckSafeLoadPath_PipeStdout, "Check if SafeDllSearchMode is active or available and report to stdout."},
 	{ "-deleteonreboot", DeleteOnReboot, "Register a file or folder to be deleted on reboot.  Folders should be empty "},
+	{ "-midasptrsize", ShowInternalPointerSize, "Is midas running 32-bit (4 byte) or 64-bit (8 byte) pointers?"},
+	{ "-GetPEMachineType",  ShowMachineType, "Report what the Passed PE (DLL/EXE) file has noted as it's machine type"},
+	/* notice: ALWAYS PUT THIS AT THE BOTTOM!*/
 	{0, 0, feature_disabled}
 };
 
@@ -140,6 +147,11 @@ ToolFunction GetFunctionPointer(const char* flag_name)
 	return nullptr;
 }
 
+/// <summary>
+/// Lookup the flag for the respecting help thing and return the const string for the help
+/// </summary>
+/// <param name="flag_name"></param>
+/// <returns></returns>
 const char* GetFunctionHelp(const char* flag_name)
 {
 

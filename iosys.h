@@ -1,6 +1,6 @@
 #pragma once
 #include <windows.h>
-
+#include "Support/LWAnsiString/LWAnsiString.h"
 
 /// <summary>
 /// Write to stdout, will setup pipes if not already done.
@@ -14,3 +14,5 @@ extern void WriteStdout(const wchar_t* message);
 extern void WriteStderr(const wchar_t* message);
 extern void WriteStdout(const char* message);
 extern void WriteStderr(const char* message);
+
+extern void WriteStdout(LWAnsiString* str);

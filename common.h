@@ -13,5 +13,7 @@
 #include "string_tools.h"
 #include "numbers.h"
 #include "minibug.h"
+#include "PEHeaderHandling.h"
+
 
 

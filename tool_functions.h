@@ -43,6 +43,8 @@ extern "C" {
 	extern bool DeleteOnReboot(int* result, const char** message_result, const char* argv[], int argc);
 	extern bool ShowPendingDeletes(int* result, const char** message_result, const char* argv[], int argc);
 	
+	// this one is actually in tool_functions.cpp
+	extern bool ShowInternalPointerSize(int* result, const char** message_result, const char* argv[], int argc);
 }
 
 
