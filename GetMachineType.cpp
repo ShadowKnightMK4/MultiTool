@@ -157,6 +157,48 @@ extern "C" {
 
 		}
 	}
+
+	BOOL GetFileSizeShim(PLARGE_INTEGER x, HANDLE FN)
+	{
+		if (!x)
+		{
+			return FALSE;
+		}
+		else
+		{
+			if (FN == INVALID_HANDLE_VALUE)
+			{
+				return FALSE;
+			}
+			if (FN == 0)
+			{
+				return FALSE;
+			}
+
+			(x)->HighPart = (x)->LowPart = 0;
+			SetLastError(0);
+			DWORD ret = GetFileSize(FN, (DWORD*)x + offsetof(LARGE_INTEGER, HighPart));
+
+			if (ret != INVALID_FILE_SIZE)
+			{
+				(x)->LowPart = ret;
+				return TRUE;
+			}
+			else
+			{
+				if (GetLastError() != NO_ERROR)
+				{
+					return FALSE;
+				}
+				else
+				{
+					(x)->LowPart = ret;
+					return TRUE;
+				}
+				return FALSE;
+			}
+		}
+	}
 	/// <summary>
 	/// Returns the machine type, and which PE header we found
 	/// </summary>
@@ -187,6 +229,9 @@ extern "C" {
 		HANDLE FileHandle = INVALID_HANDLE_VALUE;
 		HANDLE Mapped = 0;
 		LPCVOID MapData = 0;
+		LARGE_INTEGER FileSize;
+		FileSize.HighPart = FileSize.LowPart = 0;
+
 		FileHandle = CreateFileA(ExeOnDisk, GENERIC_READ, FILE_SHARE_READ, 0, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, 0);
 		if (FileHandle != INVALID_HANDLE_VALUE)
 		{
@@ -205,9 +250,20 @@ extern "C" {
 					}
 					else
 					{
+
 						// OK we're exe.
 						MagicPtr.ByteList += MagicPtr.DosHeader->e_lfanew;
-						
+						if (!GetFileSizeShim(&FileSize, FileHandle))
+						{
+							// no way to ensure we don't read pass eof in a malice mapped exe/dll
+							goto safe_clean;
+						}
+						if ((LONGLONG) MagicPtr.ByteList > FileSize.QuadPart)
+						{
+							// possible malice exe/dll, ABORT
+							goto safe_clean;
+						}
+
 						if (MagicPtr.Pe32->Signature != IMAGE_NT_SIGNATURE)
 						{
 							// ABORT - not an exe
