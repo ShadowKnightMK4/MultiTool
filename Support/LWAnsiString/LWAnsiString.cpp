@@ -322,7 +322,9 @@ extern "C" {
 				UnicodeHandler.WriteToIndex = (LW_STRING_WRITE_INDEX)UnicodeWriteIndex;
 			}
 		}
+#ifdef LWANSISTRING_HARDIMPORTS
 		Init_LWAnsiString_Imports();
+#endif
 		
 	}
 
@@ -490,6 +492,10 @@ extern "C" {
 		if (str == nullptr)
 		{
 			return nullptr; // null string
+		}
+		if (x == &DefaultHandler)
+		{
+			SetupLWStringLibrary();
 		}
 		size_t len = x->STRLEN((char*)str);
 		LWAnsiString* Ans = LWAnsiString_CreateStringEx(x, len);
@@ -1039,7 +1045,7 @@ extern "C" {
 		}
 
 
-		if (new_size > str->AllocatedSize)
+		if (Sizecalc > str->AllocatedSize)
 		{
 
 			
@@ -1536,25 +1542,19 @@ extern "C" {
 		return LWAnsiString_AppendW(str, L"\r\n");
 	}
 
+	const char* NewLineA_Pading = "\r\n";
+	const wchar_t* NewLineW_Padding = L"\r\n";
 	LWAnsiString* LWAnsiString_PadNewLineA(LWAnsiString* str, const char c, int len)
 	{
-		char x[3];
-		x[0] = '\r';
-		x[1] = '\n';
-		x[2] = 0;
 		auto ret= LWAnsiString_PadInternal(str, c, len);
-		LWAnsiString_AppendA(str, x);
+		LWAnsiString_AppendA(str, NewLineA_Pading);
 		return ret;
 	}
 
 	LWAnsiString* LWAnsiString_PadNewLineW(LWAnsiString* str, const wchar_t c, int len)
 	{
-		wchar_t x[3];
-		x[0] = L'\r';
-		x[1] = L'\n';
-		x[2] = 0;
 		auto ret = LWAnsiString_PadInternal(str, c, len);
-		LWAnsiString_AppendW(str, x);
+		LWAnsiString_AppendW(str, NewLineW_Padding);
 		return ret;
 
 	}

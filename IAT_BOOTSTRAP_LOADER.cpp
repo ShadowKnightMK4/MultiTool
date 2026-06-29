@@ -16,15 +16,17 @@
 */
 extern "C"
 {
+	
 	LoadLibraryAPtr IAT_LoadLibraryA = 0;
 	LoadLibraryWPtr IAT_LoadLibraryW = 0;
 	GetProcAddressPtr IAT_GetProcAddress = 0;
-
+	FreeLibraryPtr IAT_FreeLibrary = 0;
 	DWORD IAT_DynamicLink_BootStrapCleanup()
 	{
 		IAT_LoadLibraryA = 0;
 		IAT_LoadLibraryW = 0;
 		IAT_GetProcAddress = 0;
+		IAT_FreeLibrary = 0;
 		return 1;
 	}
 
@@ -39,6 +41,7 @@ extern "C"
 		{
 			return 0;
 		}
+
 		DWORD dummy = (IAT_settings & IAT_BOOTSTRAP_LOADER_ANSI);
 		if ((IAT_settings & IAT_BOOTSTRAP_LOADER_ANSI) != 0)
 		{
@@ -54,9 +57,11 @@ extern "C"
 			IAT_LoadLibraryW = (LoadLibraryWPtr)GetProcAddress(iatKernel32, "LoadLibraryW");
 			if (IAT_LoadLibraryW != 0)
 			{
+				
 				ret |= IAT_BOOTSTRAP_LOADER_UNICODE;
 			}
 		}
+
 
 		if ((IAT_settings & IAT_BOOTSTRAP_LOADER_GETPROCADDRESS) )
 		{
@@ -66,7 +71,72 @@ extern "C"
 				ret |= IAT_BOOTSTRAP_LOADER_GETPROCADDRESS;
 			}
 		}
+		else
+		{
+			IAT_GetProcAddress = (GetProcAddressPtr)GetProcAddress(iatKernel32, "GetProcAddress");
+		}
 
+			IAT_FreeLibrary = (FreeLibraryPtr)GetProcAddress(iatKernel32, "FreeLibrary");
+
+//			IAT_FreeLibrary = (FreeLibraryPtr)GetProcAddress(iatKernel32, "FreeLibrary");
+
+			/* the code below is checking to see if CommandLineToArgV exists in shell32.
+			
+			that is the deciding factor between if Ansi lwansi string works and
+			unicodfe LWAnsiString
+			*/
+		
+			bool BothNull = ((IAT_LoadLibraryA != 0) && (IAT_LoadLibraryW == 0));
+			
+			if ( (IAT_FreeLibrary != 0)  || ((BothNull == false)))
+			{
+				
+				HMODULE DecidingLib = 0;
+				FARPROC StubbyCheck = 0;
+				if (IAT_LoadLibraryA != 0)
+				{
+					DecidingLib = IAT_LoadLibraryA("shell32.dll");
+				}
+				else
+				{
+					if (IAT_LoadLibraryW != 0)
+					{
+						DecidingLib = IAT_LoadLibraryW(L"shell32.dll");
+					}
+					else
+					{
+						DecidingLib = 0;
+					}
+				}
+				if (DecidingLib != 0)
+				{
+					StubbyCheck = IAT_GetProcAddress(DecidingLib, "CommandLineToArgvW");
+					if (StubbyCheck == 0)
+					{
+						// we're assuming ansi enviroment
+						//
+						if (IAT_LoadLibraryW != 0)
+						{
+							IAT_LoadLibraryW = 0;
+							if ((ret & IAT_BOOTSTRAP_LOADER_UNICODE) == (IAT_BOOTSTRAP_LOADER_UNICODE))
+							{
+								ret &= ~IAT_BOOTSTRAP_LOADER_UNICODE;
+							}
+						}
+
+					}
+					if (DecidingLib != 0)
+					{
+						IAT_FreeLibrary(DecidingLib);
+					}
+					DecidingLib = 0;
+				}
+
+				if ((IAT_settings & IAT_BOOTSTRAP_LOADER_GETPROCADDRESS) == 0)
+				{
+					IAT_GetProcAddress = 0;
+				}
+			}
 		return ret;
 	}
 

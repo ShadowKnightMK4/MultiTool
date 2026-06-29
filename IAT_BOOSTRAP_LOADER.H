@@ -14,12 +14,16 @@ typedef FARPROC (WINAPI *GetProcAddressPtr)(
 	 LPCSTR  lpProcName
 );
 
+typedef BOOL (WINAPI* FreeLibraryPtr)(
+	 HMODULE hLibModule
+);
+
 
 extern "C" {
 	extern LoadLibraryAPtr IAT_LoadLibraryA;
 	extern LoadLibraryWPtr IAT_LoadLibraryW;
 	extern GetProcAddressPtr IAT_GetProcAddress;
-
+	extern FreeLibraryPtr IAT_FreeLibrary;
 
 
 	extern	DWORD IAT_DynamicLink_BootStrapCleanup();
@@ -33,5 +37,5 @@ extern "C" {
 #define IAT_BOOTSTRAP_LOADER_UNICODE (4)
 #define IAT_BOOTSTRAP_LOADER_GETPROCADDRESS_ANSI (8)
 #define IAT_BOOTSTRAP_LOADER_GETPROCADDRESS_UNICODE (IAT_BOOTSTRAP_LOADER_GETPROCADDRESS | IAT_BOOTSTRAP_LOADER_UNICODE)
-
+#define IAT_BOOTSTRAP_LOADER_FREELIBRARY (16)
 #endif

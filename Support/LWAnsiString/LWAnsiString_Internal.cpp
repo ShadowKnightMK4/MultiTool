@@ -240,7 +240,7 @@ extern "C" {
 
 		if (len <= 0)
 			return str; // no change if size is less than or equal to 0
-		if (len + str->Length > str->AllocatedSize)
+		if ((len + str->Length) >= str->AllocatedSize)
 		{
 			LWAnsiString_Reserve(str, len + str->Length); // ensure we have enough space
 		}

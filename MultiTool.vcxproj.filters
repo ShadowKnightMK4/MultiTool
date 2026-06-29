@@ -201,6 +201,9 @@
     <ClCompile Include="GetMachineType.cpp">
       <Filter>Source Files\PEParsing</Filter>
     </ClCompile>
+    <ClCompile Include="IAT_STRING_STUFF.cpp">
+      <Filter>IAT</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="common.h">
@@ -225,9 +228,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="string_tools.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="whoami.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\LWAnsiString\LWAnsiString.h">
@@ -265,6 +265,12 @@
     </ClInclude>
     <ClInclude Include="PEHeaderHandling.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="IAT_STRING_STUFF.H">
+      <Filter>Header Files\IAT</Filter>
+    </ClInclude>
+    <ClInclude Include="whoami.h">
+      <Filter>IAT</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

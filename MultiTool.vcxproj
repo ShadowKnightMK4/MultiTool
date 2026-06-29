@@ -104,7 +104,7 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions);EXPERIMENT;SECURITY_WIN32;DEBUG</PreprocessorDefinitions>
+      <PreprocessorDefinitions>LWANSISTRING_HARDIMPORTS_VISIBLE; WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions);EXPERIMENT;SECURITY_WIN32;DEBUG</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <BufferSecurityCheck>false</BufferSecurityCheck>
       <BasicRuntimeChecks>Default</BasicRuntimeChecks>
@@ -113,6 +113,7 @@
       </AdditionalHeaderUnitDependencies>
       <ScanSourceForModuleDependencies>true</ScanSourceForModuleDependencies>
       <ExceptionHandling>false</ExceptionHandling>
+      <UndefinePreprocessorDefinitions>LWANSISTRING_HARDIMPORTS LWANSISTRING_HARDIMPORTS</UndefinePreprocessorDefinitions>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -138,6 +139,7 @@
       </AdditionalHeaderUnitDependencies>
       <ScanSourceForModuleDependencies>true</ScanSourceForModuleDependencies>
       <ExceptionHandling>false</ExceptionHandling>
+      <UndefinePreprocessorDefinitions>LWANSISTRING_HARDIMPORTS </UndefinePreprocessorDefinitions>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -165,6 +167,7 @@
       <ScanSourceForModuleDependencies>true</ScanSourceForModuleDependencies>
       <PrecompiledHeaderFile>
       </PrecompiledHeaderFile>
+      <UndefinePreprocessorDefinitions>LWANSISTRING_HARDIMPORTS </UndefinePreprocessorDefinitions>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -189,6 +192,7 @@
       </AdditionalHeaderUnitDependencies>
       <ScanSourceForModuleDependencies>true</ScanSourceForModuleDependencies>
       <PrecompiledHeaderFile />
+      <UndefinePreprocessorDefinitions>LWANSISTRING_HARDIMPORTS </UndefinePreprocessorDefinitions>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -213,6 +217,7 @@
     <ClCompile Include="IAT_JOBS.cpp" />
     <ClCompile Include="IAT_PROCESS.cpp" />
     <ClCompile Include="IAT_SECTOKEN.CPP" />
+    <ClCompile Include="IAT_STRING_STUFF.cpp" />
     <ClCompile Include="IAT_THREAD.CPP" />
     <ClCompile Include="IAT_VERSIONINFO.cpp" />
     <ClCompile Include="iosys.cpp" />
@@ -260,6 +265,7 @@
     <ClInclude Include="IAT_REGISTRY.H" />
     <ClInclude Include="IAT_VERSIONINFO.H" />
     <ClInclude Include="iosys.h" />
+    <ClInclude Include="IAT_STRING_STUFF.H" />
     <ClInclude Include="minibug.h" />
     <ClInclude Include="osver.h" />
     <ClInclude Include="PEHeaderHandling.h" />

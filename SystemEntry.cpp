@@ -1,5 +1,8 @@
 #include <Windows.h>
 #include "IAT_BOOSTRAP_LOADER.H"
+#include "IAT_STRING_STUFF.H"
+#include "IAT_DLLS.H"
+
 extern int main(int argc, const char* argv[]);
 extern void SETUP_PIPES();
 
@@ -82,8 +85,9 @@ LPCSTR* CommandLineAsArgv(LPSTR lpCmdLine, int* pArgc)
 
 }
 
-int SystemStart()
+INT SystemStart()
 {
+	BOOL TriggerUnicodeStrings = false;
 	if ((IAT_DynamicLink_BootStrapLoader(IAT_BOOTSTRAP_LOADER_GETPROCADDRESS_UNICODE) & IAT_BOOTSTRAP_LOADER_GETPROCADDRESS_UNICODE) != IAT_BOOTSTRAP_LOADER_GETPROCADDRESS_UNICODE)
 	{
 		if ((IAT_DynamicLink_BootStrapLoader(IAT_BOOTSTRAP_LOADER_GETPROCADDRESS_ANSI) & IAT_BOOTSTRAP_LOADER_GETPROCADDRESS_ANSI) != IAT_BOOTSTRAP_LOADER_GETPROCADDRESS_ANSI)
@@ -91,6 +95,18 @@ int SystemStart()
 			return INT_MIN;
 		}
 	}
+	else
+	{
+		TriggerUnicodeStrings = true;
+	}
+
+#ifndef  LWANSISTRING_HARDIMPORTS
+	// this code  configures the LWAnsiString subsystem.
+	// the routine calls IAT_GetProcAddress (think GetProcAddress) in windows
+	// and passes iatKernel32 tru a series of routiens.
+	Midas_LWANSISTRING_Init(TriggerUnicodeStrings, IAT_GetProcAddress, iatKernel32);
+	
+#endif // ! LWANSISTRING_HARDIMPORTS
 
 	int argc = 0;
 	auto CmdLine = GetCommandLineA();
