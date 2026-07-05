@@ -64,6 +64,9 @@
     <Filter Include="Source Files\PEParsing">
       <UniqueIdentifier>{6d711484-c06b-4d23-b243-aa8de5c1ea83}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\NtQueryProcessInfo">
+      <UniqueIdentifier>{5ba01acf-1500-483d-974a-fc552dd58859}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -204,6 +207,15 @@
     <ClCompile Include="IAT_STRING_STUFF.cpp">
       <Filter>IAT</Filter>
     </ClCompile>
+    <ClCompile Include="IAT_NTDLL.cpp">
+      <Filter>IAT</Filter>
+    </ClCompile>
+    <ClCompile Include="NtQueryProcessInfo.cpp">
+      <Filter>Source Files\NtQueryProcessInfo</Filter>
+    </ClCompile>
+    <ClCompile Include="IAT_PRIV.cpp">
+      <Filter>IAT</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="common.h">
@@ -271,6 +283,15 @@
     </ClInclude>
     <ClInclude Include="whoami.h">
       <Filter>IAT</Filter>
+    </ClInclude>
+    <ClInclude Include="IAT_NTDLL.H">
+      <Filter>Header Files\IAT</Filter>
+    </ClInclude>
+    <ClInclude Include="NtQueryProcessInfo.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="IAT_PRIV.h">
+      <Filter>Header Files\IAT</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

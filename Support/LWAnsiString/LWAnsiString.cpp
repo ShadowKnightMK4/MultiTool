@@ -354,7 +354,14 @@ extern "C" {
 		if (offset == 0)
 			return LWAnsiString_CreateFromStringEx(x, LWAnsiString_ToCStr(str)); // if offset is 0, just duplicate original
 
+#ifdef _DEBUG
+		auto calc = offset * ALLOC_PTR(str, SingleCharacterLength);
+		auto calc_ret = (LWAnsiString_ToCStr(str) + calc);
+		auto actual = LWAnsiString_CreateFromStringEx(x,calc_ret);
+		return	actual; // create a new string from the offset
+#else
 		return LWAnsiString_CreateFromStringEx(x, LWAnsiString_ToCStr(str) + (offset* ALLOC_PTR(str, SingleCharacterLength))); // create a new string from the offset
+#endif
 
 	}
 
@@ -378,7 +385,7 @@ extern "C" {
 
 	LWAnsiString* LWAnsiString_CreateStringA(int len)
 	{
-		return LWAnsiString_CreateStringEx(LWAnsiHandler, 1);
+		return LWAnsiString_CreateStringEx(LWAnsiHandler, len);
 	}
 	LWAnsiString* LWAnsiString_CreateStringW(int len)
 	{
@@ -411,20 +418,17 @@ extern "C" {
 		}
 		else
 		{
-				size_t debug_size_chars = (len + 1);
-				debug_size_chars *= (x->SingleCharacterLength);
-				//size_t times_chars = debug_size_chars * (x->SingleCharacterLength);
-				//times_chars++;
-				//times_chars--;
-				{
-					;;;
-					;;;
+			size_t char_needed = (len + 1);// chars needed
+			size_t bytes_needed = char_needed * x->SingleCharacterLength;
+			// convert to actually bytes needed
+			//bytes_needed *= (x->SingleCharacterLength);
 
-				}
 			
-			Ans->Data = (char*)DefaultHandler.CustomFirstAlloc(StringHeap, HEAP_GENERATE_EXCEPTIONS | HEAP_ZERO_MEMORY, (len +1 )*(x->SingleCharacterLength)); // +1 for null terminator
+			Ans->Data = (char*)DefaultHandler.CustomFirstAlloc(StringHeap, HEAP_GENERATE_EXCEPTIONS | HEAP_ZERO_MEMORY, 
+				
+				bytes_needed); // +1 for null terminator
 
-			Ans->AllocatedSize = len + 1; // +1 for null terminator
+			Ans->AllocatedSize = char_needed; // +1 for null terminator
 			if ( (x != &DefaultHandler) && (x != LWUnicodeHandler))
 			{
 				// if the default handler is NOT passed, we create a copy of it and stash it as  a pointer in the void* thing.
@@ -493,7 +497,7 @@ extern "C" {
 		{
 			return nullptr; // null string
 		}
-		if (x == &DefaultHandler)
+		if ( (x == &DefaultHandler) || (x == LWUnicodeHandler))
 		{
 			SetupLWStringLibrary();
 		}
@@ -512,10 +516,28 @@ extern "C" {
 		}
 		return Ans;
 	}
+
+	LWAnsiString* LWAnsiString_CreateFromString(const wchar_t* str)
+	{
+		return LWAnsiString_CreateFromStringW(str);
+	}
+
 	LWAnsiString* LWAnsiString_CreateFromString(const char* str)
+	{
+		return LWAnsiString_CreateFromStringA(str);
+	}
+	
+
+
+	LWAnsiString* LWAnsiString_CreateFromStringA(const char* str)
 	{
 		/*  UNIT TESTED. thru the full test collection UnitTestLWString*/
 		return LWAnsiString_CreateFromStringEx(&DefaultHandler, str);
+	}
+
+	LWAnsiString* LWAnsiString_CreateFromStringW(const wchar_t* str)
+	{
+		return LWAnsiString_CreateFromStringEx(LWUnicodeHandler, (const char*)str);
 	}
 
 	bool LWAnsiString_FreeString(LWAnsiString* str)
@@ -728,7 +750,7 @@ extern "C" {
 				str->AllocatedSize = new_size + 1; // update the allocated size
 //				str->Data[str->AllocatedSize - 1] = 0; // null terminate
 				LWAnsiString_ClampNull(str);
-				return new_size; // return max buffer size
+				return new_size; // return max buffer size chars
 			}
 		}
 		else
@@ -1141,10 +1163,12 @@ extern "C" {
 	/// <returns>null on error and duplicate on ok</returns>
 	LWAnsiString* LWAnsiString_Duplicate(LWAnsiString* str)
 	{
-		if (str == nullptr) return nullptr;
+		return nullptr;
+		//if (str == nullptr) return nullptr;
 		/* UNIT TESTED THRU LWAnsiString_CreateFromString and the */
-		ProbeIfDirtyLen(str);
-		return LWAnsiString_CreateFromString(LWAnsiString_ToCStr(str));
+		//ProbeIfDirtyLen(str);
+
+		//return LWAnsiString_CreateFromString(LWAnsiString_ToCStr(str)); 
 	}
 
 	LWAnsiString* LWAnsiString_DuplicateEx(AllocationHandler* x, LWAnsiString* str)
@@ -1502,14 +1526,19 @@ extern "C" {
 		{
 
 			int res = MultiByteToWideChar(CP_ACP, 0, append, -1, 0, 0);
+#ifdef _DEBUG
+			int debug_check = lstrlenA(append);
+#endif
 			if (res > 0)
 			{
 				auto Heap = ALLOC_PTR(str, CustomGetHeap)(0, 0, 0);
-				wchar_t* tmp = (wchar_t*)ALLOC_PTR(str, CustomFirstAlloc)(Heap, 0, res * ALLOC_PTR(str, SingleCharacterLength));
+				auto math_stuff = res;
+				math_stuff *= ALLOC_PTR(str, SingleCharacterLength);
+				wchar_t* tmp = (wchar_t*)ALLOC_PTR(str, CustomFirstAlloc)(Heap, 0, math_stuff);
 				LWAnsiString* self = str;
 				if (tmp != 0)
 				{
-					local_memzero((unsigned char*)tmp, res * ALLOC_PTR(str, SingleCharacterLength));
+					local_memzero((unsigned char*)tmp, math_stuff);
 
 				
 					int do_res = MultiByteToWideChar(CP_ACP, 0, append, -1, tmp, res);
@@ -1522,6 +1551,7 @@ extern "C" {
 				}
 				if (tmp != 0) {
 					ALLOC_PTR(str, CustomFree)(ALLOC_PTR(str, CustomGetHeap)(0, 0, 0), 0, tmp);
+					tmp = 0;
 				}
 				return self;
 			}

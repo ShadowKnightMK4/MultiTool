@@ -14,6 +14,7 @@
 #include "numbers.h"
 #include "minibug.h"
 #include "PEHeaderHandling.h"
+#include "NtQueryProcessInfo.h"
 
 
 

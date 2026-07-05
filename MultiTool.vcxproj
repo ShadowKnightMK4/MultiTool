@@ -215,6 +215,8 @@
     <ClCompile Include="IAT_Files.cpp" />
     <ClCompile Include="IAT_Info.cpp" />
     <ClCompile Include="IAT_JOBS.cpp" />
+    <ClCompile Include="IAT_NTDLL.cpp" />
+    <ClCompile Include="IAT_PRIV.cpp" />
     <ClCompile Include="IAT_PROCESS.cpp" />
     <ClCompile Include="IAT_SECTOKEN.CPP" />
     <ClCompile Include="IAT_STRING_STUFF.cpp" />
@@ -225,6 +227,7 @@
     <ClCompile Include="minibug_server.cpp" />
     <ClCompile Include="moveonreboot.cpp" />
     <ClCompile Include="IAT_registry.cpp" />
+    <ClCompile Include="NtQueryProcessInfo.cpp" />
     <ClCompile Include="show_pending_deletes.cpp" />
     <ClCompile Include="string_to_numer_for_kill_process.cpp" />
     <ClCompile Include="Support\MiniBugClinet\minibug.cpp" />
@@ -262,11 +265,14 @@
     <ClInclude Include="IAT_ENV.H" />
     <ClInclude Include="IAT_FILE.H" />
     <ClInclude Include="IAT_JOBS.H" />
+    <ClInclude Include="IAT_NTDLL.H" />
+    <ClInclude Include="IAT_PRIV.h" />
     <ClInclude Include="IAT_REGISTRY.H" />
     <ClInclude Include="IAT_VERSIONINFO.H" />
     <ClInclude Include="iosys.h" />
     <ClInclude Include="IAT_STRING_STUFF.H" />
     <ClInclude Include="minibug.h" />
+    <ClInclude Include="NtQueryProcessInfo.h" />
     <ClInclude Include="osver.h" />
     <ClInclude Include="PEHeaderHandling.h" />
     <ClInclude Include="SharedCodeAccess.h" />

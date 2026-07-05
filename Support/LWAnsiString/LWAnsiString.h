@@ -259,6 +259,11 @@ int main() {
 		/// <returns>pointer to new string. </returns>
 		LWAnsiString* LWAnsiString_CreateFromString(const char* str);
 
+		LWAnsiString* LWAnsiString_CreateFromStringA(const char* str);
+
+		LWAnsiString* LWAnsiString_CreateFromStringW(const wchar_t* str);
+
+
 		/// <summary>
 		/// Create a string to hold the c string and specify a different allocator 
 		/// </summary>

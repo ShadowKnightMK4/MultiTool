@@ -39,7 +39,7 @@ bool ShowHelp_(int* result, const char** message_result, const char* argv[], int
 
 
 
-ToolEntry Entries[24] =
+ToolEntry Entries[25] =
 {
 	{ "-EmptyRecyling", EmptyBin, "Empty the Recyling bin"},
 	{ "-OsVer", ReportVersionStdout, "Report what version of Windows is running to stdout."},
@@ -60,7 +60,7 @@ ToolEntry Entries[24] =
 	{ "-which", SearchPath_EntryPoint, "When given a file/folder, asks windows where it's at."},
 	{ "-whichdll", whichdll_entrypoint, "Using a helper, get the path of the dll you set that is loaded"},
 	{ "-ShowPendingDeletes", ShowPendingDeletes, "(CURRENTLY NT ONLY) Show Pending file operations for the session (including deletes) that will trigger next reboot"},
-
+	{ "-ntqueryprocess", RunNTQueryProcessInfo, "(NT ONLY), Probe for some information on the process"},
 #else
 	{ "-whoami_priv_system", Disabled , feature_disabled },
 	{ "-whoami_user_group", WhoAmi_WriteStdout_UserGroups ,  "Output Group info of the user."},

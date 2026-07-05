@@ -21,9 +21,6 @@
     <ClCompile Include="pch.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="UnicodeStringTests.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\Support\LWAnsiString\LWAnsiString.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>

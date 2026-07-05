@@ -85,7 +85,7 @@ void WriteStdout(LWAnsiString* str)
 		}
 		else
 		{
-			
+			// TO DO some way to tell caller that they need to do custom output.
 		}
 	}
 

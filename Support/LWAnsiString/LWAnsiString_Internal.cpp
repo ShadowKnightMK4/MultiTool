@@ -269,6 +269,12 @@ extern "C" {
 
 	LWAnsiString* LW_INTERNAL LWAnsiString_AppendInternal(LWAnsiString* str, const void* append, LW_STRING_strlen STRLEN)
 	{
+#ifdef _DEBUG
+		char* a_input = (char*)append;
+		wchar_t* w_input = (wchar_t*)append;
+		size_t a_aize = DefaultHandler.STRLEN((void*)append);
+		size_t w_size = LWUnicodeHandler->STRLEN((void*)w_input);
+#endif
 		/* INIT TESTED CAUSE WE USE IT THRUOUT MIDAS AND the unit tests for other stuff*/
 		if (str == nullptr)
 			return str;
@@ -305,7 +311,7 @@ extern "C" {
 
 #endif
 
-		if (required_size <= str->AllocatedSize)
+		if (required_size < str->AllocatedSize)
 		{
 			// if you remove the +1 in the code above, ensure we add it here for the null term
 			new_size = str->AllocatedSize;
@@ -390,6 +396,20 @@ extern "C" {
 			}
 		}
 	}
+
+	LW_INTERNAL bool LWAnsiString_IsDirtyLen(LWAnsiString* str)
+	{
+		if (str != 0)
+		{
+			if ((str->Length < 0) || ((str->Flags & LWANSI_FLAG_DIRTY) == LWANSI_FLAG_DIRTY))
+			{
+				return true;
+			}
+		}
+		return false;
+	}
+
+
 
 	
 	bool LWAnsiString_AppendNumberInternal(int number, 
