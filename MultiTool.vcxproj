@@ -104,7 +104,7 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>LWANSISTRING_HARDIMPORTS_VISIBLE; WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions);EXPERIMENT;SECURITY_WIN32;DEBUG</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_BRING_OVERFLOW_RESIST; LWANSISTRING_HARDIMPORTS_VISIBLE; WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions);EXPERIMENT;SECURITY_WIN32;DEBUG</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <BufferSecurityCheck>false</BufferSecurityCheck>
       <BasicRuntimeChecks>Default</BasicRuntimeChecks>
@@ -130,7 +130,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions);SECURITY_WIN32</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_BRING_OVERFLOW_RESIST; WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions);SECURITY_WIN32</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <Optimization>MinSpace</Optimization>
       <BufferSecurityCheck>false</BufferSecurityCheck>
@@ -157,7 +157,7 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>PTR_X64;_DEBUG;_CONSOLE;%(PreprocessorDefinitions);EXPERIMENT;SECURITY_WIN32;SECURITY_WIN32</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_BRING_OVERFLOW_RESIST; PTR_X64;_DEBUG;_CONSOLE;%(PreprocessorDefinitions);EXPERIMENT;SECURITY_WIN32;SECURITY_WIN32</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <BufferSecurityCheck>false</BufferSecurityCheck>
       <BasicRuntimeChecks>Default</BasicRuntimeChecks>
@@ -184,7 +184,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>PTR_X64;NDEBUG;_CONSOLE;%(PreprocessorDefinitions);SECURITY_WIN32</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_BRING_OVERFLOW_RESIST; PTR_X64;NDEBUG;_CONSOLE;%(PreprocessorDefinitions);SECURITY_WIN32</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <BufferSecurityCheck>false</BufferSecurityCheck>
       <AdditionalIncludeDirectories>C:\Users\Thoma\source\repos\LWAnsiString;</AdditionalIncludeDirectories>

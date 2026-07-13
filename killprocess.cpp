@@ -148,7 +148,12 @@ bool AskForDebugPriv()
 				if (IAT_AdjustTokenPriv(self, false, &Privs, 0, 0, 0))
 				{
 					if (GetLastError() != ERROR_NOT_ALL_ASSIGNED)
-						ret = true;
+					{
+						if (GetLastError() == 0)
+							ret = true;
+						else
+							ret = false;
+					}
 					else
 						ret = false;
 				}
@@ -324,7 +329,7 @@ bool KillProcess(int* result, const char** message_result, const char* argv[], i
 
 					if (!res)
 					{
-						res = RemoteExitProcess(PID, output);
+			 			res = RemoteExitProcess(PID, output);
 					}
 
 					if (DebugModeConfig == false)
@@ -334,9 +339,11 @@ bool KillProcess(int* result, const char** message_result, const char* argv[], i
 							if (!AskForDebugPriv())
 							{
 								LWAnsiString_AppendA(output, "Unable to enable SeDebugPriv. Try running as admin.\r\n");
+								goto clean;
 							}
 							else
 							{
+								DebugModeConfig = true;
 								goto debug_retry;
 							}
 						}
@@ -348,6 +355,7 @@ bool KillProcess(int* result, const char** message_result, const char* argv[], i
 			}
 		}
 	}
+	clean:
 	WriteStdout(output);
 	LWAnsiString_FreeString(output);
 	return true;

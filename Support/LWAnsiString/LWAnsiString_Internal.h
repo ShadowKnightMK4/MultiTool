@@ -149,6 +149,24 @@ typedef void(_stdcall* IAT_SleepPtr)(DWORD dwSecs);
 
 
 
+/// <summary>
+/// Returns true if no overflow. Out is assigned the results
+/// </summary>
+/// <param name="a"></param>
+/// <param name="b"></param>
+/// <param name="out"></param>
+/// <returns></returns>
+extern bool MulOp(size_t a, size_t b, size_t* out);
+/// <summary>
+/// Returns true if no overflow, Out is assigned the results.
+/// </summary>
+/// <param name="a"></param>
+/// <param name="b"></param>
+/// <param name="out"></param>
+/// <returns></returns>
+extern bool AddOp(size_t a, size_t b, size_t* out);
+
+
 #ifdef LWANSISTRING_HARDIMPORTS_VISIBLE
 /* IF the build undefines LWANSISTRING_HARDIMPORTS and includes this include, we expose the IAT pointers that will normally point to Win32 code. */
 extern "C" {

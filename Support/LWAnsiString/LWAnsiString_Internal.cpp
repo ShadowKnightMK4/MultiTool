@@ -6,6 +6,44 @@
 #define INTERNALCALL_STREN(str) ALLOC_PTR(str, STRLEN)(str->Data);
 #define INTERNALCALL_STRCAT(str) ALLOC_PTR(str, STRCAT)(str->Data, x);
 
+
+bool MulOp(size_t a, size_t b, size_t* out)
+{
+	*out = 0;
+	if ((a == 0) || (b == 0))
+	{
+		return true;
+	}
+	else
+	{
+		if ((b != 0 && a > SIZE_MAX / b))
+		{
+			return false;
+			
+		}
+		else
+		{
+			*out = a * b;
+		}
+		return true;
+	}
+}
+bool AddOp(size_t a, size_t b, size_t *out)
+{
+	size_t calc = a + b;
+	if (!(calc <  a))
+	{
+		*out = calc;
+		return true;
+	}
+	else
+	{
+		*out = 0;
+		return false;
+	}
+}
+
+
 extern "C" {
 
 	IAT_WideCharToMultiBytePtr IAT_WideCharToMultiByte = 0;
@@ -269,6 +307,131 @@ extern "C" {
 
 	LWAnsiString* LW_INTERNAL LWAnsiString_AppendInternal(LWAnsiString* str, const void* append, LW_STRING_strlen STRLEN)
 	{
+		if (str == nullptr)
+			return str;
+		if (append == nullptr)
+			return nullptr;
+		if (str->AllocatedHandle == 0)
+			return nullptr;
+		if (append == nullptr)
+			return nullptr;
+		else
+		{
+			//DebugBreak();
+			size_t chars_needed=0;
+			size_t bytes_needed=0;
+			size_t alloc_size=0;
+			ProbeIfDirtyLen(str);
+			alloc_size = ALLOC_PTR(str, SingleCharacterLength);
+			chars_needed = 0;
+			if (!AddOp(chars_needed, 0, &chars_needed))
+				return nullptr;
+
+			if (!AddOp(chars_needed, str->Length, &chars_needed))
+				return nullptr;
+			//chars_needed += str->Length;
+			if (!AddOp(chars_needed, STRLEN((void*)append), &chars_needed))
+			{
+				return nullptr;
+			}
+
+			
+			//chars_needed += STRLEN(( void*)append);
+			if (!AddOp(chars_needed, 1, &chars_needed))
+			{
+				return nullptr;
+			}
+			//chars_needed += 1; // the nullptr;
+			
+
+			bytes_needed = chars_needed;
+
+			if (!MulOp(chars_needed, alloc_size, &bytes_needed))
+			{
+				return nullptr;
+			}
+			//bytes_needed *= alloc_size;
+
+		
+			
+			size_t crr = LWAnsiString_GetAllocatedByteSize(str);
+
+			if (LWAnsiString_GetAllocatedByteSize(str) >= bytes_needed)
+			{
+				// it fits!?
+				
+				
+				//ALLOC_PTR(str, STRCAT)(str->Data, (void*)append);
+				/*if (str->AllocatedHandle == &DefaultHandler)
+				{
+					char* buff = str->A;
+					buff += str->Length;
+					ALLOC_PTR(str, STRCPY)((void*)buff, (void*)append);
+				}
+				else if (str->AllocatedHandle == LWUnicodeHandler)
+				{
+					wchar_t* buff =  str->W;
+					buff += str->Length;
+					ALLOC_PTR(str, STRCPY)((void*)buff, (void*)append);
+				}
+				else
+				{
+					// the generic slower (4mb + fallback)
+					ALLOC_PTR(str, STRCAT)(str->Data, (void*)append);
+				}*/
+				char* calc = str->A;
+				calc += (str->Length * ALLOC_PTR(str, SingleCharacterLength));
+				ALLOC_PTR(str, STRCPY)((void*)calc, (void*)append);
+				str->Length = chars_needed - 1;
+				LWAnsiString_ClampNull(str);
+				return str;
+			}
+			else
+			{
+
+				// we need to realloc
+				size_t target_bytes_needed=0;
+				size_t greed_check = 0;
+				if (!MulOp(LWAnsiString_GetAllocatedByteSize(str), 2, &greed_check))
+				{
+					greed_check = bytes_needed;
+				}
+				if (bytes_needed > greed_check)
+				{
+					target_bytes_needed = bytes_needed;
+				}
+				else
+				{
+				
+					target_bytes_needed = greed_check;
+				}
+
+		
+				char*  newPtr = (char*)((AllocationHandler*)(str->AllocatedHandle))->CustomReAlloc(((AllocationHandler*)(str->AllocatedHandle))->CustomGetHeap(0, 0, 0), HEAP_GENERATE_EXCEPTIONS | HEAP_ZERO_MEMORY, str->Data, target_bytes_needed);
+
+				if (newPtr != 0)
+				{
+					char* calc_ptr = newPtr;
+					str->Data = newPtr;
+					str->AllocatedSize = target_bytes_needed;
+					if ((alloc_size != 0) && (alloc_size != 1))
+					{
+						str->AllocatedSize /= alloc_size;
+					}
+					//ALLOC_PTR(str, STRCAT)(str->Data, (void*)append);
+					newPtr += (str->Length * ALLOC_PTR(str, SingleCharacterLength));
+					ALLOC_PTR(str, STRCPY)((void*)calc_ptr, (void*)append);
+					str->Length = ALLOC_PTR(str, STRLEN)(str->Data);
+					return str;
+				}
+			}
+
+
+			return nullptr;
+		}
+	}
+	LWAnsiString* LW_INTERNAL LWAnsiString_AppendInternalOldOd(LWAnsiString* str, const void* append, LW_STRING_strlen STRLEN)
+	{
 #ifdef _DEBUG
 		char* a_input = (char*)append;
 		wchar_t* w_input = (wchar_t*)append;
@@ -286,7 +449,7 @@ extern "C" {
 		size_t append_len = STRLEN((void*)append);
 		if (append_len == 0)
 			return str; // nothing to append
-		int new_size = 0;
+		size_t new_size = 0;
 		int required_size = 0;
 		ProbeIfDirtyLen(str);
 #ifndef AGGRO_REALLOC
@@ -299,18 +462,36 @@ extern "C" {
 		}
 		else
 		{
-			if ((str->Length + append_len + 1) < (str->AllocatedSize * 2))
+		//	if ((str->Length + append_len + 1) < (str->AllocatedSize * 2))
+			if ((str->Length + append_len + 0) < (str->AllocatedSize * 2))
 			{
 				required_size = str->AllocatedSize * 2;
 			}
 			else
 			{
-				required_size = str->AllocatedSize + append_len + ALLOC_PTR(str, SingleCharacterLength);
+				required_size = str->AllocatedSize + append_len;
 			}
 		}
 
 #endif
 
+		if (required_size > str->AllocatedSize)
+		{
+			new_size = required_size + 1;
+		}
+		else
+		{
+			new_size = str->AllocatedSize;
+		}
+		if (new_size * ALLOC_PTR(str, SingleCharacterLength) < LWAnsiString_GetAllocatedByteSize(str))
+		{
+			new_size = LWAnsiString_GetAllocatedByteSize(str);
+		}
+		else
+		{
+			new_size = (new_size * ALLOC_PTR(str, SingleCharacterLength)) + 0;
+		}
+		/*
 		if (required_size < str->AllocatedSize)
 		{
 			// if you remove the +1 in the code above, ensure we add it here for the null term
@@ -321,7 +502,19 @@ extern "C" {
 			new_size = required_size;
 		}
 
-		if (new_size >= str->AllocatedSize)
+		// convert new size to byes needed
+
+		{
+			size_t calculated;
+			if (!MulOp(new_size, ALLOC_PTR(str, SingleCharacterLength), &calculated))
+			{
+				return nullptr;
+			}
+			new_size = calculated;
+		}*/
+
+		//if (new_size >= str->AllocatedSize)
+		if (new_size > LWAnsiString_GetAllocatedByteSize(str))
 		{
 			LWAnsiString_ClampNull(str);
 			//new_size++; // +1 for null terminator 
@@ -537,6 +730,8 @@ extern "C" {
 			return true;
 		}
 	}
+
+
 
 
 }

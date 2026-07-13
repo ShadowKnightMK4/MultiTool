@@ -2,6 +2,8 @@
 // LWAnsiString.cpp : Defines the functions for the static library.]
 #define LWANSISTRING_HARDIMPORTS_VISIBLE
 #include "LWAnsiString_Internal.h"
+#include "intsafe.h"
+
 /*
  * This file is part of the Midas project and is designed to be self-contained.
  * It presents a lightweight mechanism for creating and managing ANSI strings using
@@ -259,6 +261,7 @@ extern "C" {
 	}
 	LPVOID LW_INTERNAL WINAPI DefaultReAlloc(HANDLE hHeap, DWORD dwFlags, LPVOID lpMem, SIZE_T dwBytes)
 	{
+
 		if ((DefaultHandler.CustomReAlloc != nullptr) && (DefaultHandler.CustomReAlloc != DefaultReAlloc))
 		{
 			return DefaultHandler.CustomReAlloc(hHeap, dwFlags, lpMem, dwBytes);
@@ -727,9 +730,19 @@ extern "C" {
 
 		if (new_size != str->AllocatedSize)
 		{
-			DWORD SizeCalc = ((new_size + 1) * ALLOC_PTR(str, SingleCharacterLength));
+			size_t NewChar = 0;
+			size_t NewCharCountInBytes = 0;
+			if (!AddOp(new_size, +1, &NewChar))
+			{
+				return -1; // HELLO OVERFL but possible signed/unsized junk
+			}
+			if (!MulOp(NewChar, ALLOC_PTR(str, SingleCharacterLength), &NewCharCountInBytes))
+			{
+				return -1; // still overflow
+			}
+			
 			//char* newPtr = (char*)((AllocationHandler*)(str->AllocatedHandle))->CustomReAlloc(((AllocationHandler*)(str->AllocatedHandle))->CustomGetHeap(0, 0, 0), HEAP_GENERATE_EXCEPTIONS | HEAP_ZERO_MEMORY, str->Data, new_size + 1); // +1 for null terminator
-			char* newPtr = (char*)Handler->CustomReAlloc(Handler->CustomGetHeap(0, 0, 0), HEAP_GENERATE_EXCEPTIONS | HEAP_ZERO_MEMORY, str->Data, SizeCalc); // +1 for null terminator
+			char* newPtr = (char*)Handler->CustomReAlloc(Handler->CustomGetHeap(0, 0, 0), HEAP_GENERATE_EXCEPTIONS | HEAP_ZERO_MEMORY, str->Data, NewCharCountInBytes); // +1 for null terminator
 
 			if (newPtr == nullptr)
 			{
@@ -798,10 +811,11 @@ extern "C" {
 	{
 		if (str == nullptr)
 			return str;
-		if (append == nullptr)
-			return str; // nothing to append
 		if (str->AllocatedHandle == 0)
 			return nullptr; // WE CAN'T CAUSE there's no table of allocator routines
+		if (append == nullptr)
+			return str; // nothing to append
+
 
 		if (str->AllocatedHandle == LWAnsiHandler)
 		{
@@ -1048,6 +1062,7 @@ extern "C" {
 
 	LWAnsiString* LWAnsiString_Reserve(LWAnsiString* str, size_t  new_size)
 	{
+		size_t SizeCalcInBytes = 0;
 		size_t Sizecalc = 0;
 		/* UNIT TESTED THRU LWAnsiString_Reserve */
 		if (str == nullptr)
@@ -1057,6 +1072,43 @@ extern "C" {
 			uncomment this out if you go back to signed size
 			*/
 		ProbeIfDirtyLen(str);
+
+
+		if (new_size > str->AllocatedSize)
+		{
+			if (!AddOp(new_size, 1, &Sizecalc))
+			{
+				// unlikey to overflow but play defensie
+				return nullptr;
+			}
+		}
+		
+
+		{
+			{
+				
+				if (!MulOp(Sizecalc, ALLOC_PTR(str, SingleCharacterLength), &SizeCalcInBytes))
+				{
+					return nullptr;// overflow can happen still
+				}
+			}
+		}
+
+		/*
+		// the null is added up here
+		if (!AddOp(new_size, 0, &Sizecalc))
+		{
+			return nullptr; // overflow possible.
+		}
+		else
+		{
+			// addops already did it.
+			if (!MulOp((Sizecalc ), ALLOC_PTR(str, SingleCharacterLength), &Sizecalc))
+			{
+				return nullptr;// overflow can happen still
+			}
+		}*/
+		/*
 		if ((new_size+1) > (MAXSIZE_T/ ALLOC_PTR(str, SingleCharacterLength)))
 		{
 			return nullptr; //  overflow can happen on this allocate.
@@ -1064,7 +1116,7 @@ extern "C" {
 		else
 		{
 			Sizecalc = ((new_size + 1) * ALLOC_PTR(str, SingleCharacterLength)); // +1 for null terminator
-		}
+		}*/
 
 
 		if (Sizecalc > str->AllocatedSize)
@@ -1074,7 +1126,7 @@ extern "C" {
 		//	Sizecalc = ((new_size + 1) * ALLOC_PTR(str, SingleCharacterLength)); // +1 for null terminator
 			
 			
-			char* newPtr = (char*)((AllocationHandler*)(str->AllocatedHandle))->CustomReAlloc(((AllocationHandler*)(str->AllocatedHandle))->CustomGetHeap(0, 0, 0), HEAP_GENERATE_EXCEPTIONS | HEAP_ZERO_MEMORY, str->Data, Sizecalc); // +1 for null terminator
+			char* newPtr = (char*)((AllocationHandler*)(str->AllocatedHandle))->CustomReAlloc(((AllocationHandler*)(str->AllocatedHandle))->CustomGetHeap(0, 0, 0), HEAP_GENERATE_EXCEPTIONS | HEAP_ZERO_MEMORY, str->Data, SizeCalcInBytes); // +1 for null terminator
 			if (newPtr == nullptr)
 			{
 				return nullptr; // failed to reallocate
@@ -1083,7 +1135,8 @@ extern "C" {
 			{
 				
 				str->Data = newPtr; // set the new data pointer
-				str->AllocatedSize = new_size + 1; // update the allocated size
+				//str->AllocatedSize = new_size ; // update the allocated size
+				str->AllocatedSize = Sizecalc;
 
 					/*
 					* FALLBACK: If a custom allocator is injected that ignores HEAP_ZERO_MEMORY,
@@ -1096,13 +1149,7 @@ extern "C" {
 				LWAnsiString_ClampNull(str);
 				return str; // return the current string
 
-				/*
-				str->Data = newPtr; // set the new data pointer
-				str->AllocatedSize = new_size + 1; // update the allocated size
-				str->Data[str->AllocatedSize - 1] = 0; // null terminate
-				local_memzero((unsigned char*)str->Data + str->Length, str->AllocatedSize - 1 - str->Length); // zero out the rest of the buffer
-				str->Data[str->Length] = 0; // ensure the string is null terminated
-				return str; // return the current string*/
+
 			}
 		}
 		return str; // no change if size is less than or equal to allocated size
@@ -1114,8 +1161,28 @@ extern "C" {
 			return nullptr; // null string
 		/* UNIT TESTED THRU LWAnsiString_Reserve */
 		ProbeIfDirtyLen(str);
-		size_t calc_size;
+		size_t calc_size = 0;
 
+		if (new_size > max)
+		{
+			calc_size = max;
+		}
+		else
+		{
+			
+			if (!AddOp(str->AllocatedSize, new_size, &calc_size))
+			{
+				return nullptr;
+			}
+			else
+			{
+				if (calc_size > max)
+				{
+					calc_size = max;
+				}
+			}
+		}
+		/*
 		if (new_size + str->Length > max)
 		{
 			calc_size = max;
@@ -1128,7 +1195,7 @@ extern "C" {
 			{
 				calc_size = max;
 			}
-		}
+		}*/
 		
 
 		return LWAnsiString_Reserve(str, calc_size); // reserve the string with the new size plus current length
@@ -1163,12 +1230,37 @@ extern "C" {
 	/// <returns>null on error and duplicate on ok</returns>
 	LWAnsiString* LWAnsiString_Duplicate(LWAnsiString* str)
 	{
-		return nullptr;
-		//if (str == nullptr) return nullptr;
-		/* UNIT TESTED THRU LWAnsiString_CreateFromString and the */
-		//ProbeIfDirtyLen(str);
+		if (str == nullptr)
+		{
+			return nullptr;
+		}
 
-		//return LWAnsiString_CreateFromString(LWAnsiString_ToCStr(str)); 
+		if (str->AllocatedHandle == nullptr)
+		{
+			return nullptr;
+		}
+		ProbeIfDirtyLen(str);
+
+		// below routes to the current create from depending on contents
+		if (LWAnsiString_IsAnsi(str))
+		{
+			return LWAnsiString_CreateFromStringA(LWAnsiString_ToCStr(str));
+		}
+
+		if (LWAnsiString_IsUnicode(str))
+		{
+			return LWAnsiString_CreateFromStringW((const wchar_t*) LWAnsiString_ToCStr(str));
+		}
+
+		if (LWAnsiString_IsCustomHandler(str))
+		{
+			return LWAnsiString_CreateFromStringEx(( AllocationHandler*) str->AllocatedHandle, LWAnsiString_ToCStr(str));
+		}
+
+		// shouldnt'y striclty need this 
+		// but if its none of the above (how?) we need to return something
+		return nullptr;
+
 	}
 
 	LWAnsiString* LWAnsiString_DuplicateEx(AllocationHandler* x, LWAnsiString* str)
@@ -1200,6 +1292,7 @@ extern "C" {
 	/// </summary>1
 	/// <param name="str">type to get buffer to</param>
 	/// <returns>pointer to the null char ending the string.</returns>
+	/// <remarks>note well while this returns char*, it is returning the LEST char</remarks>
 	const char* LWAnsiString_EndingOffset(LWAnsiString* str)
 	{
 		if (str == nullptr)
@@ -1224,126 +1317,6 @@ extern "C" {
 	}
 
 
-	/*
-	bool LWAnsiString_AppendNumberAOLD(int number, LWAnsiString* output, int* output_size)
-	{
-		// yes it's an int. Yes we're treating it like a bool.
-		int IsPositive = number > 0;
-		// arg validation;
-		if (output == nullptr)
-		{
-			return false;
-		}
-
-		ProbeIfDirtyLen(output);
-		if (number == INT_MIN)
-		{
-			// special case for the minimum int value, which cannot be represented as a positive number
-			LWAnsiString_AppendA(output, "-2147483648");
-			if (output_size != 0)
-			{
-				*output_size = ( 12 + 
-					ALLOC_PTR(output, SingleCharacterLength) // this odd wayt lets it theory scale for say unicode and ansi
-					);
-			}; // 11 digits + null terminator
-			return true;
-		}
-
-		if (number == 0)
-		{
-			// special case for zero
-			LWAnsiString_Append(output, "0");
-			if (output_size != 0) { *output_size = 2; }; // 1 digit + null terminator
-			return true;
-		}
-		int tmp = number;
-		// count digits
-		int digit_count = 0;
-
-		if (!IsPositive)
-			tmp *= -1; // we fix in POST
-
-		// count our digits. we need it to figure the buffer
-		while (((char)(tmp & 0xFF)) != 0)
-		{
-
-			digit_count++;
-			if (tmp > 9)
-			{
-				tmp /= 10;
-			}
-			else
-			{
-				break;
-			}
-
-		}
-
-
-		// should we have a digit count of 0, we tick it to 1.
-		if (digit_count == 0)
-			digit_count++;
-
-		if (!IsPositive)
-			digit_count++; // for the minus sign;
-
-		// and allocate + lock a void* to place
-		// note the +1 is for the null terminator
-		// note the IsPositive note is to add a - sign if the number is negative
-		LWAnsiString_AddReserve(output, digit_count + 1); // reserve the string with the new size + 1 for null terminator
-
-
-		{
-			LWAnsiString* tmp_buff = LWAnsiString_CreateString(digit_count);
-			// grab a pointer if possible and bail if not
-			char* ret = (char*)LWAnsiString_ToCStr(tmp_buff);
-
-			if (ret == 0)
-			{
-				return false;
-			}
-			else
-			{
-				if (!IsPositive)
-					tmp = number * -1;
-				else
-					tmp = number;
-
-				if (tmp != 0)
-				{
-					while (digit_count > 0)
-					{
-						char debug = (char)((tmp % 10) + '0');
-						// what this code here is doing is started from the ones place and moves up taking the remainding of diviing tmp by 10 and add '0' (the string 0) to 
-						// get the digit of it. ie
-						// the number 5 would end up being '5' when done.
-						ret[digit_count - 1] = debug;
-						tmp /= 10;
-						digit_count--;
-						if (!IsPositive)
-						{
-							if (digit_count == 1)
-							{
-								ret[digit_count - 1] = '-';
-								digit_count--;
-							}
-						}
-					}
-				}
-				else
-				{
-					/* code above should be counting digits and ect... if code gets here, aka the int was 0, return 0
-					ret[0] = '0';
-				}
-				LWAnsiString_AppendNative(output, tmp_buff); // append the string to the output
-				LWAnsiString_FreeString(tmp_buff); // free the temporary buffer
-			}
-
-
-			if (output_size != 0) { *output_size = digit_count + 1; };
-			return true;
-		}
-	}*/
 
 	int LW_INTERNAL LWAnsiString_CompareInternalShim(LWAnsiString* a, const wchar_t* b, bool Case, AllocationHandler* TestHandler, bool* DidCompare = 0)
 	{
@@ -1357,7 +1330,7 @@ extern "C" {
 		}
 		if (DidCompare != 0)
 		{
-			*DidCompare * false;
+			*DidCompare = false;
 		}
 		return -2;
 	}

@@ -186,12 +186,12 @@ int main() {
 		LWAnsiString* LWAnsiString_CreateStringW(int len);
 
 		/// <summary>
-		/// Trigger a realloc if needed to ensure the string has at least new_size characters available. If the string is null, it will return null. If new_size is less than or equal to the current size, it will return the string unchanged. Also allocated extra memory will zero it out
+		/// Trigger a realloc if needed to ensure the string has at least new_size characters available not including the null terminator. 
 		/// </summary>
 		/// <param name="str"></param>
 		/// <param name="new_size"></param>
-		/// <returns></returns>
-		/// <remarks>IMPORTANT. As it stands atm, this does NOT zero stuff out.</remarks>
+		/// <returns> if the allocatoe might trigger wrap around in size calcuature or anmother error happens, returns null</returns>
+		/// <remarks>IMPORTANT. As it stands atm, this does NOT zero stuff out. If you request 25 new_size it will ensure allocated size is large enough for 25 chars AND the +1 for null term </remarks>
 		LWAnsiString* LWAnsiString_Reserve(LWAnsiString* str, size_t new_size);
 
 		/// <summary>

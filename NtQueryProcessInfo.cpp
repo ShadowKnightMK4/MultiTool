@@ -55,6 +55,7 @@ bool RunNTQueryProcessInfo(int* result, const char** message_result, const char*
 	{
 		return false;
 	}
+	return false; /*
 	FetchVersionInfo(&GlobalVersionInfo, &VERISON_INFO_IS_UNICODE);
 	if (GlobalVersionInfo.A.dwPlatformId != VER_PLATFORM_WIN32_NT)
 	{
@@ -79,7 +80,7 @@ bool RunNTQueryProcessInfo(int* result, const char** message_result, const char*
 			* arg1 = -ntqueryprocss
 			* arg2 = { all, or one off}
 			* arg3 = PID
-			*/
+
 			DWORD PID = 0;
 			if (!StringToNumber(argv[3],(int*) & PID))
 			{
@@ -109,5 +110,5 @@ bool RunNTQueryProcessInfo(int* result, const char** message_result, const char*
 			clean:
 			LWAnsiString_FreeString(output);
 		}
-	}
+		*/
 }
